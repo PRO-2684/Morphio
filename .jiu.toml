@@ -13,6 +13,12 @@ arguments = []
 command = ["wasm-pack", "build", "--target", "web", "--no-pack", "--dev"]
 
 [[recipes]]
+names = ["run", "r"]
+description = "Compile and \u001b[4mr\u001b[24mun"
+arguments = ["*rest"]
+command = ["cargo", "run", "--", ["*rest"]]
+
+[[recipes]]
 names = ["test", "t"]
 description = "Run \u001b[4mt\u001b[24mests"
 arguments = ["*rest"]
