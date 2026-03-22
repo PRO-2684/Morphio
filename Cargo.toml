@@ -1,0 +1,22 @@
+[package]
+name = "text-morph"
+version = "0.1.0"
+edition = "2024"
+readme = "README.md"
+description = "Patching a font, so it shows word_a as word_b"
+keywords = []
+categories = []
+include = ["src", "README.md", "LICENSE"]
+repository = "https://github.com/PRO-2684/text-morph"
+license = "MIT"
+authors = ["PRO-2684"]
+
+[dependencies]
+wasm-bindgen = "0.2.104"
+
+[dependencies.web-sys]
+version = "0.3.81"
+features = ["Document", "Element", "HtmlElement", "Node", "Window"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]

@@ -1,0 +1,19 @@
+description = "\u001b[1;36mtext-morph\u001b[22;39m: Patching a font, so it shows word_a as word_b"
+
+[[recipes]]
+names = ["build", "b"]
+description = "\u001b[4mB\u001b[24muild Wasm module and glue code"
+arguments = []
+command = ["wasm-pack", "build", "--target", "web", "--no-pack", "--release"]
+
+[[recipes]]
+names = ["dev", "d"]
+description = "Create a \u001b[4md\u001b[24evelopment build"
+arguments = []
+command = ["wasm-pack", "build", "--target", "web", "--no-pack", "--dev"]
+
+[[recipes]]
+names = ["test", "t"]
+description = "Run \u001b[4mt\u001b[24mests"
+arguments = ["*rest"]
+command = ["cargo", "test", ["*rest"]]
