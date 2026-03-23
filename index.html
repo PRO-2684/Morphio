@@ -20,6 +20,7 @@
             </div>
 
             <div class="row morph-row">
+                <label>Morph Words</label>
                 <span class="inline-label">Render</span>
                 <input
                     id="from-word"
@@ -48,19 +49,41 @@
             </div>
 
             <div class="output-area">
-                <label for="preview">Preview</label>
-                <textarea id="preview" spellcheck="false" rows="10">
+                <label for="source-preview">Previews</label>
+                <div class="preview-grid">
+                    <div class="preview-pane">
+                        <div class="preview-title">Original font</div>
+                        <textarea
+                            id="source-preview"
+                            spellcheck="false"
+                            rows="14"
+                        >
 banana
 bandana
 bananarama
 
 Try typing the source word in different contexts here.</textarea
-                >
+                        >
+                    </div>
+                    <div class="preview-pane">
+                        <div class="preview-title">Morphed font</div>
+                        <textarea
+                            id="morphed-preview"
+                            spellcheck="false"
+                            rows="14"
+                            readonly
+                        ></textarea>
+                    </div>
+                </div>
             </div>
 
             <div class="actions">
-                <button id="download-button" disabled>Download morphed font</button>
-                <button id="reset-preview" class="secondary">Reset preview text</button>
+                <button id="download-button" disabled>
+                    Download morphed font
+                </button>
+                <button id="reset-preview" class="secondary">
+                    Reset preview text
+                </button>
             </div>
         </div>
 
@@ -71,7 +94,10 @@ Try typing the source word in different contexts here.</textarea
         </p>
         <p class="help">
             Source:
-            <a href="https://github.com/PRO-2684/morphio" target="_blank" rel="noreferrer"
+            <a
+                href="https://github.com/PRO-2684/morphio"
+                target="_blank"
+                rel="noreferrer"
                 >github.com/PRO-2684/morphio</a
             >
         </p>
