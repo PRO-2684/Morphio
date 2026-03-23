@@ -8,4 +8,4 @@
 [![Crates.io Total Downloads](https://img.shields.io/crates/d/text-morph?logo=rust)](https://crates.io/crates/text-morph)
 [![docs.rs](https://img.shields.io/docsrs/text-morph?logo=rust)](https://docs.rs/text-morph)
 
-Patching a font, so it shows word_a as word_b.
+Patching a font, so it shows worda as wordb.
