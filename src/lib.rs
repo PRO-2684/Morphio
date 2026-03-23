@@ -17,8 +17,9 @@ use write_fonts::{BuilderError, FontBuilder};
 pub trait TextMorph {
     /// Patch the font so it shows `from_word` as `to_word`, returning the rebuilt font bytes.
     ///
-    /// The two words must have the same length, must be non-empty, and the font must
-    /// contain glyphs for all characters in both words.
+    /// The two words must have the same length, must be non-empty, and the font must contain glyphs for all characters in both words.
+    ///
+    /// If multiple fonts are present (e.g. in a TTC), all fonts will be patched.
     fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError>;
 }
 
@@ -33,14 +34,12 @@ impl TextMorph for FileRef<'_> {
         match self {
             Self::Font(font) => font.morph(from_word, to_word),
             Self::Collection(collection) => {
-                if collection.len() == 1 {
-                    collection
-                        .get(0)
-                        .map_err(MorphError::Read)?
-                        .morph(from_word, to_word)
-                } else {
-                    Err(MorphError::CollectionIndexRequired(collection.len()))
-                }
+                let fonts = collection
+                    .iter()
+                    .map(|font| font.map_err(MorphError::Read))
+                    .map(|font| font.and_then(|font| morph_font(font, from_word, to_word)))
+                    .collect::<Result<Vec<_>, _>>()?;
+                Ok(build_ttc(fonts))
             }
         }
     }
@@ -57,8 +56,6 @@ pub enum MorphError {
     MissingCmap,
     /// The font is missing a glyph for a character in one of the words.
     MissingGlyph(char),
-    /// The file is a font collection with multiple entries and an explicit font selection is required.
-    CollectionIndexRequired(u32),
     /// An error occurred while reading the font.
     Read(ReadError),
     /// An error occurred while building the font.
@@ -84,9 +81,70 @@ fn morph_font(font: FontRef<'_>, from_word: &str, to_word: &str) -> Result<Vec<u
     Ok(builder.build())
 }
 
+/// Build a TTC from the given font bytes, rebasing all internal offsets by the appropriate amount. Implemented here because `write-fonts` [doesn't support TTC yet](https://github.com/googlefonts/fontations/blob/423de8c29d960f1d2dd691c325a1bf41dda8513e/write-fonts/src/font_builder.rs#L265).
+fn build_ttc(mut fonts: Vec<Vec<u8>>) -> Vec<u8> {
+    let header_len = 12 + fonts.len() * 4;
+    let mut offsets = Vec::with_capacity(fonts.len());
+    let mut offset = header_len as u32;
+
+    for font in &fonts {
+        offsets.push(offset);
+        offset += align_4(font.len()) as u32;
+    }
+
+    for (font, offset) in fonts.iter_mut().zip(offsets.iter().copied()) {
+        rebase_sfnt_offsets(font, offset);
+    }
+
+    let mut ttc = Vec::with_capacity(offset as usize);
+    ttc.extend_from_slice(b"ttcf");
+    ttc.extend_from_slice(&0x0001_0000_u32.to_be_bytes());
+    ttc.extend_from_slice(&(fonts.len() as u32).to_be_bytes());
+    for offset in offsets {
+        ttc.extend_from_slice(&offset.to_be_bytes());
+    }
+
+    for font in fonts {
+        ttc.extend_from_slice(&font);
+        let padding = align_4(font.len()) - font.len();
+        ttc.resize(ttc.len() + padding, 0);
+    }
+
+    ttc
+}
+
+fn align_4(len: usize) -> usize {
+    (len + 3) & !3
+}
+
+fn rebase_sfnt_offsets(font: &mut [u8], delta: u32) {
+    if font.len() < 12 {
+        return;
+    }
+
+    let num_tables = u16::from_be_bytes([font[4], font[5]]) as usize;
+    let records_start = 12;
+
+    for i in 0..num_tables {
+        let record_offset = records_start + i * 16;
+        if record_offset + 12 > font.len() {
+            return;
+        }
+
+        let table_offset = u32::from_be_bytes([
+            font[record_offset + 8],
+            font[record_offset + 9],
+            font[record_offset + 10],
+            font[record_offset + 11],
+        ]);
+        let rebased = table_offset.saturating_add(delta).to_be_bytes();
+        font[record_offset + 8..record_offset + 12].copy_from_slice(&rebased);
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use read_fonts::TableProvider;
+    use read_fonts::{TableProvider, types::Tag};
 
     use super::*;
 
@@ -159,13 +217,33 @@ mod tests {
     }
 
     #[test]
-    fn file_ref_rejects_multi_font_collection() {
+    fn file_ref_morphs_all_fonts_in_collection() {
         let bytes = fixture_bytes();
         let file = FileRef::new(&bytes).expect("fixture should parse");
-        let err = file
+        let morphed = file
             .morph("abc", "xyz")
-            .expect_err("multi-font collection should require an explicit index");
+            .expect("collection morph should patch every font");
+        let rebuilt = FileRef::new(&morphed).expect("patched bytes should still be a valid file");
 
-        assert!(matches!(err, MorphError::CollectionIndexRequired(count) if count > 1));
+        let FileRef::Collection(collection) = rebuilt else {
+            panic!("patched fixture should remain a collection");
+        };
+        assert_eq!(collection.len(), 2);
+
+        for font in collection.iter() {
+            let font = font.expect("collection member should parse");
+            let gsub = font.gsub().expect("patched font should contain GSUB");
+            let feature_list = gsub
+                .feature_list()
+                .expect("patched GSUB should contain a feature list");
+            let has_calt = feature_list
+                .feature_records()
+                .iter()
+                .any(|record| record.feature_tag() == Tag::new(b"calt"));
+            assert!(
+                has_calt,
+                "every collection font should expose a calt feature"
+            );
+        }
     }
 }
