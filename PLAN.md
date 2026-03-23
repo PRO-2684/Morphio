@@ -104,10 +104,12 @@ Open question:
 - Construct the equivalent of:
   - `ignore substitute @LETTER <word>;`
   - `ignore substitute <word> @LETTER;`
-- Confirm which `write-fonts` layout structures correspond to ignore rules.
-- If `ignore substitute` is awkward to encode directly, verify whether the same behavior can be expressed with explicit backtrack/lookahead coverage and separate contextual subtables.
+- Implement these as earlier chained-context subtables with no lookup actions, followed by the real substitution subtable in the same lookup.
+- Prefer coverage-based chained context subtables for this first version because they map cleanly to:
+  - exact glyph sequences for the source word
+  - a reusable ASCII-letter boundary class
 
-This is the riskiest implementation area and should be validated early with a small real font.
+This remains the riskiest implementation area and should be validated early with a small real font.
 
 ### Phase 5: Integrate into `TextMorph`
 
