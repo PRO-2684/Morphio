@@ -1,0 +1,221 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    color-scheme: dark;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    font-family: sans-serif;
+    padding: 2rem;
+}
+
+h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #aaa;
+}
+
+.card {
+    background: #242424;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 720px;
+}
+
+label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+input[type="file"],
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+input[type="file"]:focus {
+    border-color: #5b9bd5;
+}
+
+textarea {
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.morph-row {
+    justify-content: flex-start;
+}
+
+.inline-label {
+    color: #bbb;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.word-input {
+    flex: 1 1 140px;
+    min-width: 0;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 24px;
+    font-size: 0.88rem;
+    color: #888;
+}
+
+.status[data-state="ready"] {
+    color: #7fc6a4;
+}
+
+.status[data-state="error"] {
+    color: #d88972;
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #444;
+    border-top-color: #5b9bd5;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: none;
+}
+
+.status[data-busy="true"] .spinner {
+    display: inline-block;
+}
+
+.output-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition:
+        filter 0.15s,
+        opacity 0.15s;
+    background: #5b9bd5;
+    color: #fff;
+    font-weight: 600;
+}
+
+button.secondary {
+    background: #3a3a3a;
+    color: #ccc;
+    border: 1px solid #555;
+    font-weight: 400;
+}
+
+button:hover:not(:disabled) {
+    filter: brightness(1.15);
+}
+
+button:active:not(:disabled) {
+    filter: brightness(0.9);
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.help {
+    width: 100%;
+    max-width: 720px;
+    color: #777;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.help a {
+    color: #9cc4eb;
+    text-decoration: none;
+}
+
+.help a:hover {
+    text-decoration: underline;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        justify-content: flex-start;
+        padding: 1rem;
+    }
+
+    .card {
+        padding: 1.2rem;
+    }
+
+    .morph-row {
+        align-items: stretch;
+    }
+
+    .morph-row button {
+        width: 100%;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+}

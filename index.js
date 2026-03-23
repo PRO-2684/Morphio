@@ -20,11 +20,6 @@ const elements = {
     fileInput: document.querySelector("#font-file"),
     fromWord: document.querySelector("#from-word"),
     toWord: document.querySelector("#to-word"),
-    fromCount: document.querySelector("#from-count"),
-    toCount: document.querySelector("#to-count"),
-    fontSelection: document.querySelector("#font-selection"),
-    fontName: document.querySelector("#font-name"),
-    fontMeta: document.querySelector("#font-meta"),
     status: document.querySelector("#status"),
     statusText: document.querySelector("#status-text"),
     preview: document.querySelector("#preview"),
@@ -35,13 +30,12 @@ const elements = {
 
 async function boot() {
     wireUi();
-    syncCounts();
 
     try {
         await init();
         state.wasmReady = true;
         updateActionState();
-        setStatus("idle", "Upload a font, then click Morph font.");
+        setStatus("idle", "Choose a font and click Morph.");
     } catch (error) {
         setStatus("error", `Failed to load WebAssembly: ${formatError(error)}`);
     }
@@ -49,8 +43,6 @@ async function boot() {
 
 function wireUi() {
     elements.fileInput.addEventListener("change", onFileChange);
-    elements.fromWord.addEventListener("input", syncCounts);
-    elements.toWord.addEventListener("input", syncCounts);
     elements.morphButton.addEventListener("click", morphCurrentFont);
     elements.downloadButton.addEventListener("click", downloadFont);
     elements.resetPreviewButton.addEventListener("click", () => {
@@ -65,15 +57,10 @@ async function onFileChange(event) {
     if (!file) {
         state.sourceBytes = null;
         state.sourceName = "";
-        elements.fontSelection.classList.remove("ready");
-        elements.fontName.textContent = "";
-        elements.fontMeta.textContent = "";
         updateActionState();
         setStatus(
             state.wasmReady ? "idle" : "loading",
-            state.wasmReady
-                ? "Upload a font, then click Morph font."
-                : "Loading WebAssembly…",
+            state.wasmReady ? "Choose a font and click Morph." : "Loading WebAssembly…",
         );
         return;
     }
@@ -81,16 +68,8 @@ async function onFileChange(event) {
     const buffer = await file.arrayBuffer();
     state.sourceBytes = new Uint8Array(buffer);
     state.sourceName = file.name;
-    elements.fontSelection.classList.add("ready");
-    elements.fontName.textContent = file.name;
-    elements.fontMeta.textContent = `${formatBytes(file.size)} / ${file.type || "font file"}`;
     updateActionState();
-    setStatus("idle", "Font loaded. Click Morph font to rebuild it.");
-}
-
-function syncCounts() {
-    elements.fromCount.textContent = `${[...elements.fromWord.value].length} chars`;
-    elements.toCount.textContent = `${[...elements.toWord.value].length} chars`;
+    setStatus("idle", "Font loaded. Click Morph.");
 }
 
 async function morphCurrentFont() {
@@ -112,7 +91,7 @@ async function morphCurrentFont() {
 
         state.outputBytes = morphed;
         applyPreviewFont(morphed);
-        setStatus("ready", "Font morphed successfully. Preview and download are ready.");
+        setStatus("ready", "Morphed font ready.");
     } catch (error) {
         clearOutputFont();
         setStatus("error", formatError(error));
@@ -143,15 +122,13 @@ function applyPreviewFont(fontBytes) {
         }
     `;
 
-    elements.preview.style.fontFamily = `"${MORPHED_FAMILY}", "Iowan Old Style", serif`;
-    elements.preview.classList.add("ready");
+    elements.preview.style.fontFamily = `"${MORPHED_FAMILY}", sans-serif`;
 }
 
 function clearOutputFont() {
     state.outputBytes = null;
     clearPreviewFontUrl();
     elements.preview.style.fontFamily = "";
-    elements.preview.classList.remove("ready");
     updateActionState();
 }
 
@@ -200,16 +177,6 @@ function setStatus(stateName, message) {
     elements.status.dataset.state = stateName;
     elements.status.dataset.busy = stateName === "loading" ? "true" : "false";
     elements.statusText.textContent = message;
-}
-
-function formatBytes(size) {
-    if (size < 1024) {
-        return `${size} B`;
-    }
-    if (size < 1024 * 1024) {
-        return `${(size / 1024).toFixed(1)} KB`;
-    }
-    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 function formatError(error) {
