@@ -9,6 +9,8 @@ mod gsub;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::wasm_bindgen;
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::JsValue;
 
 use read_fonts::{FileRef, FontRef, ReadError};
 use write_fonts::{BuilderError, FontBuilder};
@@ -68,6 +70,21 @@ impl MorphError {
     }
 }
 
+impl std::fmt::Display for MorphError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::DifferentLengths => write!(f, "source and target words must have the same length"),
+            Self::EmptyWord => write!(f, "source and target words must not be empty"),
+            Self::MissingCmap => write!(f, "font does not contain a usable Unicode cmap"),
+            Self::MissingGlyph(ch) => write!(f, "font is missing a glyph for '{ch}'"),
+            Self::Read(err) => write!(f, "{err}"),
+            Self::Builder(err) => write!(f, "failed to rebuild font: {}", err.inner),
+        }
+    }
+}
+
+impl std::error::Error for MorphError {}
+
 fn morph_font(font: FontRef<'_>, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
     let (from_glyphs, to_glyphs) = font::validate_words(&font, from_word, to_word)?;
     let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs)?;
@@ -79,6 +96,19 @@ fn morph_font(font: FontRef<'_>, from_word: &str, to_word: &str) -> Result<Vec<u
         .copy_missing_tables(font);
 
     Ok(builder.build())
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(js_name = morphFont)]
+/// WebAssembly entry point that morphs the provided font bytes and returns rebuilt font data.
+pub fn morph_font_wasm(
+    font_data: &[u8],
+    from_word: &str,
+    to_word: &str,
+) -> Result<Vec<u8>, JsValue> {
+    let file = FileRef::new(font_data).map_err(|err| JsValue::from_str(&err.to_string()))?;
+    file.morph(from_word, to_word)
+        .map_err(|err| JsValue::from_str(&err.to_string()))
 }
 
 /// Build a TTC from the given font bytes, rebasing all internal offsets by the appropriate amount. Implemented here because `write-fonts` [doesn't support TTC yet](https://github.com/googlefonts/fontations/blob/423de8c29d960f1d2dd691c325a1bf41dda8513e/write-fonts/src/font_builder.rs#L265).
