@@ -20,7 +20,18 @@
             </div>
 
             <div class="row morph-row">
-                <label>Morph Words</label>
+                <div class="morph-heading">
+                    <label>Morph Words</label>
+                    <div
+                        id="status"
+                        class="status"
+                        data-state="idle"
+                        data-busy="false"
+                    >
+                        <span class="spinner" aria-hidden="true"></span>
+                        <span id="status-text">Loading WebAssembly…</span>
+                    </div>
+                </div>
                 <span class="inline-label">Render</span>
                 <input
                     id="from-word"
@@ -40,37 +51,26 @@
                     autocomplete="off"
                 />
                 <span class="inline-label">!</span>
-                <button id="morph-button" disabled>Morph</button>
-            </div>
-
-            <div id="status" class="status" data-state="idle" data-busy="false">
-                <span class="spinner" aria-hidden="true"></span>
-                <span id="status-text">Loading WebAssembly…</span>
+                <button id="morph-button" disabled>Morph 🪄</button>
             </div>
 
             <div class="output-area">
-                <label for="source-preview">Previews</label>
                 <div class="preview-grid">
                     <div class="preview-pane">
-                        <div class="preview-title">Original font</div>
-                        <textarea
-                            id="source-preview"
-                            spellcheck="false"
-                            rows="14"
+                        <label for="source-preview"
+                            >Original font preview</label
                         >
-banana
-bandana
-bananarama
-
-Try typing the source word in different contexts here.</textarea
+                        <textarea id="source-preview" spellcheck="false">
+banana.</textarea
                         >
                     </div>
                     <div class="preview-pane">
-                        <div class="preview-title">Morphed font</div>
+                        <label for="morphed-preview"
+                            >Morphed font preview</label
+                        >
                         <textarea
                             id="morphed-preview"
                             spellcheck="false"
-                            rows="14"
                             readonly
                         ></textarea>
                     </div>
@@ -89,17 +89,9 @@ Try typing the source word in different contexts here.</textarea
 
         <p class="help">
             Upload a font, choose two words with the same length, then click
-            Morph. The preview will use the rebuilt font directly in your
-            browser.
-        </p>
-        <p class="help">
-            Source:
-            <a
-                href="https://github.com/PRO-2684/morphio"
-                target="_blank"
-                rel="noreferrer"
-                >github.com/PRO-2684/morphio</a
-            >
+            Morph. The morphed font will render the source word as the
+            second word. You can preview before downloading the morphed
+            font. GitHub: <a href="https://github.com/PRO-2684/morphio" target="_blank">PRO-2684/morphio</a>.
         </p>
 
         <script type="module" src="./index.js"></script>

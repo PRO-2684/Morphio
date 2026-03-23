@@ -41,13 +41,12 @@ h1 {
 }
 
 label {
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #888;
     display: block;
     margin-bottom: 0.4rem;
-    width: 100%;
 }
 
 input[type="file"],
@@ -88,6 +87,19 @@ textarea {
     justify-content: flex-start;
 }
 
+.morph-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1 1 100%;
+    margin-bottom: 0.1rem;
+}
+
+.morph-heading label {
+    width: auto;
+    margin-bottom: 0;
+}
+
 .inline-label {
     color: #bbb;
     font-size: 0.95rem;
@@ -106,6 +118,7 @@ textarea {
     min-height: 24px;
     font-size: 0.88rem;
     color: #888;
+    width: auto;
 }
 
 .status[data-state="ready"] {
@@ -145,14 +158,6 @@ textarea {
 .preview-pane {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-}
-
-.preview-title {
-    color: #9a9a9a;
-    font-size: 0.76rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
 }
 
 .actions {
@@ -230,6 +235,12 @@ button:disabled {
 
     .morph-row {
         align-items: stretch;
+    }
+
+    .morph-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
     }
 
     .morph-row button {
