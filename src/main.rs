@@ -1,10 +1,10 @@
 use argh::FromArgs;
+use morphio::TextMorph;
 use read_fonts::FileRef;
 use std::{
     fs::{read, write},
     path::PathBuf,
 };
-use text_morph::TextMorph;
 
 /// Morphio: Morphs the font, so it shows worda as wordb.
 #[derive(FromArgs)]

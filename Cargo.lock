@@ -142,6 +142,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
+name = "morphio"
+version = "0.1.0"
+dependencies = [
+ "argh",
+ "read-fonts",
+ "wasm-bindgen",
+ "web-sys",
+ "write-fonts",
+]
+
+[[package]]
 name = "num-traits"
 version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -205,17 +216,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "text-morph"
-version = "0.1.0"
-dependencies = [
- "argh",
- "read-fonts",
- "wasm-bindgen",
- "web-sys",
- "write-fonts",
 ]
 
 [[package]]

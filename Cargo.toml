@@ -1,13 +1,13 @@
 [package]
-name = "text-morph"
+name = "morphio"
 version = "0.1.0"
 edition = "2024"
 readme = "README.md"
-description = "Patching a font, so it shows worda as wordb"
+description = "Morphs the font, so it shows worda as wordb"
 keywords = []
 categories = []
 include = ["src", "README.md", "LICENSE"]
-repository = "https://github.com/PRO-2684/text-morph"
+repository = "https://github.com/PRO-2684/morphio"
 license = "MIT"
 authors = ["PRO-2684"]
 
@@ -28,5 +28,5 @@ web-sys = { version = "0.3.81", features = ["Document", "Element", "HtmlElement"
 crate-type = ["cdylib", "rlib"]
 
 [[bin]]
-name = "text-morph"
+name = "morphio"
 required-features = ["cli"]
