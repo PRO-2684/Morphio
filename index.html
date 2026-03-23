@@ -138,12 +138,18 @@
                 border-color: rgba(10, 122, 120, 0.5);
             }
 
-            .file-picker {
+            .file-container {
                 position: relative;
                 display: grid;
                 gap: 12px;
+            }
+
+            .file-container input[type="file"] {
+                width: 100%;
+                font: inherit;
+                color: var(--muted);
                 padding: 18px;
-                border: 1px dashed rgba(10, 122, 120, 0.4);
+                border: 1px dashed rgba(10, 122, 120, 0.42);
                 border-radius: 18px;
                 background: linear-gradient(
                     180deg,
@@ -152,39 +158,48 @@
                 );
             }
 
-            .file-picker input[type="file"] {
-                width: 100%;
-                font: inherit;
-                color: var(--muted);
+            .meta {
+                display: none;
+                padding: 0 16px;
             }
 
-            .meta {
+            .meta.ready {
                 display: grid;
-                gap: 6px;
-                padding: 14px 16px;
-                border-radius: 16px;
-                background: rgba(13, 35, 44, 0.05);
             }
 
             .meta strong {
                 font-size: 0.95rem;
+                color: var(--accent-strong);
             }
 
             .status {
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                min-height: 24px;
+                min-height: 48px;
+                padding: 12px 14px;
+                border-radius: 14px;
+                border: 1px solid transparent;
+                background: rgba(28, 43, 50, 0.06);
                 font-size: 0.94rem;
-                color: var(--muted);
+                color: var(--text);
             }
 
             .status[data-state="error"] {
                 color: #a23819;
+                background: rgba(162, 56, 25, 0.1);
+                border-color: rgba(162, 56, 25, 0.16);
             }
 
             .status[data-state="ready"] {
                 color: var(--accent-strong);
+                background: rgba(10, 122, 120, 0.1);
+                border-color: rgba(10, 122, 120, 0.16);
+            }
+
+            .status[data-state="loading"] {
+                background: rgba(205, 107, 46, 0.12);
+                border-color: rgba(205, 107, 46, 0.16);
             }
 
             .spinner {
@@ -242,16 +257,10 @@
 
             .preview-header {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
+                justify-content: flex-start;
+                align-items: flex-start;
                 gap: 12px;
                 margin-bottom: 14px;
-            }
-
-            .preview-note {
-                font-size: 0.88rem;
-                color: var(--warm);
-                font-weight: 600;
             }
 
             #preview {
@@ -300,10 +309,10 @@
                 <p class="eyebrow">Morphio / WebAssembly</p>
                 <h1>Patch a font so one word renders as another.</h1>
                 <p class="summary">
-                    Upload any font, choose the source and target words, and
-                    Morphio will rebuild the font in the browser. Changes apply
-                    automatically, the preview updates with the morphed font,
-                    and you can download the result when it is ready.
+                    Upload any font, choose the source and target words, then
+                    run the morph in the browser. The preview updates with the
+                    rebuilt font, and you can download the result when it is
+                    ready.
                 </p>
             </section>
 
@@ -319,17 +328,15 @@
 
                     <div class="field">
                         <label for="font-file">Font file</label>
-                        <div class="file-picker">
+                        <div class="file-container">
                             <input
                                 id="font-file"
                                 type="file"
                                 accept=".ttf,.otf,.ttc,.woff,.woff2,font/*"
                             />
-                            <div class="meta">
-                                <strong id="font-name">No font selected</strong>
-                                <span id="font-meta" class="hint"
-                                    >Upload a font to start morphing.</span
-                                >
+                            <div id="font-selection" class="meta">
+                                <strong id="font-name"></strong>
+                                <span id="font-meta" class="hint"></span>
                             </div>
                         </div>
                     </div>
@@ -374,6 +381,14 @@
 
                     <div class="actions">
                         <button
+                            id="morph-button"
+                            class="primary"
+                            type="button"
+                            disabled
+                        >
+                            Morph font
+                        </button>
+                        <button
                             id="download-button"
                             class="primary"
                             type="button"
@@ -399,9 +414,6 @@
                                 Type anything here to test how the morphed font
                                 behaves.
                             </div>
-                        </div>
-                        <div id="preview-note" class="preview-note">
-                            Waiting for a morphed font.
                         </div>
                     </div>
                     <textarea id="preview" spellcheck="false">

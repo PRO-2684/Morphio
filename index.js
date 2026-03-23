@@ -13,7 +13,7 @@ const state = {
     sourceName: "",
     outputBytes: null,
     fontUrl: null,
-    morphToken: 0,
+    isMorphing: false,
 };
 
 const elements = {
@@ -22,12 +22,13 @@ const elements = {
     toWord: document.querySelector("#to-word"),
     fromCount: document.querySelector("#from-count"),
     toCount: document.querySelector("#to-count"),
+    fontSelection: document.querySelector("#font-selection"),
     fontName: document.querySelector("#font-name"),
     fontMeta: document.querySelector("#font-meta"),
     status: document.querySelector("#status"),
     statusText: document.querySelector("#status-text"),
     preview: document.querySelector("#preview"),
-    previewNote: document.querySelector("#preview-note"),
+    morphButton: document.querySelector("#morph-button"),
     downloadButton: document.querySelector("#download-button"),
     resetPreviewButton: document.querySelector("#reset-preview"),
 };
@@ -39,8 +40,8 @@ async function boot() {
     try {
         await init();
         state.wasmReady = true;
-        setStatus("ready", "WebAssembly ready. Upload a font to begin.");
-        scheduleMorph();
+        updateActionState();
+        setStatus("idle", "Upload a font, then click Morph font.");
     } catch (error) {
         setStatus("error", `Failed to load WebAssembly: ${formatError(error)}`);
     }
@@ -50,8 +51,7 @@ function wireUi() {
     elements.fileInput.addEventListener("change", onFileChange);
     elements.fromWord.addEventListener("input", syncCounts);
     elements.toWord.addEventListener("input", syncCounts);
-    elements.fromWord.addEventListener("input", scheduleMorph);
-    elements.toWord.addEventListener("input", scheduleMorph);
+    elements.morphButton.addEventListener("click", morphCurrentFont);
     elements.downloadButton.addEventListener("click", downloadFont);
     elements.resetPreviewButton.addEventListener("click", () => {
         elements.preview.value = DEFAULT_PREVIEW;
@@ -65,12 +65,14 @@ async function onFileChange(event) {
     if (!file) {
         state.sourceBytes = null;
         state.sourceName = "";
-        elements.fontName.textContent = "No font selected";
-        elements.fontMeta.textContent = "Upload a font to start morphing.";
+        elements.fontSelection.classList.remove("ready");
+        elements.fontName.textContent = "";
+        elements.fontMeta.textContent = "";
+        updateActionState();
         setStatus(
             state.wasmReady ? "idle" : "loading",
             state.wasmReady
-                ? "Upload a font to begin."
+                ? "Upload a font, then click Morph font."
                 : "Loading WebAssembly…",
         );
         return;
@@ -79,9 +81,11 @@ async function onFileChange(event) {
     const buffer = await file.arrayBuffer();
     state.sourceBytes = new Uint8Array(buffer);
     state.sourceName = file.name;
+    elements.fontSelection.classList.add("ready");
     elements.fontName.textContent = file.name;
     elements.fontMeta.textContent = `${formatBytes(file.size)} / ${file.type || "font file"}`;
-    scheduleMorph();
+    updateActionState();
+    setStatus("idle", "Font loaded. Click Morph font to rebuild it.");
 }
 
 function syncCounts() {
@@ -89,49 +93,32 @@ function syncCounts() {
     elements.toCount.textContent = `${[...elements.toWord.value].length} chars`;
 }
 
-function scheduleMorph() {
-    if (!state.wasmReady) {
-        return;
-    }
-    if (!state.sourceBytes) {
-        clearOutputFont();
-        setStatus("idle", "Upload a font to begin.");
-        return;
-    }
-
-    void morphCurrentFont();
-}
-
 async function morphCurrentFont() {
-    const token = ++state.morphToken;
-    const fromWord = elements.fromWord.value;
-    const toWord = elements.toWord.value;
+    if (!state.wasmReady || !state.sourceBytes || state.isMorphing) {
+        return;
+    }
 
+    state.isMorphing = true;
+    updateActionState();
     setStatus("loading", "Morphing font…");
-    elements.downloadButton.disabled = true;
-    elements.previewNote.textContent = "Morphing in progress…";
-
-    await nextFrame();
 
     try {
-        const morphed = morphFont(state.sourceBytes, fromWord, toWord);
-        if (token !== state.morphToken) {
-            return;
-        }
+        await nextFrame();
+        const morphed = morphFont(
+            state.sourceBytes,
+            elements.fromWord.value,
+            elements.toWord.value,
+        );
 
         state.outputBytes = morphed;
         applyPreviewFont(morphed);
-        elements.downloadButton.disabled = false;
-        elements.previewNote.textContent = "Preview uses the morphed font.";
-        setStatus("ready", "Font morphed successfully.");
+        setStatus("ready", "Font morphed successfully. Preview and download are ready.");
     } catch (error) {
-        if (token !== state.morphToken) {
-            return;
-        }
-
         clearOutputFont();
-        elements.previewNote.textContent = "Preview is using the default font.";
         setStatus("error", formatError(error));
+    } finally {
+        state.isMorphing = false;
+        updateActionState();
     }
 }
 
@@ -163,10 +150,9 @@ function applyPreviewFont(fontBytes) {
 function clearOutputFont() {
     state.outputBytes = null;
     clearPreviewFontUrl();
-    elements.downloadButton.disabled = true;
     elements.preview.style.fontFamily = "";
     elements.preview.classList.remove("ready");
-    elements.previewNote.textContent = "Waiting for a morphed font.";
+    updateActionState();
 }
 
 function clearPreviewFontUrl() {
@@ -174,6 +160,12 @@ function clearPreviewFontUrl() {
         URL.revokeObjectURL(state.fontUrl);
         state.fontUrl = null;
     }
+}
+
+function updateActionState() {
+    const canMorph = state.wasmReady && !!state.sourceBytes && !state.isMorphing;
+    elements.morphButton.disabled = !canMorph;
+    elements.downloadButton.disabled = !state.outputBytes || state.isMorphing;
 }
 
 function downloadFont() {
