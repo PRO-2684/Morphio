@@ -8,15 +8,13 @@ mod font;
 mod gsub;
 
 #[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::wasm_bindgen;
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::JsValue;
+use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 use read_fonts::{FileRef, FontRef, ReadError};
 use write_fonts::{BuilderError, FontBuilder};
 
 /// The main trait for "morphing" text.
-pub trait TextMorph {
+pub trait Morphio {
     /// Patch the font so it shows `from_word` as `to_word`, returning the rebuilt font bytes.
     ///
     /// The two words must have the same length, must be non-empty, and the font must contain glyphs for all characters in both words.
@@ -25,13 +23,13 @@ pub trait TextMorph {
     fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError>;
 }
 
-impl TextMorph for FontRef<'_> {
+impl Morphio for FontRef<'_> {
     fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
         morph_font(self.clone(), from_word, to_word)
     }
 }
 
-impl TextMorph for FileRef<'_> {
+impl Morphio for FileRef<'_> {
     fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
         match self {
             Self::Font(font) => font.morph(from_word, to_word),
@@ -73,7 +71,9 @@ impl MorphError {
 impl std::fmt::Display for MorphError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::DifferentLengths => write!(f, "source and target words must have the same length"),
+            Self::DifferentLengths => {
+                write!(f, "source and target words must have the same length")
+            }
             Self::EmptyWord => write!(f, "source and target words must not be empty"),
             Self::MissingCmap => write!(f, "font does not contain a usable Unicode cmap"),
             Self::MissingGlyph(ch) => write!(f, "font is missing a glyph for '{ch}'"),

@@ -1,5 +1,5 @@
 use argh::FromArgs;
-use morphio::TextMorph;
+use morphio::Morphio;
 use read_fonts::FileRef;
 use std::{
     fs::{read, write},
