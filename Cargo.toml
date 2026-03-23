@@ -3,7 +3,7 @@ name = "text-morph"
 version = "0.1.0"
 edition = "2024"
 readme = "README.md"
-description = "Patching a font, so it shows word_a as word_b"
+description = "Patching a font, so it shows worda as wordb"
 keywords = []
 categories = []
 include = ["src", "README.md", "LICENSE"]
@@ -13,10 +13,12 @@ authors = ["PRO-2684"]
 
 [features]
 default = []
+cli = ["argh"]
 
 [dependencies]
 read-fonts = "0.38.0"
 write-fonts = "0.46.0"
+argh = { version = "0.1.19", default-features = false, features = ["help"], optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.104"
@@ -24,3 +26,7 @@ web-sys = { version = "0.3.81", features = ["Document", "Element", "HtmlElement"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "text-morph"
+required-features = ["cli"]

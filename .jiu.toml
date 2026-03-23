@@ -16,7 +16,7 @@ command = ["wasm-pack", "build", "--target", "web", "--no-pack", "--dev"]
 names = ["run", "r"]
 description = "Compile and \u001b[4mr\u001b[24mun"
 arguments = ["*rest"]
-command = ["cargo", "run", "--", ["*rest"]]
+command = ["cargo", "run", "--features=cli", "--", ["*rest"]]
 
 [[recipes]]
 names = ["test", "t"]
