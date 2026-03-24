@@ -158,6 +158,10 @@ mod tests {
         std::fs::read("tests/fonts/msyh.ttc").expect("fixture font should exist")
     }
 
+    fn impact_bytes() -> Vec<u8> {
+        std::fs::read("tests/fonts/IMPACT.TTF").expect("impact fixture should exist")
+    }
+
     #[test]
     fn rejects_different_lengths() {
         let bytes = fixture_bytes();
@@ -249,6 +253,55 @@ mod tests {
             assert!(
                 has_calt,
                 "every collection font should expose a calt feature"
+            );
+        }
+    }
+
+    #[test]
+    fn impact_adds_calt_to_all_latin_langsys_records() {
+        let bytes = impact_bytes();
+        let font = FontRef::new(&bytes).expect("impact fixture should parse");
+        let morphed = font
+            .morph("banana", "orange")
+            .expect("impact font should patch successfully");
+        let rebuilt = FontRef::new(&morphed).expect("patched impact should parse");
+        let gsub = rebuilt.gsub().expect("patched impact should contain GSUB");
+        let feature_list = gsub
+            .feature_list()
+            .expect("patched GSUB should contain a feature list");
+        let calt_index = feature_list
+            .feature_records()
+            .iter()
+            .position(|record| record.feature_tag() == Tag::new(b"calt"))
+            .expect("patched impact should expose calt");
+        let calt_index =
+            u16::try_from(calt_index).expect("feature index should fit into u16 for test");
+
+        let script_list = gsub.script_list().expect("patched GSUB should contain scripts");
+        let latn = script_list
+            .script_records()
+            .iter()
+            .find(|record| record.script_tag() == Tag::new(b"latn"))
+            .expect("patched impact should keep latn script");
+        let script = latn.script(script_list.offset_data()).expect("latn script should resolve");
+
+        let default_lang_sys = script
+            .default_lang_sys()
+            .expect("latn script should have a default langsys")
+            .expect("latn default langsys should resolve");
+        assert!(
+            default_lang_sys.feature_indices().iter().any(|index| index.get() == calt_index),
+            "latn default langsys should include calt",
+        );
+
+        for record in script.lang_sys_records() {
+            let lang_sys = record.lang_sys(script.offset_data()).expect("langsys should resolve");
+            assert!(
+                lang_sys
+                    .feature_indices()
+                    .iter()
+                    .any(|index| index.get() == calt_index),
+                "every latn langsys should include calt",
             );
         }
     }

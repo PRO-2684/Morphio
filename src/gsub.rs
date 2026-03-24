@@ -180,7 +180,7 @@ fn ensure_script_feature(gsub: &mut Gsub, script_tag: Tag, feature_index: u16) {
         .iter_mut()
         .find(|record| record.script_tag == script_tag)
     {
-        ensure_langsys_feature(record.script.as_mut(), feature_index);
+        ensure_langsys_features(record.script.as_mut(), feature_index);
         return;
     }
 
@@ -190,7 +190,7 @@ fn ensure_script_feature(gsub: &mut Gsub, script_tag: Tag, feature_index: u16) {
     ));
 }
 
-fn ensure_langsys_feature(script: &mut Script, feature_index: u16) {
+fn ensure_langsys_features(script: &mut Script, feature_index: u16) {
     let lang_sys = if let Some(lang_sys) = script.default_lang_sys.as_mut() {
         lang_sys
     } else {
@@ -203,5 +203,12 @@ fn ensure_langsys_feature(script: &mut Script, feature_index: u16) {
 
     if !lang_sys.feature_indices.contains(&feature_index) {
         lang_sys.feature_indices.push(feature_index);
+    }
+
+    for record in &mut script.lang_sys_records {
+        let lang_sys = record.lang_sys.as_mut();
+        if !lang_sys.feature_indices.contains(&feature_index) {
+            lang_sys.feature_indices.push(feature_index);
+        }
     }
 }
