@@ -20,7 +20,7 @@ const CMAP_PREFERENCES: &[(PlatformId, u16)] = &[
     (PlatformId::Unicode, 0),
 ];
 
-pub(crate) fn validate_words(
+pub fn validate_words(
     font: &FontRef<'_>,
     from_word: &str,
     to_word: &str,
@@ -39,13 +39,16 @@ pub(crate) fn validate_words(
     ))
 }
 
-pub(crate) fn ascii_letter_glyphs(font: &FontRef<'_>) -> Result<Vec<GlyphId16>, MorphError> {
+pub fn ascii_letter_glyphs(font: &FontRef<'_>) -> Result<Vec<GlyphId16>, MorphError> {
     let cmap = best_cmap(font)?.ok_or(MorphError::MissingCmap)?;
     let mut glyphs = Vec::new();
 
     for ch in ('A'..='Z').chain('a'..='z') {
         if let Some(glyph) = cmap.map_codepoint(ch) {
-            let glyph = GlyphId16::new(u32::from(glyph) as u16);
+            let glyph_u32 = u32::from(glyph);
+            let glyph_u16 =
+                u16::try_from(glyph_u32).map_err(|_| MorphError::GlyphIdOutOfRange(glyph_u32))?;
+            let glyph = GlyphId16::new(glyph_u16);
             if !glyphs.contains(&glyph) {
                 glyphs.push(glyph);
             }
@@ -75,9 +78,13 @@ fn best_cmap<'a>(font: &'a FontRef<'a>) -> Result<Option<CmapSubtable<'a>>, Morp
 fn resolve_glyphs(cmap: &CmapSubtable<'_>, word: &str) -> Result<Vec<GlyphId16>, MorphError> {
     word.chars()
         .map(|ch| {
-            cmap.map_codepoint(ch)
-                .map(|glyph| GlyphId16::new(u32::from(glyph) as u16))
-                .ok_or(MorphError::MissingGlyph(ch))
+            let Some(glyph) = cmap.map_codepoint(ch) else {
+                return Err(MorphError::MissingGlyph(ch));
+            };
+            let glyph_u32 = u32::from(glyph);
+            let glyph_u16 =
+                u16::try_from(glyph_u32).map_err(|_| MorphError::GlyphIdOutOfRange(glyph_u32))?;
+            Ok(GlyphId16::new(glyph_u16))
         })
         .collect()
 }

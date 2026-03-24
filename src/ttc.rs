@@ -1,3 +1,7 @@
+#![allow(
+    clippy::cast_possible_truncation,
+    reason = "This is an experimental TTC implementation."
+)]
 /// Build a TTC from the given font bytes, rebasing all internal offsets by the appropriate amount. Implemented here because `write-fonts` [doesn't support TTC yet](https://github.com/googlefonts/fontations/blob/423de8c29d960f1d2dd691c325a1bf41dda8513e/write-fonts/src/font_builder.rs#L265).
 pub fn build_ttc(mut fonts: Vec<Vec<u8>>) -> Vec<u8> {
     let header_len = 12 + fonts.len() * 4;
@@ -30,7 +34,7 @@ pub fn build_ttc(mut fonts: Vec<Vec<u8>>) -> Vec<u8> {
     ttc
 }
 
-fn align_4(len: usize) -> usize {
+const fn align_4(len: usize) -> usize {
     (len + 3) & !3
 }
 

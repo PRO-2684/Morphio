@@ -15,6 +15,8 @@ pub enum MorphError {
     MissingCmap,
     /// The font is missing a glyph for a character in one of the words.
     MissingGlyph(char),
+    /// Out of range trying to represent glyph ID as u16.
+    GlyphIdOutOfRange(u32),
     /// An error occurred while reading the font.
     Read(ReadError),
     /// An error occurred while building the font.
@@ -22,7 +24,7 @@ pub enum MorphError {
 }
 
 impl MorphError {
-    pub(crate) fn malformed(message: &'static str) -> Self {
+    pub(crate) const fn malformed(message: &'static str) -> Self {
         Self::Read(ReadError::MalformedData(message))
     }
 }
@@ -36,6 +38,9 @@ impl fmt::Display for MorphError {
             Self::EmptyWord => write!(f, "source and target words must not be empty"),
             Self::MissingCmap => write!(f, "font does not contain a usable Unicode cmap"),
             Self::MissingGlyph(ch) => write!(f, "font is missing a glyph for '{ch}'"),
+            Self::GlyphIdOutOfRange(id) => {
+                write!(f, "glyph ID {id} is out of range for u16 (max 65535)")
+            }
             Self::Read(err) => write!(f, "{err}"),
             Self::Builder(err) => write!(f, "failed to rebuild font: {}", err.inner),
         }

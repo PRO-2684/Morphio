@@ -89,11 +89,17 @@ use write_fonts::FontBuilder;
 
 /// The main trait for "morphing" text.
 pub trait Morphio {
-    /// Patch the font so it shows `from_word` as `to_word`, returning the rebuilt font bytes.
+    /// Patch the font so it shows `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
     ///
-    /// The two words must have the same length, must be non-empty, and the font must contain glyphs for all characters in both words.
+    /// - Must have the same length
+    /// - Must be non-empty
+    /// - Must be fully supported by the font (i.e. all glyphs must be present)
     ///
     /// If multiple fonts are present (e.g. in a TTC), all fonts will be patched.
+    ///
+    /// ## Errors
+    ///
+    /// See the [`MorphError`] enum for possible error cases.
     fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError>;
 }
 

@@ -23,7 +23,7 @@ const CALT_TAG: Tag = Tag::new(b"calt");
 const DFLT_TAG: Tag = Tag::new(b"DFLT");
 const LATN_TAG: Tag = Tag::new(b"latn");
 
-pub(crate) fn patch_gsub(
+pub fn patch_gsub(
     font: &FontRef<'_>,
     from_glyphs: &[GlyphId16],
     to_glyphs: &[GlyphId16],
@@ -69,10 +69,9 @@ fn append_word_substitution_lookups(
             pair_lookup_indices.insert((src, dst), index);
             index
         };
-        sequence_records.push(SequenceLookupRecord::new(
-            sequence_index as u16,
-            lookup_index,
-        ));
+        let sequence_index = u16::try_from(sequence_index)
+            .map_err(|_| MorphError::malformed("sequence index exceeds u16::MAX"))?;
+        sequence_records.push(SequenceLookupRecord::new(sequence_index, lookup_index));
     }
 
     let letter_glyphs = font::ascii_letter_glyphs(font)?;
