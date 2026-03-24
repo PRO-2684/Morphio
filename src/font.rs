@@ -1,12 +1,14 @@
 //! Internal helpers for reading and validating source fonts.
 
+use range_set_blaze::RangeSetBlaze;
 use read_fonts::{
     FontRef, TableProvider,
     tables::cmap::{CmapSubtable, PlatformId},
     types::GlyphId16,
 };
+use write_fonts::tables::layout::RangeRecord;
 
-use crate::MorphError;
+use super::MorphError;
 
 /// The preferred order of `cmap` subtables to use when looking for a Unicode mapping. From [fonttools](https://github.com/fonttools/fonttools/blob/29a392f2b67be8ad0229a75e75893c8bd585d792/Lib/fontTools/ttLib/tables/_c_m_a_p.py#L82-L91).
 const CMAP_PREFERENCES: &[(PlatformId, u16)] = &[
@@ -39,35 +41,43 @@ pub fn validate_words(
     ))
 }
 
-/// Returns the glyph IDs for all word characters in the font, sorted and deduplicated. Including:
+/// Returns the glyph ID ranges for all word characters in the font, sorted and merged. Including:
 ///
 /// - ASCII letters (A-Z, a-z)
 /// - ASCII digits (0-9)
 /// - Underscore (_)
 ///
 /// Ignores any characters that are not present in the font.
-pub fn word_glyphs(font: &FontRef<'_>) -> Result<Vec<GlyphId16>, MorphError> {
+pub fn word_glyph_ranges(font: &FontRef<'_>) -> Result<Vec<RangeRecord>, MorphError> {
     let cmap = best_cmap(font)?.ok_or(MorphError::MissingCmap)?;
-    let mut glyphs = Vec::new();
-
-    for ch in ('A'..='Z')
+    let word_char_iter = ('A'..='Z')
         .chain('a'..='z')
         .chain('0'..='9')
-        .chain(std::iter::once('_'))
-    {
+        .chain(std::iter::once('_'));
+    let word_glyph_id_iter = word_char_iter.filter_map(|ch| {
         if let Some(glyph) = cmap.map_codepoint(ch) {
             let glyph_u32 = u32::from(glyph);
-            let glyph_u16 =
-                u16::try_from(glyph_u32).map_err(|_| MorphError::GlyphIdOutOfRange(glyph_u32))?;
-            let glyph = GlyphId16::new(glyph_u16);
-            if !glyphs.contains(&glyph) {
-                glyphs.push(glyph);
-            }
+            let glyph_u16 = u16::try_from(glyph_u32).ok()?; // TODO: Error on out-of-range glyph IDs?
+            Some(glyph_u16)
+        } else {
+            None
         }
-    }
-
-    glyphs.sort_unstable();
-    Ok(glyphs)
+    });
+    let word_glyph_ranges = RangeSetBlaze::from_iter(word_glyph_id_iter);
+    let result = word_glyph_ranges
+        .ranges()
+        .scan(0, |coverage_index, r| {
+            let range_length = r.end() - r.start() + 1;
+            let record = RangeRecord {
+                start_glyph_id: GlyphId16::new(*r.start()),
+                end_glyph_id: GlyphId16::new(*r.end()),
+                start_coverage_index: *coverage_index,
+            };
+            *coverage_index += range_length;
+            Some(record)
+        })
+        .collect();
+    Ok(result)
 }
 
 fn best_cmap<'a>(font: &'a FontRef<'a>) -> Result<Option<CmapSubtable<'a>>, MorphError> {

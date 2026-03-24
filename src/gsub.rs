@@ -12,12 +12,13 @@ use write_fonts::{
         gsub::{Gsub, SingleSubst, SubstitutionChainContext, SubstitutionLookup},
         layout::{
             ChainedSequenceContext, CoverageTable, Feature, FeatureList, FeatureRecord, LangSys,
-            Lookup, LookupFlag, LookupList, Script, ScriptList, ScriptRecord, SequenceLookupRecord,
+            Lookup, LookupFlag, LookupList, RangeRecord, Script, ScriptList, ScriptRecord,
+            SequenceLookupRecord,
         },
     },
 };
 
-use crate::{MorphError, font};
+use super::{MorphError, font::word_glyph_ranges};
 
 const CALT_TAG: Tag = Tag::new(b"calt");
 const DFLT_TAG: Tag = Tag::new(b"DFLT");
@@ -74,8 +75,9 @@ fn append_word_substitution_lookups(
         sequence_records.push(SequenceLookupRecord::new(sequence_index, lookup_index));
     }
 
-    let word_glyphs = font::word_glyphs(font)?;
-    let contextual_lookup = create_contextual_lookup(from_glyphs, &word_glyphs, sequence_records);
+    let word_glyph_ranges = word_glyph_ranges(font)?;
+    let contextual_lookup =
+        create_contextual_lookup(from_glyphs, word_glyph_ranges, sequence_records);
     let contextual_lookup_index = push_lookup(gsub, contextual_lookup)?;
 
     Ok(vec![contextual_lookup_index])
@@ -89,17 +91,17 @@ fn create_single_substitution_lookup(src: GlyphId16, dst: GlyphId16) -> Substitu
 
 fn create_contextual_lookup(
     from_glyphs: &[GlyphId16],
-    word_glyphs: &[GlyphId16],
+    word_glyph_ranges: Vec<RangeRecord>,
     sequence_records: Vec<SequenceLookupRecord>,
 ) -> SubstitutionLookup {
     let input_coverages = exact_coverages(from_glyphs);
     let mut subtables: Vec<SubstitutionChainContext> = Vec::new();
 
-    if !word_glyphs.is_empty() {
-        let letter_coverage = CoverageTable::format_1(word_glyphs.to_vec()); // TODO: Use format 2, which could be more compact.
+    if !word_glyph_ranges.is_empty() {
+        let word_coverage = CoverageTable::format_2(word_glyph_ranges);
         subtables.push(
             ChainedSequenceContext::format_3(
-                vec![letter_coverage.clone()],
+                vec![word_coverage.clone()],
                 input_coverages.clone(),
                 Vec::new(),
                 Vec::new(),
@@ -110,7 +112,7 @@ fn create_contextual_lookup(
             ChainedSequenceContext::format_3(
                 Vec::new(),
                 input_coverages.clone(),
-                vec![letter_coverage],
+                vec![word_coverage],
                 Vec::new(),
             )
             .into(),
