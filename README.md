@@ -12,7 +12,8 @@ Morphs the font, so it shows worda as wordb.
 
 ## 📥 Installation
 
-<!--> You can try Morphio without installing it [in the browser](https://morphio.rs/).-->
+> [!NOTE]
+> You can try Morphio without installing it [in the browser](https://pro-2684.github.io/Morphio/).
 
 ### Using [`binstall`](https://github.com/cargo-bins/cargo-binstall)
 
