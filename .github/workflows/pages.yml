@@ -31,15 +31,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Cache
+      - name: Rust Cache
         id: cache
-        uses: actions/cache@v5
+        uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/
-            ./target/
+          cache-directories: |
             ~/.cache/wasm-pack/
-          key: ${{ runner.os }}-cargo
       - name: Inspect Cache
         run: |
           echo "~/.cargo/:"
@@ -64,7 +61,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'site/'
+          path: "site/"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

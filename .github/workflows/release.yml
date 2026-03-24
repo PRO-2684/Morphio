@@ -63,9 +63,8 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           targets: ${{ matrix.target }}
-      # - uses: Swatinem/rust-cache@v2
-      #   with:
-      #     key: ${{ matrix.os }}-${{ matrix.rust }}-${{ matrix.target }}
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
       - name: Test
         run: cargo test --target ${{ matrix.target }}
       - name: Build release binary
