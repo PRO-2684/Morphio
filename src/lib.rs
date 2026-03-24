@@ -11,7 +11,7 @@
 //! ```rust
 //! use read_fonts::FontRef;
 //!
-//! let path_to_font = "tests/fonts/IMPACT.TTF";
+//! let path_to_font = "tests/fonts/INKFREE.TTF";
 //! let font_data = std::fs::read(path_to_font).unwrap();
 //! let font = FontRef::new(&font_data).unwrap();
 //! ```
@@ -24,7 +24,7 @@
 //! # use read_fonts::FontRef;
 //! use morphio::Morphio;
 //!
-//! # let path_to_font = "tests/fonts/IMPACT.TTF";
+//! # let path_to_font = "tests/fonts/INKFREE.TTF";
 //! # let font_data = std::fs::read(path_to_font).unwrap();
 //! # let font = FontRef::new(&font_data).unwrap();
 //! let morphed_font_data = font.morph("worda", "wordb").unwrap(); // Of type `Vec<u8>`, containing the bytes of the morphed font
@@ -39,7 +39,7 @@
 //! # use morphio::Morphio;
 //! use read_fonts::{TableProvider, types::Tag};
 //!
-//! # let path_to_font = "tests/fonts/IMPACT.TTF";
+//! # let path_to_font = "tests/fonts/INKFREE.TTF";
 //! # let font_data = std::fs::read(path_to_font).unwrap();
 //! # let font = FontRef::new(&font_data).unwrap();
 //! # let morphed_font_data = font.morph("worda", "wordb").unwrap();

@@ -62,6 +62,8 @@ Options:
     - Say we want to morph "banana" to "orange"
     - When word matching is enabled, `xbanana` will not be morphed, because we're matching whole words, not letters
     - When word matching is disabled, `xbanana` will be morphed to `xorange`
+- [ ] Bug fixes
+    - [ ] Doesn't seem to work with some fonts, e.g. `IMPACT.TTF`
 
 ## 🎉 Credits
 
