@@ -50,6 +50,18 @@ Options:
   -h, --help        display usage information
 ```
 
+## ✅ TODO
+
+- [ ] Font optimization
+- [ ] Better word matching
+    - Currently we consider whole words only by letters (`[a-zA-Z]+`)
+    - Next stage: consider digits (`[0-9]+`) and underscores (`_`)
+    - Maybe an option for toggling which characters to consider as part of words?
+- [ ] Option for enabling/disabling word matching
+    - Say we want to morph "banana" to "orange"
+    - When word matching is enabled, `xbanana` will not be morphed, because we're matching whole words, not letters
+    - When word matching is disabled, `xbanana` will be morphed to `xorange`
+
 ## 🎉 Credits
 
 - [fontations](https://github.com/googlefonts/fontations/)
