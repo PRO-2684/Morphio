@@ -74,8 +74,8 @@ fn append_word_substitution_lookups(
         sequence_records.push(SequenceLookupRecord::new(sequence_index, lookup_index));
     }
 
-    let letter_glyphs = font::ascii_letter_glyphs(font)?;
-    let contextual_lookup = create_contextual_lookup(from_glyphs, &letter_glyphs, sequence_records);
+    let word_glyphs = font::word_glyphs(font)?;
+    let contextual_lookup = create_contextual_lookup(from_glyphs, &word_glyphs, sequence_records);
     let contextual_lookup_index = push_lookup(gsub, contextual_lookup)?;
 
     Ok(vec![contextual_lookup_index])
@@ -89,14 +89,14 @@ fn create_single_substitution_lookup(src: GlyphId16, dst: GlyphId16) -> Substitu
 
 fn create_contextual_lookup(
     from_glyphs: &[GlyphId16],
-    letter_glyphs: &[GlyphId16],
+    word_glyphs: &[GlyphId16],
     sequence_records: Vec<SequenceLookupRecord>,
 ) -> SubstitutionLookup {
     let input_coverages = exact_coverages(from_glyphs);
     let mut subtables: Vec<SubstitutionChainContext> = Vec::new();
 
-    if !letter_glyphs.is_empty() {
-        let letter_coverage = CoverageTable::format_1(letter_glyphs.to_vec());
+    if !word_glyphs.is_empty() {
+        let letter_coverage = CoverageTable::format_1(word_glyphs.to_vec()); // TODO: Use format 2, which could be more compact.
         subtables.push(
             ChainedSequenceContext::format_3(
                 vec![letter_coverage.clone()],

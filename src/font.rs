@@ -8,7 +8,7 @@ use read_fonts::{
 
 use crate::MorphError;
 
-/// The preferred order of `cmap` subtables to use when looking for a Unicode mapping.
+/// The preferred order of `cmap` subtables to use when looking for a Unicode mapping. From [fonttools](https://github.com/fonttools/fonttools/blob/29a392f2b67be8ad0229a75e75893c8bd585d792/Lib/fontTools/ttLib/tables/_c_m_a_p.py#L82-L91).
 const CMAP_PREFERENCES: &[(PlatformId, u16)] = &[
     (PlatformId::Windows, 10),
     (PlatformId::Unicode, 6),
@@ -39,11 +39,22 @@ pub fn validate_words(
     ))
 }
 
-pub fn ascii_letter_glyphs(font: &FontRef<'_>) -> Result<Vec<GlyphId16>, MorphError> {
+/// Returns the glyph IDs for all word characters in the font, sorted and deduplicated. Including:
+///
+/// - ASCII letters (A-Z, a-z)
+/// - ASCII digits (0-9)
+/// - Underscore (_)
+///
+/// Ignores any characters that are not present in the font.
+pub fn word_glyphs(font: &FontRef<'_>) -> Result<Vec<GlyphId16>, MorphError> {
     let cmap = best_cmap(font)?.ok_or(MorphError::MissingCmap)?;
     let mut glyphs = Vec::new();
 
-    for ch in ('A'..='Z').chain('a'..='z') {
+    for ch in ('A'..='Z')
+        .chain('a'..='z')
+        .chain('0'..='9')
+        .chain(std::iter::once('_'))
+    {
         if let Some(glyph) = cmap.map_codepoint(ch) {
             let glyph_u32 = u32::from(glyph);
             let glyph_u16 =

@@ -52,7 +52,8 @@ Options:
 
 ## ✅ TODO
 
-- [ ] Font optimization
+- [ ] Optimization
+    - [ ] Use `CoverageTable::Format2`, which allows for more efficient storage of contiguous ranges of glyphs
 - [ ] Better word matching
     - Currently we consider whole words only by letters (`[a-zA-Z]+`)
     - Next stage: consider digits (`[0-9]+`) and underscores (`_`)
