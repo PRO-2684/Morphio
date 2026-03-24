@@ -1,4 +1,76 @@
-#![doc = include_str!("../README.md")]
+//! # Morphio
+//!
+//! Morphs the font, so it shows worda as wordb.
+//!
+//! ## Usage
+//!
+//! ### Loading and parsing a font
+//!
+//! You should load the font file as bytes (e.g. using [`std::fs::read`]) and parse it using [`read_fonts::FontRef`].
+//!
+//! ```rust
+//! use read_fonts::FontRef;
+//!
+//! let path_to_font = "tests/fonts/IMPACT.TTF";
+//! let font_data = std::fs::read(path_to_font).unwrap();
+//! let font = FontRef::new(&font_data).unwrap();
+//! ```
+//!
+//! ### Morphing the font
+//!
+//! Then, call the [`Morphio::morph`] method on the parsed font, passing in the two words you want to morph between. Note that the two words must be of the same length.
+//!
+//! ```rust
+//! # use read_fonts::FontRef;
+//! use morphio::Morphio;
+//!
+//! # let path_to_font = "tests/fonts/IMPACT.TTF";
+//! # let font_data = std::fs::read(path_to_font).unwrap();
+//! # let font = FontRef::new(&font_data).unwrap();
+//! let morphed_font_data = font.morph("worda", "wordb").unwrap(); // Of type `Vec<u8>`, containing the bytes of the morphed font
+//! ```
+//!
+//! ### Verifying the morphed font
+//!
+//! We can verify the result by trying to parse the morphed font and check the expected GSUB feature is present.
+//!
+//! ```rust
+//! # use read_fonts::FontRef;
+//! # use morphio::Morphio;
+//! use read_fonts::{TableProvider, types::Tag};
+//!
+//! # let path_to_font = "tests/fonts/IMPACT.TTF";
+//! # let font_data = std::fs::read(path_to_font).unwrap();
+//! # let font = FontRef::new(&font_data).unwrap();
+//! # let morphed_font_data = font.morph("worda", "wordb").unwrap();
+//! let morphed_font = FontRef::new(&morphed_font_data).unwrap();
+//! let gsub = morphed_font.gsub().unwrap();
+//! let feature_list = gsub.feature_list().unwrap();
+//! let has_calt = feature_list.feature_records().iter().any(|record| record.feature_tag() == Tag::new(b"calt"));
+//! assert!(has_calt, "morphed font should expose a calt feature for the morphing substitution");
+//! ```
+//!
+//! ### Font collection support
+//!
+//! [`Morphio::morph`] can also be called on a font collection (e.g. a TTC). In this case, the morphing will be applied to every font in the collection, and the result will still be a valid font collection containing the morphed fonts.
+//!
+//! To load a font collection, use [`read_fonts::FileRef`] instead of [`read_fonts::FontRef`].
+//!
+//! ```rust
+//! use read_fonts::FileRef;
+//! use morphio::Morphio;
+//!
+//! let path_to_collection = "tests/fonts/msyh.ttc";
+//! let collection_data = std::fs::read(path_to_collection).unwrap();
+//! let collection = FileRef::new(&collection_data).unwrap();
+//! let morphed_collection_data = collection.morph("abc", "xyz").unwrap();
+//! let morphed_collection = FileRef::new(&morphed_collection_data).unwrap(); // Verify that it can be parsed
+//! ```
+//!
+//! ## WebAssembly
+//!
+//! This library can also be compiled to WebAssembly, providing the [`morph_font_wasm`] function as the entry point (the JavaScript name is `morphFont`). See it in action in the [demo](https://pro-2684.github.io/Morphio/), and the source code is available in [the GitHub repo](https://github.com/PRO-2684/Morphio).
+
 #![deny(missing_docs)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, clippy::cargo)]
 
