@@ -43,11 +43,11 @@ jobs:
       - name: Inspect Cache
         run: |
           echo "~/.cargo/:"
-          ls ~/.cargo/
+          ls ~/.cargo/ || true
           echo "./target/:"
-          ls ./target/
+          ls ./target/ || true
           echo "~/.cache/wasm-pack/:"
-          ls ~/.cache/wasm-pack/
+          ls ~/.cache/wasm-pack/ || true
       - name: Install WASM Tools
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
