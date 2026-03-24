@@ -57,16 +57,14 @@ pub(crate) fn ascii_letter_glyphs(font: &FontRef<'_>) -> Result<Vec<GlyphId16>, 
 }
 
 fn best_cmap<'a>(font: &'a FontRef<'a>) -> Result<Option<CmapSubtable<'a>>, MorphError> {
-    let cmap = font.cmap().map_err(MorphError::Read)?;
+    let cmap = font.cmap()?;
     let records = cmap.encoding_records();
 
     for (platform_id, encoding_id) in CMAP_PREFERENCES {
         if let Some(record) = records.iter().find(|record| {
             record.platform_id() == *platform_id && record.encoding_id() == *encoding_id
         }) {
-            let subtable = record
-                .subtable(cmap.offset_data())
-                .map_err(MorphError::Read)?;
+            let subtable = record.subtable(cmap.offset_data())?;
             return Ok(Some(subtable));
         }
     }

@@ -2,15 +2,17 @@
 
 use std::collections::BTreeMap;
 
-use read_fonts::{FontRef, TableProvider, TopLevelTable, types::{GlyphId16, Tag}};
+use read_fonts::{
+    FontRef, TableProvider, TopLevelTable,
+    types::{GlyphId16, Tag},
+};
 use write_fonts::{
     from_obj::ToOwnedTable,
     tables::{
         gsub::{Gsub, SingleSubst, SubstitutionChainContext, SubstitutionLookup},
         layout::{
             ChainedSequenceContext, CoverageTable, Feature, FeatureList, FeatureRecord, LangSys,
-            Lookup, LookupFlag, LookupList, Script, ScriptList, ScriptRecord,
-            SequenceLookupRecord,
+            Lookup, LookupFlag, LookupList, Script, ScriptList, ScriptRecord, SequenceLookupRecord,
         },
     },
 };
@@ -36,9 +38,7 @@ pub(crate) fn patch_gsub(
 
 fn load_gsub(font: &FontRef<'_>) -> Result<Gsub, MorphError> {
     if font.data_for_tag(Gsub::TAG).is_some() {
-        font.gsub()
-            .map(|table| table.to_owned_table())
-            .map_err(MorphError::Read)
+        Ok(font.gsub().map(|table| table.to_owned_table())?)
     } else {
         Ok(Gsub::new(
             ScriptList::new(Vec::new()),
@@ -69,7 +69,10 @@ fn append_word_substitution_lookups(
             pair_lookup_indices.insert((src, dst), index);
             index
         };
-        sequence_records.push(SequenceLookupRecord::new(sequence_index as u16, lookup_index));
+        sequence_records.push(SequenceLookupRecord::new(
+            sequence_index as u16,
+            lookup_index,
+        ));
     }
 
     let letter_glyphs = font::ascii_letter_glyphs(font)?;
@@ -95,26 +98,30 @@ fn create_contextual_lookup(
 
     if !letter_glyphs.is_empty() {
         let letter_coverage = CoverageTable::format_1(letter_glyphs.to_vec());
-        subtables.push(ChainedSequenceContext::format_3(
-            vec![letter_coverage.clone()],
-            input_coverages.clone(),
-            Vec::new(),
-            Vec::new(),
-        ).into());
-        subtables.push(ChainedSequenceContext::format_3(
-            Vec::new(),
-            input_coverages.clone(),
-            vec![letter_coverage],
-            Vec::new(),
-        ).into());
+        subtables.push(
+            ChainedSequenceContext::format_3(
+                vec![letter_coverage.clone()],
+                input_coverages.clone(),
+                Vec::new(),
+                Vec::new(),
+            )
+            .into(),
+        );
+        subtables.push(
+            ChainedSequenceContext::format_3(
+                Vec::new(),
+                input_coverages.clone(),
+                vec![letter_coverage],
+                Vec::new(),
+            )
+            .into(),
+        );
     }
 
-    subtables.push(ChainedSequenceContext::format_3(
-        Vec::new(),
-        input_coverages,
-        Vec::new(),
-        sequence_records,
-    ).into());
+    subtables.push(
+        ChainedSequenceContext::format_3(Vec::new(), input_coverages, Vec::new(), sequence_records)
+            .into(),
+    );
 
     SubstitutionLookup::ChainContextual(Lookup::new(LookupFlag::empty(), subtables))
 }
@@ -128,14 +135,17 @@ fn exact_coverages(glyphs: &[GlyphId16]) -> Vec<CoverageTable> {
 }
 
 fn push_lookup(gsub: &mut Gsub, lookup: SubstitutionLookup) -> Result<u16, MorphError> {
-    let index = u16::try_from(gsub.lookup_list.lookups.len()).map_err(|_| {
-        MorphError::malformed("lookup list exceeds u16::MAX")
-    })?;
+    let index = u16::try_from(gsub.lookup_list.lookups.len())
+        .map_err(|_| MorphError::malformed("lookup list exceeds u16::MAX"))?;
     gsub.lookup_list.lookups.push(lookup.into());
     Ok(index)
 }
 
-fn ensure_feature(gsub: &mut Gsub, feature_tag: Tag, lookup_indices: &[u16]) -> Result<u16, MorphError> {
+fn ensure_feature(
+    gsub: &mut Gsub,
+    feature_tag: Tag,
+    lookup_indices: &[u16],
+) -> Result<u16, MorphError> {
     if let Some((index, record)) = gsub
         .feature_list
         .feature_records

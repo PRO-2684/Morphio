@@ -2,6 +2,7 @@
 #![deny(missing_docs)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, clippy::cargo)]
 
+mod error;
 mod font;
 mod gsub;
 mod ttc;
@@ -9,9 +10,10 @@ mod ttc;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
-use read_fonts::{FileRef, FontRef, ReadError};
+pub use error::MorphError;
+use read_fonts::{FileRef, FontRef};
 use ttc::build_ttc;
-use write_fonts::{BuilderError, FontBuilder};
+use write_fonts::FontBuilder;
 
 /// The main trait for "morphing" text.
 pub trait Morphio {
@@ -45,55 +47,12 @@ impl Morphio for FileRef<'_> {
     }
 }
 
-/// Errors that can occur during morphing.
-#[derive(Debug, Clone)]
-pub enum MorphError {
-    /// The two words have different lengths.
-    DifferentLengths,
-    /// The input word is empty.
-    EmptyWord,
-    /// The font does not have a usable Unicode cmap.
-    MissingCmap,
-    /// The font is missing a glyph for a character in one of the words.
-    MissingGlyph(char),
-    /// An error occurred while reading the font.
-    Read(ReadError),
-    /// An error occurred while building the font.
-    Builder(BuilderError),
-}
-
-impl MorphError {
-    pub(crate) fn malformed(message: &'static str) -> Self {
-        Self::Read(ReadError::MalformedData(message))
-    }
-}
-
-impl std::fmt::Display for MorphError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::DifferentLengths => {
-                write!(f, "source and target words must have the same length")
-            }
-            Self::EmptyWord => write!(f, "source and target words must not be empty"),
-            Self::MissingCmap => write!(f, "font does not contain a usable Unicode cmap"),
-            Self::MissingGlyph(ch) => write!(f, "font is missing a glyph for '{ch}'"),
-            Self::Read(err) => write!(f, "{err}"),
-            Self::Builder(err) => write!(f, "failed to rebuild font: {}", err.inner),
-        }
-    }
-}
-
-impl std::error::Error for MorphError {}
-
 fn morph_font(font: FontRef<'_>, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
     let (from_glyphs, to_glyphs) = font::validate_words(&font, from_word, to_word)?;
     let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs)?;
 
     let mut builder = FontBuilder::new();
-    builder
-        .add_table(&gsub)
-        .map_err(MorphError::Builder)?
-        .copy_missing_tables(font);
+    builder.add_table(&gsub)?.copy_missing_tables(font);
 
     Ok(builder.build())
 }
