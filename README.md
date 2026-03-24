@@ -8,7 +8,7 @@
 [![Crates.io Total Downloads](https://img.shields.io/crates/d/morphio?logo=rust)](https://crates.io/crates/morphio)
 [![docs.rs](https://img.shields.io/docsrs/morphio?logo=rust)](https://docs.rs/morphio)
 
-Morphs the font, so it shows worda as wordb.
+Morphs the font, so it renders worda as wordb.
 
 ## 📥 Installation
 
@@ -37,7 +37,7 @@ cargo install morphio
 $ morphio --help
 Usage: morphio -i <input> -o <output> [-y] [--] <from> <to>
 
-Morphio: Morphs the font, so it shows worda as wordb.
+Morphio: Morphs the font, so it renders worda as wordb.
 
 Positional Arguments:
   from              word to morph from
@@ -52,7 +52,10 @@ Options:
 
 ## ✅ TODO
 
-- [ ] Option for enabling/disabling word matching
+- [ ] Allow morphing multiple words in one go
+- [ ] Allow morphing words with different lengths
+    - Possibly using edit distance algorithms, but might need to favor substitutions over insertions/deletions
+- [x] Option for enabling/disabling word matching
     - Say we want to morph "banana" to "orange"
     - When word matching is enabled, `xbanana` will not be morphed, because we're matching whole words, not letters
     - When word matching is disabled, `xbanana` will be morphed to `xorange`

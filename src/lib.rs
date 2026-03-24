@@ -1,6 +1,6 @@
 //! # Morphio
 //!
-//! Morphs the font, so it shows worda as wordb.
+//! Morphs the font, so it renders worda as wordb.
 //!
 //! ## Usage
 //!
@@ -87,9 +87,36 @@ use read_fonts::{FileRef, FontRef};
 use ttc::build_ttc;
 use write_fonts::FontBuilder;
 
+/// Options for morphing a font.
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub struct MorphOptions {
+    /// Whether to enable word matching.
+    ///
+    /// ## Example
+    ///
+    /// Say we want to morph "banana" to "orange". With word match enabled, "bananas" won't be affected; with it disabled, "bananas" will be rendered as "oranges".
+    pub word_match: bool,
+}
+
+impl Default for MorphOptions {
+    fn default() -> Self {
+        Self { word_match: true }
+    }
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl MorphOptions {
+    /// Creates a new [`MorphOptions`].
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(constructor))]
+    pub fn new(word_match: bool) -> Self {
+        Self { word_match }
+    }
+}
+
 /// The main trait for "morphing" text.
 pub trait Morphio {
-    /// Patch the font so it shows `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
+    /// Patch the font so it renders `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
     ///
     /// - Must have the same length
     /// - Must be non-empty
@@ -100,24 +127,56 @@ pub trait Morphio {
     /// ## Errors
     ///
     /// See the [`MorphError`] enum for possible error cases.
-    fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError>;
+    fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
+        self.morph_with_options(from_word, to_word, &Default::default())
+    }
+
+    /// Patch the font with options, so it renders `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
+    ///
+    /// - Must have the same length
+    /// - Must be non-empty
+    /// - Must be fully supported by the font (i.e. all glyphs must be present)
+    ///
+    /// If multiple fonts are present (e.g. in a TTC), all fonts will be patched.
+    ///
+    /// ## Errors
+    ///
+    /// See the [`MorphError`] enum for possible error cases.
+    fn morph_with_options(
+        &self,
+        from_word: &str,
+        to_word: &str,
+        options: &MorphOptions,
+    ) -> Result<Vec<u8>, MorphError>;
 }
 
 impl Morphio for FontRef<'_> {
-    fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
-        morph_font(self.clone(), from_word, to_word)
+    fn morph_with_options(
+        &self,
+        from_word: &str,
+        to_word: &str,
+        options: &MorphOptions,
+    ) -> Result<Vec<u8>, MorphError> {
+        morph_font(self.clone(), from_word, to_word, options)
     }
 }
 
 impl Morphio for FileRef<'_> {
-    fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
+    fn morph_with_options(
+        &self,
+        from_word: &str,
+        to_word: &str,
+        options: &MorphOptions,
+    ) -> Result<Vec<u8>, MorphError> {
         match self {
-            Self::Font(font) => font.morph(from_word, to_word),
+            Self::Font(font) => font.morph_with_options(from_word, to_word, options),
             Self::Collection(collection) => {
                 let fonts = collection
                     .iter()
                     .map(|font| font.map_err(MorphError::Read))
-                    .map(|font| font.and_then(|font| morph_font(font, from_word, to_word)))
+                    .map(|font| {
+                        font.and_then(|font| font.morph_with_options(from_word, to_word, options))
+                    })
                     .collect::<Result<Vec<_>, _>>()?;
                 Ok(build_ttc(fonts))
             }
@@ -125,9 +184,14 @@ impl Morphio for FileRef<'_> {
     }
 }
 
-fn morph_font(font: FontRef<'_>, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
+fn morph_font(
+    font: FontRef<'_>,
+    from_word: &str,
+    to_word: &str,
+    options: &MorphOptions,
+) -> Result<Vec<u8>, MorphError> {
     let (from_glyphs, to_glyphs) = font::validate_words(&font, from_word, to_word)?;
-    let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs)?;
+    let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs, options)?;
 
     let mut builder = FontBuilder::new();
     builder.add_table(&gsub)?.copy_missing_tables(font);
@@ -142,9 +206,10 @@ pub fn morph_font_wasm(
     font_data: &[u8],
     from_word: &str,
     to_word: &str,
+    options: MorphOptions,
 ) -> Result<Vec<u8>, JsValue> {
     let file = FileRef::new(font_data).map_err(|err| JsValue::from_str(&err.to_string()))?;
-    file.morph(from_word, to_word)
+    file.morph_with_options(from_word, to_word, &options)
         .map_err(|err| JsValue::from_str(&err.to_string()))
 }
 
@@ -277,25 +342,34 @@ mod tests {
         let calt_index =
             u16::try_from(calt_index).expect("feature index should fit into u16 for test");
 
-        let script_list = gsub.script_list().expect("patched GSUB should contain scripts");
+        let script_list = gsub
+            .script_list()
+            .expect("patched GSUB should contain scripts");
         let latn = script_list
             .script_records()
             .iter()
             .find(|record| record.script_tag() == Tag::new(b"latn"))
             .expect("patched impact should keep latn script");
-        let script = latn.script(script_list.offset_data()).expect("latn script should resolve");
+        let script = latn
+            .script(script_list.offset_data())
+            .expect("latn script should resolve");
 
         let default_lang_sys = script
             .default_lang_sys()
             .expect("latn script should have a default langsys")
             .expect("latn default langsys should resolve");
         assert!(
-            default_lang_sys.feature_indices().iter().any(|index| index.get() == calt_index),
+            default_lang_sys
+                .feature_indices()
+                .iter()
+                .any(|index| index.get() == calt_index),
             "latn default langsys should include calt",
         );
 
         for record in script.lang_sys_records() {
-            let lang_sys = record.lang_sys(script.offset_data()).expect("langsys should resolve");
+            let lang_sys = record
+                .lang_sys(script.offset_data())
+                .expect("langsys should resolve");
             assert!(
                 lang_sys
                     .feature_indices()

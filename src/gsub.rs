@@ -2,6 +2,7 @@
 
 use std::collections::BTreeMap;
 
+use super::MorphOptions;
 use read_fonts::{
     FontRef, TableProvider, TopLevelTable,
     types::{GlyphId16, Tag},
@@ -28,9 +29,16 @@ pub fn patch_gsub(
     font: &FontRef<'_>,
     from_glyphs: &[GlyphId16],
     to_glyphs: &[GlyphId16],
+    options: &MorphOptions,
 ) -> Result<Gsub, MorphError> {
     let mut gsub = load_gsub(font)?;
-    let lookup_indices = append_word_substitution_lookups(font, &mut gsub, from_glyphs, to_glyphs)?;
+    let lookup_indices = append_word_substitution_lookups(
+        font,
+        &mut gsub,
+        from_glyphs,
+        to_glyphs,
+        options.word_match,
+    )?;
     let feature_index = ensure_feature(&mut gsub, CALT_TAG, &lookup_indices)?;
     ensure_script_feature(&mut gsub, DFLT_TAG, feature_index);
     ensure_script_feature(&mut gsub, LATN_TAG, feature_index);
@@ -54,6 +62,7 @@ fn append_word_substitution_lookups(
     gsub: &mut Gsub,
     from_glyphs: &[GlyphId16],
     to_glyphs: &[GlyphId16],
+    word_match: bool,
 ) -> Result<Vec<u16>, MorphError> {
     let mut pair_lookup_indices = BTreeMap::new();
     let mut sequence_records = Vec::new();
@@ -75,7 +84,11 @@ fn append_word_substitution_lookups(
         sequence_records.push(SequenceLookupRecord::new(sequence_index, lookup_index));
     }
 
-    let word_glyph_ranges = word_glyph_ranges(font)?;
+    let word_glyph_ranges = if word_match {
+        word_glyph_ranges(font)?
+    } else {
+        Vec::new() // If word matching is disabled, use an empty list of word glyph ranges, which effectively disables the word-matching behavior
+    };
     let contextual_lookup =
         create_contextual_lookup(from_glyphs, word_glyph_ranges, sequence_records);
     let contextual_lookup_index = push_lookup(gsub, contextual_lookup)?;

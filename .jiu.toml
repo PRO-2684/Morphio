@@ -1,4 +1,4 @@
-description = "\u001b[1;36mtext-morph\u001b[22;39m: Patching a font, so it shows word_a as word_b"
+description = "\u001b[1;36mtext-morph\u001b[22;39m: Patching a font, so it renders word_a as word_b"
 
 [[recipes]]
 names = ["build", "b"]

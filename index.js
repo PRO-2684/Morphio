@@ -1,12 +1,8 @@
-import init, { morphFont } from "./pkg/morphio.js";
+import init, { morphFont, MorphOptions } from "./pkg/morphio.js";
 
 const ORIGINAL_FAMILY = "MorphioOriginalPreview";
 const MORPHED_FAMILY = "MorphioPreview";
-const DEFAULT_PREVIEW = `banana
-bandana
-bananarama
-
-Try typing the source word in different contexts here.`;
+const DEFAULT_PREVIEW = "banana.";
 
 const state = {
     wasmReady: false,
@@ -22,6 +18,7 @@ const elements = {
     fileInput: document.querySelector("#font-file"),
     fromWord: document.querySelector("#from-word"),
     toWord: document.querySelector("#to-word"),
+    wordMatch: document.querySelector("#word-match"),
     status: document.querySelector("#status"),
     statusText: document.querySelector("#status-text"),
     sourcePreview: document.querySelector("#source-preview"),
@@ -67,7 +64,9 @@ async function onFileChange(event) {
         updateActionState();
         setStatus(
             state.wasmReady ? "idle" : "loading",
-            state.wasmReady ? "Choose a font and click Morph." : "Loading WebAssembly…",
+            state.wasmReady
+                ? "Choose a font and click Morph."
+                : "Loading WebAssembly…",
         );
         return;
     }
@@ -91,10 +90,12 @@ async function morphCurrentFont() {
 
     try {
         await nextFrame();
+        const options = new MorphOptions(elements.wordMatch.checked);
         const morphed = morphFont(
             state.sourceBytes,
             elements.fromWord.value,
             elements.toWord.value,
+            options,
         );
 
         state.outputBytes = morphed;
@@ -171,7 +172,8 @@ function mirrorPreviewText() {
 }
 
 function updateActionState() {
-    const canMorph = state.wasmReady && !!state.sourceBytes && !state.isMorphing;
+    const canMorph =
+        state.wasmReady && !!state.sourceBytes && !state.isMorphing;
     elements.morphButton.disabled = !canMorph;
     elements.downloadButton.disabled = !state.outputBytes || state.isMorphing;
 }
