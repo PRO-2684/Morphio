@@ -63,7 +63,7 @@ Options:
     - When word matching is enabled, `xbanana` will not be morphed, because we're matching whole words, not letters
     - When word matching is disabled, `xbanana` will be morphed to `xorange`
 - [ ] Bug fixes
-    - [ ] Doesn't seem to work with some fonts, e.g. `IMPACT.TTF`
+    - [ ] Doesn't seem to work with some fonts, e.g. `IMPACT.TTF` (likely because they already have gsub tables)
 
 ## 🎉 Credits
 
