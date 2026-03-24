@@ -52,9 +52,9 @@ Options:
 
 ## ✅ TODO
 
-- [ ] Optimization
-    - [ ] Use `CoverageTable::Format2`, which allows for more efficient storage of contiguous ranges of glyphs
-- [ ] Better word matching
+- [x] Optimization
+    - [x] Use `CoverageTable::Format2`, which allows for more efficient storage of contiguous ranges of glyphs
+- [x] Better word matching
     - Currently we consider whole words only by letters (`[a-zA-Z]+`)
     - Next stage: consider digits (`[0-9]+`) and underscores (`_`)
     - Maybe an option for toggling which characters to consider as part of words?
