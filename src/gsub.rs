@@ -10,7 +10,10 @@ use read_fonts::{
 use write_fonts::{
     from_obj::ToOwnedTable,
     tables::{
-        gsub::{Gsub, SingleSubst, SubstitutionChainContext, SubstitutionLookup},
+        gsub::{
+            Gsub, Ligature, LigatureSet, LigatureSubstFormat1, MultipleSubstFormat1, Sequence,
+            SingleSubst, SubstitutionChainContext, SubstitutionLookup,
+        },
         layout::{
             ChainedSequenceContext, CoverageTable, Feature, FeatureList, FeatureRecord, LangSys,
             Lookup, LookupFlag, LookupList, RangeRecord, Script, ScriptList, ScriptRecord,
@@ -29,6 +32,7 @@ pub fn patch_gsub(
     font: &FontRef<'_>,
     from_glyphs: &[GlyphId16],
     to_glyphs: &[GlyphId16],
+    placeholder: Option<GlyphId16>,
     options: &MorphOptions,
 ) -> Result<Gsub, MorphError> {
     let mut gsub = load_gsub(font)?;
@@ -37,6 +41,7 @@ pub fn patch_gsub(
         &mut gsub,
         from_glyphs,
         to_glyphs,
+        placeholder,
         options.word_match,
     )?;
     let feature_index = ensure_feature(&mut gsub, CALT_TAG, &lookup_indices)?;
@@ -62,8 +67,26 @@ fn append_word_substitution_lookups(
     gsub: &mut Gsub,
     from_glyphs: &[GlyphId16],
     to_glyphs: &[GlyphId16],
+    placeholder: Option<GlyphId16>,
     word_match: bool,
 ) -> Result<Vec<u16>, MorphError> {
+    let word_glyph_ranges = if word_match {
+        word_glyph_ranges(font)?
+    } else {
+        Vec::new()
+    };
+
+    if from_glyphs.len() != to_glyphs.len() {
+        let placeholder = placeholder.ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
+        return append_variable_length_lookups(
+            gsub,
+            from_glyphs,
+            to_glyphs,
+            placeholder,
+            word_glyph_ranges,
+        );
+    }
+
     let mut pair_lookup_indices = BTreeMap::new();
     let mut sequence_records = Vec::new();
 
@@ -84,11 +107,6 @@ fn append_word_substitution_lookups(
         sequence_records.push(SequenceLookupRecord::new(sequence_index, lookup_index));
     }
 
-    let word_glyph_ranges = if word_match {
-        word_glyph_ranges(font)?
-    } else {
-        Vec::new() // If word matching is disabled, use an empty list of word glyph ranges, which effectively disables the word-matching behavior
-    };
     let contextual_lookup =
         create_contextual_lookup(from_glyphs, word_glyph_ranges, sequence_records);
     let contextual_lookup_index = push_lookup(gsub, contextual_lookup)?;
@@ -96,10 +114,64 @@ fn append_word_substitution_lookups(
     Ok(vec![contextual_lookup_index])
 }
 
+fn append_variable_length_lookups(
+    gsub: &mut Gsub,
+    from_glyphs: &[GlyphId16],
+    to_glyphs: &[GlyphId16],
+    placeholder: GlyphId16,
+    word_glyph_ranges: Vec<RangeRecord>,
+) -> Result<Vec<u16>, MorphError> {
+    let collapse_lookup = match from_glyphs {
+        [src] => create_single_substitution_lookup(*src, placeholder),
+        _ => create_ligature_substitution_lookup(from_glyphs, placeholder),
+    };
+    let collapse_lookup_index = push_lookup(gsub, collapse_lookup)?;
+    let collapse_context_index = push_lookup(
+        gsub,
+        create_contextual_lookup(
+            from_glyphs,
+            word_glyph_ranges.clone(),
+            vec![SequenceLookupRecord::new(0, collapse_lookup_index)],
+        ),
+    )?;
+
+    let expand_lookup = match to_glyphs {
+        [dst] => create_single_substitution_lookup(placeholder, *dst),
+        _ => create_multiple_substitution_lookup(placeholder, to_glyphs),
+    };
+    let expand_lookup_index = push_lookup(gsub, expand_lookup)?;
+    let expand_context_index = push_lookup(
+        gsub,
+        create_contextual_lookup(
+            &[placeholder],
+            word_glyph_ranges,
+            vec![SequenceLookupRecord::new(0, expand_lookup_index)],
+        ),
+    )?;
+
+    Ok(vec![collapse_context_index, expand_context_index])
+}
+
 fn create_single_substitution_lookup(src: GlyphId16, dst: GlyphId16) -> SubstitutionLookup {
     let coverage = CoverageTable::format_1(vec![src]);
     let subtable = SingleSubst::format_2(coverage, vec![dst]);
     SubstitutionLookup::Single(Lookup::new(LookupFlag::empty(), vec![subtable]))
+}
+
+fn create_multiple_substitution_lookup(src: GlyphId16, dst: &[GlyphId16]) -> SubstitutionLookup {
+    let coverage = CoverageTable::format_1(vec![src]);
+    let subtable = MultipleSubstFormat1::new(coverage, vec![Sequence::new(dst.to_vec())]);
+    SubstitutionLookup::Multiple(Lookup::new(LookupFlag::empty(), vec![subtable]))
+}
+
+fn create_ligature_substitution_lookup(src: &[GlyphId16], dst: GlyphId16) -> SubstitutionLookup {
+    let (first, rest) = src
+        .split_first()
+        .expect("ligature substitution requires a non-empty source sequence");
+    let coverage = CoverageTable::format_1(vec![*first]);
+    let ligature = Ligature::new(dst, rest.to_vec());
+    let subtable = LigatureSubstFormat1::new(coverage, vec![LigatureSet::new(vec![ligature])]);
+    SubstitutionLookup::Ligature(Lookup::new(LookupFlag::empty(), vec![subtable]))
 }
 
 fn create_contextual_lookup(

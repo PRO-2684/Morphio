@@ -18,7 +18,7 @@
 //!
 //! ### Morphing the font
 //!
-//! Then, call the [`Morphio::morph`] method on the parsed font, passing in the two words you want to morph between. Note that the two words must be of the same length.
+//! Then, call the [`Morphio::morph`] method on the parsed font, passing in the two words you want to morph between.
 //!
 //! ```rust
 //! # use read_fonts::FontRef;
@@ -83,9 +83,21 @@ mod ttc;
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 pub use error::MorphError;
-use read_fonts::{FileRef, FontRef};
+use read_fonts::{FileRef, FontRef, TableProvider};
 use ttc::build_ttc;
-use write_fonts::FontBuilder;
+use write_fonts::{
+    FontBuilder,
+    from_obj::{FromTableRef, ToOwnedTable},
+    tables::{
+        glyf::{GlyfLocaBuilder, Glyph},
+        head::Head,
+        hhea::Hhea,
+        hmtx::{Hmtx, LongMetric},
+        loca::Loca,
+        maxp::Maxp,
+    },
+    types::GlyphId,
+};
 
 /// Options for morphing a font.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -118,7 +130,6 @@ impl MorphOptions {
 pub trait Morphio {
     /// Patch the font so it renders `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
     ///
-    /// - Must have the same length
     /// - Must be non-empty
     /// - Must be fully supported by the font (i.e. all glyphs must be present)
     ///
@@ -133,7 +144,6 @@ pub trait Morphio {
 
     /// Patch the font with options, so it renders `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
     ///
-    /// - Must have the same length
     /// - Must be non-empty
     /// - Must be fully supported by the font (i.e. all glyphs must be present)
     ///
@@ -191,12 +201,113 @@ fn morph_font(
     options: &MorphOptions,
 ) -> Result<Vec<u8>, MorphError> {
     let (from_glyphs, to_glyphs) = font::word_to_glyphs(&font, from_word, to_word)?;
-    let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs, options)?;
+    let glyph_patch = if from_glyphs.len() == to_glyphs.len() {
+        None
+    } else {
+        Some(ensure_placeholder_glyph(&font, &from_glyphs, &to_glyphs)?)
+    };
+    let placeholder = glyph_patch.as_ref().map(|patch| patch.placeholder);
+    let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs, placeholder, options)?;
 
     let mut builder = FontBuilder::new();
-    builder.add_table(&gsub)?.copy_missing_tables(font);
+    builder.add_table(&gsub)?;
+    if let Some(patch) = glyph_patch.and_then(|patch| patch.inserted_tables) {
+        builder
+            .add_table(&patch.head)?
+            .add_table(&patch.hhea)?
+            .add_table(&patch.hmtx)?
+            .add_table(&patch.maxp)?
+            .add_table(&patch.glyf)?
+            .add_table(&patch.loca)?;
+    }
+    builder.copy_missing_tables(font);
 
     Ok(builder.build())
+}
+
+struct GlyphPatch {
+    placeholder: read_fonts::types::GlyphId16,
+    inserted_tables: Option<InsertedGlyphTables>,
+}
+
+struct InsertedGlyphTables {
+    head: Head,
+    hhea: Hhea,
+    hmtx: Hmtx,
+    maxp: Maxp,
+    glyf: write_fonts::tables::glyf::Glyf,
+    loca: Loca,
+}
+
+fn ensure_placeholder_glyph(
+    font: &FontRef<'_>,
+    from_glyphs: &[read_fonts::types::GlyphId16],
+    to_glyphs: &[read_fonts::types::GlyphId16],
+) -> Result<GlyphPatch, MorphError> {
+    let mut reserved = Vec::with_capacity(from_glyphs.len() + to_glyphs.len());
+    reserved.extend_from_slice(from_glyphs);
+    reserved.extend_from_slice(to_glyphs);
+
+    if let Some(placeholder) = font::find_unused_glyph(font, &reserved)? {
+        return Ok(GlyphPatch {
+            placeholder,
+            inserted_tables: None,
+        });
+    }
+
+    append_empty_placeholder_glyph(font)
+}
+
+fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, MorphError> {
+    let mut head: Head = font.head()?.to_owned_table();
+    let mut hhea: Hhea = font.hhea()?.to_owned_table();
+    let mut hmtx: Hmtx = font.hmtx()?.to_owned_table();
+    let mut maxp: Maxp = font.maxp()?.to_owned_table();
+    let read_loca = font.loca(None)?;
+    let read_glyf = font.glyf()?;
+
+    let num_glyphs = maxp.num_glyphs;
+    let placeholder = read_fonts::types::GlyphId16::new(num_glyphs);
+
+    let mut glyf_builder = GlyfLocaBuilder::new();
+    for glyph_id in 0..num_glyphs {
+        let glyph = read_loca.get_glyf(GlyphId::new(u32::from(glyph_id)), &read_glyf)?;
+        let glyph = glyph
+            .as_ref()
+            .map(Glyph::from_table_ref)
+            .unwrap_or(Glyph::Empty);
+        glyf_builder.add_glyph(&glyph)?;
+    }
+    glyf_builder.add_glyph(&Glyph::Empty)?;
+    let (glyf, loca, loca_format) = glyf_builder.build();
+
+    maxp.num_glyphs = maxp
+        .num_glyphs
+        .checked_add(1)
+        .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
+    hmtx.h_metrics.push(LongMetric::new(0, 0));
+    hhea.number_of_h_metrics = hhea
+        .number_of_h_metrics
+        .checked_add(1)
+        .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
+    head.index_to_loc_format = if matches!(loca_format, write_fonts::tables::loca::LocaFormat::Long)
+    {
+        1
+    } else {
+        0
+    };
+
+    Ok(GlyphPatch {
+        placeholder,
+        inserted_tables: Some(InsertedGlyphTables {
+            head,
+            hhea,
+            hmtx,
+            maxp,
+            glyf,
+            loca,
+        }),
+    })
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -225,16 +336,6 @@ mod tests {
 
     fn impact_bytes() -> Vec<u8> {
         std::fs::read("tests/fonts/IMPACT.TTF").expect("impact fixture should exist")
-    }
-
-    #[test]
-    fn rejects_different_lengths() {
-        let bytes = fixture_bytes();
-        let font = FontRef::from_index(&bytes, 0).expect("fixture should parse");
-        let err = font
-            .morph("abc", "xy")
-            .expect_err("expected a validation error");
-        assert!(matches!(err, MorphError::DifferentLengths));
     }
 
     #[test]
@@ -274,6 +375,34 @@ mod tests {
             .any(|record| record.feature_tag() == read_fonts::types::Tag::new(b"calt"));
 
         assert!(has_calt, "patched font should expose a calt feature");
+    }
+
+    #[test]
+    fn supports_many_to_one_morphs() {
+        let bytes = impact_bytes();
+        let font = FontRef::new(&bytes).expect("impact fixture should parse");
+        let morphed = font
+            .morph("banana", "x")
+            .expect("many-to-one morph should succeed");
+
+        assert!(
+            FontRef::new(&morphed).is_ok(),
+            "morphed font should remain parseable"
+        );
+    }
+
+    #[test]
+    fn supports_one_to_many_morphs() {
+        let bytes = impact_bytes();
+        let font = FontRef::new(&bytes).expect("impact fixture should parse");
+        let morphed = font
+            .morph("x", "orange")
+            .expect("one-to-many morph should succeed");
+
+        assert!(
+            FontRef::new(&morphed).is_ok(),
+            "morphed font should remain parseable"
+        );
     }
 
     #[test]
