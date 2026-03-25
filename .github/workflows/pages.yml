@@ -34,22 +34,19 @@ jobs:
       - name: Rust Cache
         id: cache
         uses: Swatinem/rust-cache@v2
-        with:
-          cache-directories: |
-            ~/.cache/wasm-pack/
-      - name: Inspect Cache
+      - name: Inspect
         run: |
           echo "~/.cargo/:"
           ls ~/.cargo/ || true
           echo "./target/:"
           ls ./target/ || true
-          echo "~/.cache/wasm-pack/:"
-          ls ~/.cache/wasm-pack/ || true
+          echo "$HOME/.cargo/bin/:"
+          ls $HOME/.cargo/bin/ || true
       - name: Install WASM Tools
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
           cargo binstall wasm-pack
       - name: Build WASM
         run: wasm-pack build --target web --no-pack
