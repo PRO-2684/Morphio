@@ -62,12 +62,10 @@ textarea {
     outline: none;
     transition: border-color 0.15s;
     font-family: inherit;
-}
 
-input[type="text"]:focus,
-textarea:focus,
-input[type="file"]:focus {
-    border-color: #5b9bd5;
+    &:focus {
+        border-color: #5b9bd5;
+    }
 }
 
 textarea {
@@ -119,28 +117,28 @@ textarea {
     font-size: 0.88rem;
     color: #888;
     width: auto;
-}
 
-.status[data-state="ready"] {
-    color: #7fc6a4;
-}
+    &[data-state="ready"] {
+        color: #7fc6a4;
+    }
 
-.status[data-state="error"] {
-    color: #d88972;
-}
+    &[data-state="error"] {
+        color: #d88972;
+    }
 
-.spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid #444;
-    border-top-color: #5b9bd5;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    display: none;
-}
+    .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid #444;
+        border-top-color: #5b9bd5;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: none;
+    }
 
-.status[data-busy="true"] .spinner {
-    display: inline-block;
+    &[data-busy="true"] .spinner {
+        display: inline-block;
+    }
 }
 
 .advanced-settings {
@@ -148,24 +146,24 @@ textarea {
     border-radius: 8px;
     background: #1d1d1d;
     overflow: hidden;
-}
 
-.advanced-settings summary {
-    cursor: pointer;
-    list-style: none;
-    padding: 0.9rem 1rem;
-    color: #bcbcbc;
-    font-size: 0.82rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
+    summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 0.9rem 1rem;
+        color: #bcbcbc;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
 
-.advanced-settings summary::-webkit-details-marker {
-    display: none;
-}
+        &::-webkit-details-marker {
+            display: none;
+        }
+    }
 
-.advanced-settings[open] summary {
-    border-bottom: 1px solid #333;
+    &[open] summary {
+        border-bottom: 1px solid #333;
+    }
 }
 
 .advanced-body {
@@ -181,18 +179,18 @@ textarea {
     letter-spacing: 0;
     font-size: 0.96rem;
     color: #ddd;
-}
 
-.checkbox-row input {
-    margin: auto 0.2rem;
-}
+    input {
+        margin: auto 0.2rem;
+    }
 
-.checkbox-row small {
-    display: block;
-    margin-top: 0.18rem;
-    color: #8d8d8d;
-    font-size: 0.82rem;
-    line-height: 1.45;
+    small {
+        display: block;
+        margin-top: 0.18rem;
+        color: #8d8d8d;
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
 }
 
 .output-area {
@@ -230,26 +228,26 @@ button {
     background: #5b9bd5;
     color: #fff;
     font-weight: 600;
-}
 
-button.secondary {
-    background: #3a3a3a;
-    color: #ccc;
-    border: 1px solid #555;
-    font-weight: 400;
-}
+    &.secondary {
+        background: #3a3a3a;
+        color: #ccc;
+        border: 1px solid #555;
+        font-weight: 400;
+    }
 
-button:hover:not(:disabled) {
-    filter: brightness(1.15);
-}
+    &:hover:not(:disabled) {
+        filter: brightness(1.15);
+    }
 
-button:active:not(:disabled) {
-    filter: brightness(0.9);
-}
+    &:active:not(:disabled) {
+        filter: brightness(0.9);
+    }
 
-button:disabled {
-    opacity: 0.4;
-    cursor: default;
+    &:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
 }
 
 .help {
@@ -258,15 +256,15 @@ button:disabled {
     color: #777;
     font-size: 0.88rem;
     line-height: 1.5;
-}
 
-.help a {
-    color: #9cc4eb;
-    text-decoration: none;
-}
+    a {
+        color: #9cc4eb;
+        text-decoration: none;
 
-.help a:hover {
-    text-decoration: underline;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
 
 @keyframes spin {
