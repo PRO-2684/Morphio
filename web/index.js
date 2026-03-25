@@ -1,4 +1,4 @@
-import init, { morphFont, MorphOptions } from "./pkg/morphio.js";
+import init, { morphFont, MorphOptions } from "./wasm/morphio.js";
 
 const ORIGINAL_FAMILY = "MorphioOriginalPreview";
 const MORPHED_FAMILY = "MorphioPreview";

@@ -52,6 +52,7 @@ Options:
 
 ## ✅ TODO
 
+- [ ] ServiceWorker
 - [ ] Allow morphing multiple words in one go
 - [ ] Allow morphing words with different lengths
     - Possibly using edit distance algorithms, but might need to favor substitutions over insertions/deletions
