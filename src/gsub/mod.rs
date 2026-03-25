@@ -33,17 +33,11 @@ const LATN_TAG: Tag = Tag::new(b"latn");
 pub fn patch_gsub(
     font: &FontRef<'_>,
     rules: &[ResolvedMorphRule],
-    placeholders: &[GlyphId16],
     options: &MorphOptions,
 ) -> Result<Gsub, MorphError> {
     let mut gsub = load_gsub(font)?;
-    let lookup_indices = append_word_substitution_lookups(
-        font,
-        &mut gsub,
-        rules,
-        placeholders,
-        options.word_match,
-    )?;
+    let lookup_indices =
+        append_word_substitution_lookups(font, &mut gsub, rules, options.word_match)?;
     let feature_index = ensure_feature(&mut gsub, CALT_TAG, &lookup_indices)?;
     ensure_script_feature(&mut gsub, DFLT_TAG, feature_index);
     ensure_script_feature(&mut gsub, LATN_TAG, feature_index);
@@ -66,7 +60,6 @@ fn append_word_substitution_lookups(
     font: &FontRef<'_>,
     gsub: &mut Gsub,
     rules: &[ResolvedMorphRule],
-    placeholders: &[GlyphId16],
     word_match: bool,
 ) -> Result<Vec<u16>, MorphError> {
     let word_glyph_ranges = if word_match {
@@ -76,7 +69,6 @@ fn append_word_substitution_lookups(
     };
 
     let mut lookup_indices = Vec::new();
-    let mut placeholder_iter = placeholders.iter().copied();
 
     for rule in rules {
         if rule.from_glyphs.len() == rule.to_glyphs.len() {
@@ -88,8 +80,7 @@ fn append_word_substitution_lookups(
             )?);
         } else {
             let placeholder = if rule.from_glyphs.len() > 1 && rule.to_glyphs.len() > 1 {
-                placeholder_iter
-                    .next()
+                rule.placeholder
                     .ok_or(MorphError::UnsupportedPlaceholderGlyph)?
             } else {
                 GlyphId16::NOTDEF

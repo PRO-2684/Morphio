@@ -255,7 +255,7 @@ fn morph_font(
     rules: &[MorphRule<'_>],
     options: &MorphOptions,
 ) -> Result<Vec<u8>, MorphError> {
-    let resolved_rules = font::resolve_rules(&font, rules)?;
+    let mut resolved_rules = font::resolve_rules(&font, rules)?;
     let placeholder_count = resolved_rules
         .iter()
         .filter(|rule| {
@@ -269,10 +269,22 @@ fn morph_font(
     } else {
         Some(append_empty_placeholder_glyphs(&font, placeholder_count)?)
     };
-    let placeholders = glyph_patch
-        .as_ref()
-        .map_or(&[][..], |patch| patch.placeholders.as_slice());
-    let gsub = gsub::patch_gsub(&font, &resolved_rules, placeholders, options)?;
+    if let Some(placeholders) = glyph_patch.as_ref().map(|patch| patch.placeholders.as_slice()) {
+        let mut placeholder_iter = placeholders.iter().copied();
+        for rule in &mut resolved_rules {
+            if rule.from_glyphs.len() > 1
+                && rule.to_glyphs.len() > 1
+                && rule.from_glyphs.len() != rule.to_glyphs.len()
+            {
+                rule.placeholder = Some(
+                    placeholder_iter
+                        .next()
+                        .ok_or(MorphError::UnsupportedPlaceholderGlyph)?,
+                );
+            }
+        }
+    }
+    let gsub = gsub::patch_gsub(&font, &resolved_rules, options)?;
 
     let mut builder = FontBuilder::new();
     builder.add_table(&gsub)?;
@@ -290,11 +302,15 @@ fn morph_font(
     Ok(builder.build())
 }
 
+/// Newly appended placeholder glyph data for a font rebuild.
 struct GlyphPatch {
+    /// Placeholder glyph IDs, in creation order.
     placeholders: Vec<GlyphId16>,
+    /// Rebuilt tables required to persist the placeholder glyphs.
     inserted_tables: Option<InsertedGlyphTables>,
 }
 
+/// Tables that must be replaced after appending glyphs to a TrueType font.
 struct InsertedGlyphTables {
     head: Head,
     hhea: Hhea,
@@ -304,6 +320,7 @@ struct InsertedGlyphTables {
     loca: Loca,
 }
 
+/// Append `count` empty placeholder glyphs to the font and return the replacement tables.
 fn append_empty_placeholder_glyphs(
     font: &FontRef<'_>,
     count: usize,
