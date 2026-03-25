@@ -22,7 +22,7 @@ const CMAP_PREFERENCES: &[(PlatformId, u16)] = &[
     (PlatformId::Unicode, 0),
 ];
 
-pub fn validate_words(
+pub fn word_to_glyphs(
     font: &FontRef<'_>,
     from_word: &str,
     to_word: &str,

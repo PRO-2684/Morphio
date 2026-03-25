@@ -190,7 +190,7 @@ fn morph_font(
     to_word: &str,
     options: &MorphOptions,
 ) -> Result<Vec<u8>, MorphError> {
-    let (from_glyphs, to_glyphs) = font::validate_words(&font, from_word, to_word)?;
+    let (from_glyphs, to_glyphs) = font::word_to_glyphs(&font, from_word, to_word)?;
     let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs, options)?;
 
     let mut builder = FontBuilder::new();
