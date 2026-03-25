@@ -48,6 +48,11 @@ Options:
   -h, --help        display usage information
 ```
 
+> [!NOTE]
+> For variable-length many-to-many morphs, Morphio appends empty placeholder glyphs to the font.
+> When this happens, some legacy glyph-count-dependent tables such as `LTSH` and `hdmx` may be dropped instead of rebuilt.
+> This is usually fine in modern browsers and text renderers, but very old rasterizers may render slightly differently.
+
 ## ✅ TODO
 
 - [ ] Reduce TTC font sizes (table sharing?)
