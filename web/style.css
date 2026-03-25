@@ -252,7 +252,9 @@ button {
     cursor: pointer;
     transition:
         filter 0.15s,
-        opacity 0.15s;
+        opacity 0.15s,
+        background-color 0.15s,
+        filter 0.15s;
     background: #5b9bd5;
     color: #fff;
     font-weight: 600;
@@ -274,7 +276,7 @@ button {
 
     &:disabled {
         opacity: 0.4;
-        cursor: default;
+        cursor: not-allowed;
     }
 }
 
@@ -323,10 +325,6 @@ button {
 
     .morph-row button {
         width: 100%;
-    }
-
-    .rule-row {
-        align-items: stretch;
     }
 
     .actions button {
