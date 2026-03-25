@@ -52,10 +52,10 @@ Options:
 
 ## ✅ TODO
 
-- [ ] ServiceWorker
 - [ ] Allow morphing multiple words in one go
 - [ ] Allow morphing words with different lengths
     - Possibly using edit distance algorithms, but might need to favor substitutions over insertions/deletions
+- [x] ServiceWorker
 - [x] Option for enabling/disabling word matching
     - Say we want to morph "banana" to "orange"
     - When word matching is enabled, `xbanana` will not be morphed, because we're matching whole words, not letters
