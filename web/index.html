@@ -54,12 +54,15 @@
                             spellcheck="false"
                             autocomplete="off"
                         />
+                        <button
+                            id="add-rule-button"
+                            class="secondary rule-action-button"
+                            type="button"
+                        >
+                            +
+                        </button>
                     </div>
                 </div>
-                <button id="add-rule-button" class="secondary" type="button">
-                    Add rule
-                </button>
-                <button id="morph-button" disabled>Morph 🪄</button>
             </div>
 
             <details class="advanced-settings">
@@ -78,6 +81,13 @@
                     </label>
                 </div>
             </details>
+
+            <div class="actions controls-actions">
+                <button id="morph-button" disabled>Morph 🪄</button>
+                <button id="download-button" disabled>
+                    Download morphed font
+                </button>
+            </div>
 
             <div class="output-area">
                 <div class="preview-grid">
@@ -101,23 +111,14 @@ banana.</textarea
                     </div>
                 </div>
             </div>
-
-            <div class="actions">
-                <button id="download-button" disabled>
-                    Download morphed font
-                </button>
-                <button id="reset-preview" class="secondary">
-                    Reset preview text
-                </button>
-            </div>
         </div>
 
         <p class="help">
             Upload a font, add one or more morph rules, then click Morph. The
             morphed font will render each source word as its target word. You
             can preview before downloading the morphed font. GitHub:
-            <a href="https://github.com/PRO-2684/morphio" target="_blank"
-                >PRO-2684/morphio</a
+            <a href="https://github.com/PRO-2684/Morphio" target="_blank"
+                >PRO-2684/Morphio</a
             >.
         </p>
 
@@ -140,8 +141,11 @@ banana.</textarea
                     spellcheck="false"
                     autocomplete="off"
                 />
-                <button class="secondary remove-rule-button" type="button">
-                    Remove
+                <button
+                    class="secondary rule-action-button remove-rule-button"
+                    type="button"
+                >
+                    -
                 </button>
             </div>
         </template>

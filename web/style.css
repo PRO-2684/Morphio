@@ -99,6 +99,13 @@ textarea {
     align-items: center;
 }
 
+.rule-action-button {
+    flex: 0 0 auto;
+    min-width: 2.4rem;
+    padding-inline: 0;
+    font-size: 1rem;
+}
+
 .morph-heading {
     display: flex;
     align-items: center;
@@ -228,6 +235,10 @@ textarea {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+}
+
+.controls-actions {
+    justify-content: flex-start;
 }
 
 button {

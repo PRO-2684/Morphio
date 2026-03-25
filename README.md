@@ -55,7 +55,11 @@ Options:
 
 ## ✅ TODO
 
-- [ ] Reduce TTC font sizes (table sharing?)
+- [ ] Configure word matching of start and end of words separately
+- [ ] Recipe (configuration) support
+    - Advanced settings
+    - Morph rules
+- [x] Reduce TTC font sizes (table sharing?)
 - [x] Allow morphing multiple words in one go
 - [x] Allow morphing words with different lengths
 - [x] ServiceWorker

@@ -26,7 +26,6 @@ const elements = {
     morphedPreview: document.querySelector("#morphed-preview"),
     morphButton: document.querySelector("#morph-button"),
     downloadButton: document.querySelector("#download-button"),
-    resetPreviewButton: document.querySelector("#reset-preview"),
 };
 
 function registerServiceWorker() {
@@ -63,10 +62,6 @@ function wireUi() {
     elements.sourcePreview.addEventListener("input", mirrorPreviewText);
     elements.morphButton.addEventListener("click", morphCurrentFont);
     elements.downloadButton.addEventListener("click", downloadFont);
-    elements.resetPreviewButton.addEventListener("click", () => {
-        elements.sourcePreview.value = DEFAULT_PREVIEW;
-        mirrorPreviewText();
-    });
 }
 
 async function onFileChange(event) {
