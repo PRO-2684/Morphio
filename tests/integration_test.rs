@@ -204,3 +204,49 @@ fn supports_multiple_rules_in_one_pass() {
 
     assert!(has_calt, "patched font should expose a calt feature");
 }
+
+#[test]
+fn supports_multiple_rules_in_collection_with_placeholder() {
+    let bytes = msyh_bytes();
+    let file = FileRef::new(&bytes).expect("fixture should parse");
+    let rules = [
+        MorphRule::new("banana", "orange"),
+        MorphRule::new("from", "to"),
+    ];
+    let morphed = file
+        .morph_many(&rules)
+        .expect("multi-rule collection morph should succeed");
+
+    let rebuilt = FileRef::new(&morphed).expect("morphed collection should parse");
+    let FileRef::Collection(collection) = rebuilt else {
+        panic!("patched fixture should remain a collection");
+    };
+    assert_eq!(collection.len(), 2);
+
+    for font in collection.iter() {
+        let font = font.expect("collection member should parse");
+        let maxp = font.maxp().expect("patched font should contain maxp");
+        assert!(
+            font.table_data(Tag::new(b"LTSH")).is_none(),
+            "placeholder rebuild should drop stale LTSH",
+        );
+        assert!(
+            font.table_data(Tag::new(b"hdmx")).is_none(),
+            "placeholder rebuild should drop stale hdmx",
+        );
+
+        let vhea = font.vhea().expect("patched font should contain vhea");
+        let vmtx = font.vmtx().expect("patched font should contain vmtx");
+        let metric_count = vmtx.v_metrics().len() + vmtx.top_side_bearings().len();
+        assert_eq!(
+            usize::from(vhea.number_of_long_ver_metrics()),
+            vmtx.v_metrics().len(),
+            "vhea and vmtx should agree on long metric count",
+        );
+        assert_eq!(
+            usize::from(maxp.num_glyphs()),
+            metric_count,
+            "vmtx should cover every glyph after placeholder insertion",
+        );
+    }
+}

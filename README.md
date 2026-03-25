@@ -50,6 +50,7 @@ Options:
 
 ## ✅ TODO
 
+- [ ] Reduce TTC font sizes (table sharing?)
 - [x] Allow morphing multiple words in one go
 - [x] Allow morphing words with different lengths
 - [x] ServiceWorker

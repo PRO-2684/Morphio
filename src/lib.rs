@@ -86,7 +86,7 @@ mod ttc;
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 pub use error::MorphError;
-use read_fonts::{FileRef, FontRef, TableProvider, types::GlyphId16};
+use read_fonts::{FileRef, FontRef, TableProvider, types::{GlyphId16, Tag}};
 use ttc::build_ttc;
 use write_fonts::{
     FontBuilder,
@@ -98,6 +98,8 @@ use write_fonts::{
         hmtx::{Hmtx, LongMetric},
         loca::{Loca, LocaFormat},
         maxp::Maxp,
+        vhea::Vhea,
+        vmtx::{LongMetric as VLongMetric, Vmtx},
     },
     types::GlyphId,
 };
@@ -296,8 +298,32 @@ fn morph_font(
             .add_table(&patch.maxp)?
             .add_table(&patch.glyf)?
             .add_table(&patch.loca)?;
+        if let Some(vhea) = &patch.vhea {
+            builder.add_table(vhea)?;
+        }
+        if let Some(vmtx) = &patch.vmtx {
+            builder.add_table(vmtx)?;
+        }
+        copy_font_tables_except(
+            &mut builder,
+            &font,
+            &[
+                Tag::new(b"GSUB"),
+                Tag::new(b"head"),
+                Tag::new(b"hhea"),
+                Tag::new(b"hmtx"),
+                Tag::new(b"maxp"),
+                Tag::new(b"loca"),
+                Tag::new(b"glyf"),
+                Tag::new(b"vhea"),
+                Tag::new(b"vmtx"),
+                Tag::new(b"hdmx"),
+                Tag::new(b"LTSH"),
+            ],
+        );
+    } else {
+        builder.copy_missing_tables(font);
     }
-    builder.copy_missing_tables(font);
 
     Ok(builder.build())
 }
@@ -318,6 +344,8 @@ struct InsertedGlyphTables {
     maxp: Maxp,
     glyf: Glyf,
     loca: Loca,
+    vhea: Option<Vhea>,
+    vmtx: Option<Vmtx>,
 }
 
 /// Append `count` empty placeholder glyphs to the font and return the replacement tables.
@@ -331,6 +359,14 @@ fn append_empty_placeholder_glyphs(
     let mut maxp: Maxp = font.maxp()?.to_owned_table();
     let read_loca = font.loca(None)?;
     let read_glyf = font.glyf()?;
+    let mut vhea: Option<Vhea> = match font.data_for_tag(Tag::new(b"vhea")) {
+        Some(_) => Some(font.vhea()?.to_owned_table()),
+        None => None,
+    };
+    let mut vmtx: Option<Vmtx> = match font.data_for_tag(Tag::new(b"vmtx")) {
+        Some(_) => Some(font.vmtx()?.to_owned_table()),
+        None => None,
+    };
 
     let num_glyphs = maxp.num_glyphs;
     let count_u16 = u16::try_from(count).map_err(|_| MorphError::UnsupportedPlaceholderGlyph)?;
@@ -364,6 +400,16 @@ fn append_empty_placeholder_glyphs(
         .number_of_h_metrics
         .checked_add(count_u16)
         .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
+    if let Some(vhea) = &mut vhea {
+        vhea.number_of_long_ver_metrics = vhea
+            .number_of_long_ver_metrics
+            .checked_add(count_u16)
+            .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
+    }
+    if let Some(vmtx) = &mut vmtx {
+        vmtx.v_metrics
+            .extend(std::iter::repeat_with(|| VLongMetric::new(0, 0)).take(count));
+    }
     head.index_to_loc_format = i16::from(matches!(loca_format, LocaFormat::Long));
 
     Ok(GlyphPatch {
@@ -375,8 +421,22 @@ fn append_empty_placeholder_glyphs(
             maxp,
             glyf,
             loca,
+            vhea,
+            vmtx,
         }),
     })
+}
+
+fn copy_font_tables_except(builder: &mut FontBuilder<'_>, font: &FontRef<'_>, excluded: &[Tag]) {
+    for record in font.table_directory().table_records() {
+        let tag = record.tag();
+        if excluded.contains(&tag) {
+            continue;
+        }
+        if let Some(data) = font.table_data(tag) {
+            builder.add_raw(tag, data.as_bytes().to_vec());
+        }
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
