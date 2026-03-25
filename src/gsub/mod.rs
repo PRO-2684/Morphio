@@ -75,11 +75,11 @@ fn append_word_substitution_lookups(
         Vec::new()
     };
 
-    if from_glyphs.len() != to_glyphs.len() {
+    if from_glyphs.len() == to_glyphs.len() {
+        append_equal_length_lookups(gsub, from_glyphs, to_glyphs, word_glyph_ranges)
+    } else {
         let placeholder = placeholder.ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
         append_variable_length_lookups(gsub, from_glyphs, to_glyphs, placeholder, word_glyph_ranges)
-    } else {
-        append_equal_length_lookups(gsub, from_glyphs, to_glyphs, word_glyph_ranges)
     }
 }
 

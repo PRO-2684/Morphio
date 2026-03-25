@@ -1,8 +1,6 @@
 //! Module for handling words of variable length.
 
-use super::{
-    MorphError, SequenceLookupRecord, create_contextual_lookup, push_lookup,
-};
+use super::{MorphError, SequenceLookupRecord, create_contextual_lookup, push_lookup};
 use read_fonts::{tables::layout::LookupFlag, types::GlyphId16};
 use write_fonts::tables::{
     gsub::{
@@ -21,9 +19,10 @@ pub fn append_variable_length_lookups(
     word_glyph_ranges: Vec<RangeRecord>,
 ) -> Result<Vec<u16>, MorphError> {
     let mut lookup_indices = Vec::new();
-    let mut expand_input = from_glyphs;
 
-    if !matches!(from_glyphs, [_]) {
+    let expand_input = if matches!(from_glyphs, [_]) {
+        from_glyphs
+    } else {
         let collapse_lookup = create_ligature_substitution_lookup(from_glyphs, placeholder);
         let collapse_lookup_index = push_lookup(gsub, collapse_lookup)?;
         let collapse_context_index = push_lookup(
@@ -35,8 +34,8 @@ pub fn append_variable_length_lookups(
             ),
         )?;
         lookup_indices.push(collapse_context_index);
-        expand_input = std::slice::from_ref(&placeholder);
-    }
+        std::slice::from_ref(&placeholder)
+    };
 
     if !matches!(to_glyphs, [_]) {
         let expand_lookup = create_multiple_substitution_lookup(expand_input[0], to_glyphs);
