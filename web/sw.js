@@ -1,7 +1,7 @@
 // Service Worker for morphio
 "use strict";
 
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 const CACHE_NAME = `morphio-${VERSION}`;
 const APP_RESOURCE = [
     "/",
