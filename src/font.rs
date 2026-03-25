@@ -1,7 +1,5 @@
 //! Internal helpers for reading and validating source fonts.
 
-use std::collections::BTreeSet;
-
 use range_set_blaze::RangeSetBlaze;
 use read_fonts::{
     FontRef, TableProvider,
@@ -38,34 +36,6 @@ pub fn word_to_glyphs(
         resolve_glyphs(&cmap, from_word)?,
         resolve_glyphs(&cmap, to_word)?,
     ))
-}
-
-pub fn find_unused_glyph(
-    font: &FontRef<'_>,
-    reserved_glyphs: &[GlyphId16],
-) -> Result<Option<GlyphId16>, MorphError> {
-    let cmap = best_cmap(font)?.ok_or(MorphError::MissingCmap)?;
-    let num_glyphs = usize::from(font.maxp()?.num_glyphs());
-    if num_glyphs <= 1 {
-        return Ok(None);
-    }
-
-    let mut mapped = vec![false; num_glyphs];
-    collect_mapped_glyphs(&cmap, &mut mapped);
-    for glyph in reserved_glyphs {
-        let index = usize::from(glyph.to_u16());
-        if index < mapped.len() {
-            mapped[index] = true;
-        }
-    }
-
-    Ok(mapped
-        .iter()
-        .enumerate()
-        .skip(1)
-        .find(|(_, is_mapped)| !**is_mapped)
-        .and_then(|(glyph_id, _)| u16::try_from(glyph_id).ok())
-        .map(GlyphId16::new))
 }
 
 /// Returns the glyph ID ranges for all word characters in the font, sorted and merged. Including:
@@ -121,31 +91,6 @@ fn best_cmap<'a>(font: &'a FontRef<'a>) -> Result<Option<CmapSubtable<'a>>, Morp
     }
 
     Ok(None)
-}
-
-fn collect_mapped_glyphs(cmap: &CmapSubtable<'_>, mapped: &mut [bool]) {
-    let glyph_ids = match cmap {
-        CmapSubtable::Format0(_) => {
-            Box::new(std::iter::empty()) as Box<dyn Iterator<Item = read_fonts::types::GlyphId>>
-        }
-        CmapSubtable::Format4(subtable) => Box::new(subtable.iter().map(|(_, glyph)| glyph)),
-        CmapSubtable::Format6(subtable) => Box::new(subtable.iter().map(|(_, glyph)| glyph)),
-        CmapSubtable::Format10(subtable) => Box::new(subtable.iter().map(|(_, glyph)| glyph)),
-        CmapSubtable::Format12(subtable) => Box::new(subtable.iter().map(|(_, glyph)| glyph)),
-        CmapSubtable::Format13(subtable) => Box::new(subtable.iter().map(|(_, glyph)| glyph)),
-        _ => Box::new(std::iter::empty()),
-    };
-
-    let unique_glyphs = glyph_ids
-        .map(|glyph: read_fonts::types::GlyphId| glyph.to_u32())
-        .collect::<BTreeSet<_>>();
-    for glyph in unique_glyphs {
-        if let Ok(index) = usize::try_from(glyph)
-            && index < mapped.len()
-        {
-            mapped[index] = true;
-        }
-    }
 }
 
 fn resolve_glyphs(cmap: &CmapSubtable<'_>, word: &str) -> Result<Vec<GlyphId16>, MorphError> {

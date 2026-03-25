@@ -136,6 +136,10 @@ pub trait Morphio {
     ///
     /// If multiple fonts are present (e.g. in a TTC), all fonts will be patched.
     ///
+    /// ## Note
+    ///
+    /// If the `from_word` and `to_word` have different numbers of glyphs, and none of the numbers is 1, an empty placeholder glyph will be appended to the font.
+    ///
     /// ## Errors
     ///
     /// See the [`MorphError`] enum for possible error cases.
@@ -149,6 +153,10 @@ pub trait Morphio {
     /// - Must be fully supported by the font (i.e. all glyphs must be present)
     ///
     /// If multiple fonts are present (e.g. in a TTC), all fonts will be patched.
+    ///
+    /// ## Note
+    ///
+    /// If the `from_word` and `to_word` have different numbers of glyphs, and none of the numbers is 1, an empty placeholder glyph will be appended to the font.
     ///
     /// ## Errors
     ///
@@ -205,7 +213,7 @@ fn morph_font(
     let glyph_patch = if from_glyphs.len() == to_glyphs.len() {
         None
     } else {
-        Some(ensure_placeholder_glyph(&font, &from_glyphs, &to_glyphs)?)
+        Some(append_empty_placeholder_glyph(&font)?)
     };
     let placeholder = glyph_patch.as_ref().map(|patch| patch.placeholder);
     let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs, placeholder, options)?;
@@ -240,25 +248,6 @@ struct InsertedGlyphTables {
     loca: Loca,
 }
 
-fn ensure_placeholder_glyph(
-    font: &FontRef<'_>,
-    from_glyphs: &[read_fonts::types::GlyphId16],
-    to_glyphs: &[read_fonts::types::GlyphId16],
-) -> Result<GlyphPatch, MorphError> {
-    let mut reserved = Vec::with_capacity(from_glyphs.len() + to_glyphs.len());
-    reserved.extend_from_slice(from_glyphs);
-    reserved.extend_from_slice(to_glyphs);
-
-    if let Some(placeholder) = font::find_unused_glyph(font, &reserved)? {
-        return Ok(GlyphPatch {
-            placeholder,
-            inserted_tables: None,
-        });
-    }
-
-    append_empty_placeholder_glyph(font)
-}
-
 fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, MorphError> {
     let mut head: Head = font.head()?.to_owned_table();
     let mut hhea: Hhea = font.hhea()?.to_owned_table();
@@ -273,9 +262,7 @@ fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, Morp
     let mut glyf_builder = GlyfLocaBuilder::new();
     for glyph_id in 0..num_glyphs {
         let glyph = read_loca.get_glyf(GlyphId::new(u32::from(glyph_id)), &read_glyf)?;
-        let glyph = glyph
-            .as_ref()
-            .map_or(Glyph::Empty, Glyph::from_table_ref);
+        let glyph = glyph.as_ref().map_or(Glyph::Empty, Glyph::from_table_ref);
         glyf_builder.add_glyph(&glyph)?;
     }
     glyf_builder.add_glyph(&Glyph::Empty)?;
@@ -290,7 +277,10 @@ fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, Morp
         .number_of_h_metrics
         .checked_add(1)
         .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-    head.index_to_loc_format = i16::from(matches!(loca_format, write_fonts::tables::loca::LocaFormat::Long));
+    head.index_to_loc_format = i16::from(matches!(
+        loca_format,
+        write_fonts::tables::loca::LocaFormat::Long
+    ));
 
     Ok(GlyphPatch {
         placeholder,
