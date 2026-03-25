@@ -16,9 +16,15 @@ struct Args {
     /// output font file path
     #[argh(option, short = 'o')]
     output: PathBuf,
-    /// disable word match
+    /// disable both start and end word matching
     #[argh(switch, short = 'm')]
     no_word_match: bool,
+    /// disable word matching at the start of the source word
+    #[argh(switch)]
+    no_word_match_start: bool,
+    /// disable word matching at the end of the source word
+    #[argh(switch)]
+    no_word_match_end: bool,
     /// allow overwrite output file if it exists
     #[argh(switch, short = 'y')]
     yes: bool,
@@ -30,7 +36,8 @@ struct Args {
 impl Args {
     fn to_morph_options(&self) -> MorphOptions {
         MorphOptions {
-            word_match: !self.no_word_match,
+            word_match_start: !(self.no_word_match || self.no_word_match_start),
+            word_match_end: !(self.no_word_match || self.no_word_match_end),
         }
     }
 }

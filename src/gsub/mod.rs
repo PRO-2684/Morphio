@@ -36,8 +36,13 @@ pub fn patch_gsub(
     options: &MorphOptions,
 ) -> Result<Gsub, MorphError> {
     let mut gsub = load_gsub(font)?;
-    let lookup_indices =
-        append_word_substitution_lookups(font, &mut gsub, rules, options.word_match)?;
+    let lookup_indices = append_word_substitution_lookups(
+        font,
+        &mut gsub,
+        rules,
+        options.word_match_start,
+        options.word_match_end,
+    )?;
     let feature_index = ensure_feature(&mut gsub, CALT_TAG, &lookup_indices)?;
     ensure_script_feature(&mut gsub, DFLT_TAG, feature_index);
     ensure_script_feature(&mut gsub, LATN_TAG, feature_index);
@@ -60,9 +65,10 @@ fn append_word_substitution_lookups(
     font: &FontRef<'_>,
     gsub: &mut Gsub,
     rules: &[ResolvedMorphRule],
-    word_match: bool,
+    word_match_start: bool,
+    word_match_end: bool,
 ) -> Result<Vec<u16>, MorphError> {
-    let word_glyph_ranges = if word_match {
+    let word_glyph_ranges = if word_match_start || word_match_end {
         word_glyph_ranges(font)?
     } else {
         Vec::new()
@@ -77,6 +83,8 @@ fn append_word_substitution_lookups(
                 &rule.from_glyphs,
                 &rule.to_glyphs,
                 word_glyph_ranges.clone(),
+                word_match_start,
+                word_match_end,
             )?);
         } else {
             let placeholder = if rule.from_glyphs.len() > 1 && rule.to_glyphs.len() > 1 {
@@ -91,6 +99,8 @@ fn append_word_substitution_lookups(
                 &rule.to_glyphs,
                 placeholder,
                 word_glyph_ranges.clone(),
+                word_match_start,
+                word_match_end,
             )?);
         }
     }
@@ -108,30 +118,36 @@ fn create_contextual_lookup(
     from_glyphs: &[GlyphId16],
     word_glyph_ranges: Vec<RangeRecord>,
     sequence_records: Vec<SequenceLookupRecord>,
+    word_match_start: bool,
+    word_match_end: bool,
 ) -> SubstitutionLookup {
     let input_coverages = exact_coverages(from_glyphs);
     let mut subtables: Vec<SubstitutionChainContext> = Vec::new();
 
-    if !word_glyph_ranges.is_empty() {
+    if word_match_start || word_match_end {
         let word_coverage = CoverageTable::format_2(word_glyph_ranges);
-        subtables.push(
-            ChainedSequenceContext::format_3(
-                vec![word_coverage.clone()],
-                input_coverages.clone(),
-                Vec::new(),
-                Vec::new(),
-            )
-            .into(),
-        );
-        subtables.push(
-            ChainedSequenceContext::format_3(
-                Vec::new(),
-                input_coverages.clone(),
-                vec![word_coverage],
-                Vec::new(),
-            )
-            .into(),
-        );
+        if word_match_start {
+            subtables.push(
+                ChainedSequenceContext::format_3(
+                    vec![word_coverage.clone()],
+                    input_coverages.clone(),
+                    Vec::new(),
+                    Vec::new(),
+                )
+                .into(),
+            );
+        }
+        if word_match_end {
+            subtables.push(
+                ChainedSequenceContext::format_3(
+                    Vec::new(),
+                    input_coverages.clone(),
+                    vec![word_coverage],
+                    Vec::new(),
+                )
+                .into(),
+            );
+        }
     }
 
     subtables.push(

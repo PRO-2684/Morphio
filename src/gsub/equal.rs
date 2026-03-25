@@ -14,6 +14,8 @@ pub fn append_equal_length_lookups(
     from_glyphs: &[GlyphId16],
     to_glyphs: &[GlyphId16],
     word_glyph_ranges: Vec<RangeRecord>,
+    word_match_start: bool,
+    word_match_end: bool,
 ) -> Result<Vec<u16>, MorphError> {
     let mut pair_lookup_indices = BTreeMap::new();
     let mut sequence_records = Vec::new();
@@ -35,8 +37,13 @@ pub fn append_equal_length_lookups(
         sequence_records.push(SequenceLookupRecord::new(sequence_index, lookup_index));
     }
 
-    let contextual_lookup =
-        create_contextual_lookup(from_glyphs, word_glyph_ranges, sequence_records);
+    let contextual_lookup = create_contextual_lookup(
+        from_glyphs,
+        word_glyph_ranges,
+        sequence_records,
+        word_match_start,
+        word_match_end,
+    );
     let contextual_lookup_index = push_lookup(gsub, contextual_lookup)?;
 
     Ok(vec![contextual_lookup_index])

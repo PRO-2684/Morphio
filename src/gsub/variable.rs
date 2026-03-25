@@ -17,6 +17,8 @@ pub fn append_variable_length_lookups(
     to_glyphs: &[GlyphId16],
     placeholder: GlyphId16,
     word_glyph_ranges: Vec<RangeRecord>,
+    word_match_start: bool,
+    word_match_end: bool,
 ) -> Result<Vec<u16>, MorphError> {
     if matches!(from_glyphs, [_, ..]) && matches!(to_glyphs, [_]) {
         let collapse_lookup = create_ligature_substitution_lookup(from_glyphs, to_glyphs[0]);
@@ -27,6 +29,8 @@ pub fn append_variable_length_lookups(
                 from_glyphs,
                 word_glyph_ranges,
                 vec![SequenceLookupRecord::new(0, collapse_lookup_index)],
+                word_match_start,
+                word_match_end,
             ),
         )?;
         return Ok(vec![collapse_context_index]);
@@ -41,6 +45,8 @@ pub fn append_variable_length_lookups(
                 from_glyphs,
                 word_glyph_ranges,
                 vec![SequenceLookupRecord::new(0, expand_lookup_index)],
+                word_match_start,
+                word_match_end,
             ),
         )?;
         return Ok(vec![expand_context_index]);
@@ -50,24 +56,28 @@ pub fn append_variable_length_lookups(
     let collapse_lookup_index = push_lookup(gsub, collapse_lookup)?;
     let collapse_context_index = push_lookup(
         gsub,
-        create_contextual_lookup(
-            from_glyphs,
-            word_glyph_ranges.clone(),
-            vec![SequenceLookupRecord::new(0, collapse_lookup_index)],
-        ),
-    )?;
+            create_contextual_lookup(
+                from_glyphs,
+                word_glyph_ranges.clone(),
+                vec![SequenceLookupRecord::new(0, collapse_lookup_index)],
+                word_match_start,
+                word_match_end,
+            ),
+        )?;
 
     let expand_input = std::slice::from_ref(&placeholder);
     let expand_lookup = create_multiple_substitution_lookup(placeholder, to_glyphs);
     let expand_lookup_index = push_lookup(gsub, expand_lookup)?;
     let expand_context_index = push_lookup(
         gsub,
-        create_contextual_lookup(
-            expand_input,
-            word_glyph_ranges,
-            vec![SequenceLookupRecord::new(0, expand_lookup_index)],
-        ),
-    )?;
+            create_contextual_lookup(
+                expand_input,
+                word_glyph_ranges,
+                vec![SequenceLookupRecord::new(0, expand_lookup_index)],
+                word_match_start,
+                word_match_end,
+            ),
+        )?;
 
     Ok(vec![collapse_context_index, expand_context_index])
 }

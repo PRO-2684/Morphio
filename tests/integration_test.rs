@@ -1,4 +1,4 @@
-use morphio::{MorphError, MorphRule, Morphio};
+use morphio::{MorphError, MorphOptions, MorphRule, Morphio};
 use read_fonts::{FileRef, FontRef, TableProvider, types::Tag};
 use std::fs::read;
 
@@ -249,4 +249,32 @@ fn supports_multiple_rules_in_collection_with_placeholder() {
             "vmtx should cover every glyph after placeholder insertion",
         );
     }
+}
+
+#[test]
+fn supports_disabling_start_word_match_only() {
+    let bytes = impact_bytes();
+    let font = FontRef::new(&bytes).expect("impact fixture should parse");
+    let morphed = font
+        .morph_with_options("banana", "orange", &MorphOptions::new(false, true))
+        .expect("start-only relaxed morph should succeed");
+
+    assert!(
+        FontRef::new(&morphed).is_ok(),
+        "morphed font should remain parseable"
+    );
+}
+
+#[test]
+fn supports_disabling_end_word_match_only() {
+    let bytes = impact_bytes();
+    let font = FontRef::new(&bytes).expect("impact fixture should parse");
+    let morphed = font
+        .morph_with_options("banana", "orange", &MorphOptions::new(true, false))
+        .expect("end-only relaxed morph should succeed");
+
+    assert!(
+        FontRef::new(&morphed).is_ok(),
+        "morphed font should remain parseable"
+    );
 }

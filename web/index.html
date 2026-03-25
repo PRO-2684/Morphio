@@ -68,14 +68,23 @@
             <details class="advanced-settings">
                 <summary>Advanced settings</summary>
                 <div class="advanced-body">
-                    <label class="checkbox-row" for="word-match">
-                        <input id="word-match" type="checkbox" checked />
+                    <label class="checkbox-row" for="word-match-start">
+                        <input id="word-match-start" type="checkbox" checked />
                         <span>
-                            Enable word match
+                            Match word start
                             <small
-                                >Only morph whole-word matches instead of
-                                applying substitutions inside larger
-                                words.</small
+                                >Require a word boundary before the source
+                                word.</small
+                            >
+                        </span>
+                    </label>
+                    <label class="checkbox-row" for="word-match-end">
+                        <input id="word-match-end" type="checkbox" checked />
+                        <span>
+                            Match word end
+                            <small
+                                >Require a word boundary after the source
+                                word.</small
                             >
                         </span>
                     </label>

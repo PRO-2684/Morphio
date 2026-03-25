@@ -19,7 +19,8 @@ const elements = {
     ruleList: document.querySelector("#rule-list"),
     ruleTemplate: document.querySelector("#morph-rule-template"),
     addRuleButton: document.querySelector("#add-rule-button"),
-    wordMatch: document.querySelector("#word-match"),
+    wordMatchStart: document.querySelector("#word-match-start"),
+    wordMatchEnd: document.querySelector("#word-match-end"),
     status: document.querySelector("#status"),
     statusText: document.querySelector("#status-text"),
     sourcePreview: document.querySelector("#source-preview"),
@@ -102,7 +103,10 @@ async function morphCurrentFont() {
 
     try {
         await nextFrame();
-        const options = new MorphOptions(elements.wordMatch.checked);
+        const options = new MorphOptions(
+            elements.wordMatchStart.checked,
+            elements.wordMatchEnd.checked,
+        );
         const morphed = morphFontMany(
             state.sourceBytes,
             collectRules(),

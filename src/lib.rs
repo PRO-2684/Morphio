@@ -110,17 +110,30 @@ use write_fonts::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct MorphOptions {
-    /// Whether to enable word matching.
+    /// Whether to require a word boundary before the matched source word.
     ///
     /// ## Example
     ///
-    /// Say we want to morph "banana" to "orange". With word match enabled, "bananas" won't be affected; with it disabled, "bananas" will be rendered as "oranges".
-    pub word_match: bool,
+    /// Say we want to morph "banana" to "orange". With start matching enabled,
+    /// `xbanana` will not be affected; with it disabled, `xbanana` can be
+    /// rendered as `xorange`.
+    pub word_match_start: bool,
+    /// Whether to require a word boundary after the matched source word.
+    ///
+    /// ## Example
+    ///
+    /// Say we want to morph "banana" to "orange". With end matching enabled,
+    /// `bananas` will not be affected; with it disabled, `bananas` can be
+    /// rendered as `oranges`.
+    pub word_match_end: bool,
 }
 
 impl Default for MorphOptions {
     fn default() -> Self {
-        Self { word_match: true }
+        Self {
+            word_match_start: true,
+            word_match_end: true,
+        }
     }
 }
 
@@ -133,8 +146,11 @@ impl MorphOptions {
         clippy::missing_const_for_fn,
         reason = "wasm_bindgen doesn't support const fns"
     )]
-    pub fn new(word_match: bool) -> Self {
-        Self { word_match }
+    pub fn new(word_match_start: bool, word_match_end: bool) -> Self {
+        Self {
+            word_match_start,
+            word_match_end,
+        }
     }
 }
 
