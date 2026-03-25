@@ -83,17 +83,17 @@ mod ttc;
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 pub use error::MorphError;
-use read_fonts::{FileRef, FontRef, TableProvider};
+use read_fonts::{FileRef, FontRef, TableProvider, types::GlyphId16};
 use ttc::build_ttc;
 use write_fonts::{
     FontBuilder,
     from_obj::{FromTableRef, ToOwnedTable},
     tables::{
-        glyf::{GlyfLocaBuilder, Glyph},
+        glyf::{Glyf, GlyfLocaBuilder, Glyph},
         head::Head,
         hhea::Hhea,
         hmtx::{Hmtx, LongMetric},
-        loca::Loca,
+        loca::{Loca, LocaFormat},
         maxp::Maxp,
     },
     types::GlyphId,
@@ -235,7 +235,7 @@ fn morph_font(
 }
 
 struct GlyphPatch {
-    placeholder: read_fonts::types::GlyphId16,
+    placeholder: GlyphId16,
     inserted_tables: Option<InsertedGlyphTables>,
 }
 
@@ -244,7 +244,7 @@ struct InsertedGlyphTables {
     hhea: Hhea,
     hmtx: Hmtx,
     maxp: Maxp,
-    glyf: write_fonts::tables::glyf::Glyf,
+    glyf: Glyf,
     loca: Loca,
 }
 
@@ -277,10 +277,7 @@ fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, Morp
         .number_of_h_metrics
         .checked_add(1)
         .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-    head.index_to_loc_format = i16::from(matches!(
-        loca_format,
-        write_fonts::tables::loca::LocaFormat::Long
-    ));
+    head.index_to_loc_format = i16::from(matches!(loca_format, LocaFormat::Long));
 
     Ok(GlyphPatch {
         placeholder,
