@@ -4,7 +4,10 @@ mod equal;
 mod feature;
 mod variable;
 
-use super::{MorphError, MorphOptions, font::word_glyph_ranges};
+use super::{
+    MorphError, MorphOptions,
+    font::{ResolvedMorphRule, word_glyph_ranges},
+};
 use equal::append_equal_length_lookups;
 use feature::{ensure_feature, ensure_script_feature};
 use read_fonts::{
@@ -29,18 +32,16 @@ const LATN_TAG: Tag = Tag::new(b"latn");
 
 pub fn patch_gsub(
     font: &FontRef<'_>,
-    from_glyphs: &[GlyphId16],
-    to_glyphs: &[GlyphId16],
-    placeholder: Option<GlyphId16>,
+    rules: &[ResolvedMorphRule],
+    placeholders: &[GlyphId16],
     options: &MorphOptions,
 ) -> Result<Gsub, MorphError> {
     let mut gsub = load_gsub(font)?;
     let lookup_indices = append_word_substitution_lookups(
         font,
         &mut gsub,
-        from_glyphs,
-        to_glyphs,
-        placeholder,
+        rules,
+        placeholders,
         options.word_match,
     )?;
     let feature_index = ensure_feature(&mut gsub, CALT_TAG, &lookup_indices)?;
@@ -64,9 +65,8 @@ fn load_gsub(font: &FontRef<'_>) -> Result<Gsub, MorphError> {
 fn append_word_substitution_lookups(
     font: &FontRef<'_>,
     gsub: &mut Gsub,
-    from_glyphs: &[GlyphId16],
-    to_glyphs: &[GlyphId16],
-    placeholder: Option<GlyphId16>,
+    rules: &[ResolvedMorphRule],
+    placeholders: &[GlyphId16],
     word_match: bool,
 ) -> Result<Vec<u16>, MorphError> {
     let word_glyph_ranges = if word_match {
@@ -75,12 +75,36 @@ fn append_word_substitution_lookups(
         Vec::new()
     };
 
-    if from_glyphs.len() == to_glyphs.len() {
-        append_equal_length_lookups(gsub, from_glyphs, to_glyphs, word_glyph_ranges)
-    } else {
-        let placeholder = placeholder.ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-        append_variable_length_lookups(gsub, from_glyphs, to_glyphs, placeholder, word_glyph_ranges)
+    let mut lookup_indices = Vec::new();
+    let mut placeholder_iter = placeholders.iter().copied();
+
+    for rule in rules {
+        if rule.from_glyphs.len() == rule.to_glyphs.len() {
+            lookup_indices.extend(append_equal_length_lookups(
+                gsub,
+                &rule.from_glyphs,
+                &rule.to_glyphs,
+                word_glyph_ranges.clone(),
+            )?);
+        } else {
+            let placeholder = if rule.from_glyphs.len() > 1 && rule.to_glyphs.len() > 1 {
+                placeholder_iter
+                    .next()
+                    .ok_or(MorphError::UnsupportedPlaceholderGlyph)?
+            } else {
+                GlyphId16::NOTDEF
+            };
+            lookup_indices.extend(append_variable_length_lookups(
+                gsub,
+                &rule.from_glyphs,
+                &rule.to_glyphs,
+                placeholder,
+                word_glyph_ranges.clone(),
+            )?);
+        }
     }
+
+    Ok(lookup_indices)
 }
 
 fn create_single_substitution_lookup(src: GlyphId16, dst: GlyphId16) -> SubstitutionLookup {

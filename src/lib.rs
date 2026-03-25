@@ -30,6 +30,9 @@
 //! let morphed_font_data = font.morph("worda", "wordb").unwrap(); // Of type `Vec<u8>`, containing the bytes of the morphed font
 //! ```
 //!
+//! For multiple rules, use [`Morphio::morph_many`] with [`MorphRule`]. Rules are applied in the order provided.
+//! Chained or circular rule sets are not currently analyzed or rejected.
+//!
 //! ### Verifying the morphed font
 //!
 //! We can verify the result by trying to parse the morphed font and check the expected GSUB feature is present.
@@ -131,6 +134,23 @@ impl MorphOptions {
     }
 }
 
+/// A single morph rule.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MorphRule<'a> {
+    /// Source word.
+    pub from: &'a str,
+    /// Target word.
+    pub to: &'a str,
+}
+
+impl<'a> MorphRule<'a> {
+    /// Creates a new [`MorphRule`].
+    #[must_use]
+    pub const fn new(from: &'a str, to: &'a str) -> Self {
+        Self { from, to }
+    }
+}
+
 /// The main trait for "morphing" text.
 pub trait Morphio {
     /// Patch the font so it renders `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
@@ -148,7 +168,7 @@ pub trait Morphio {
     ///
     /// See the [`MorphError`] enum for possible error cases.
     fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
-        self.morph_with_options(from_word, to_word, &MorphOptions::default())
+        self.morph_many(&[MorphRule::new(from_word, to_word)])
     }
 
     /// Patch the font with options, so it renders `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
@@ -170,35 +190,58 @@ pub trait Morphio {
         from_word: &str,
         to_word: &str,
         options: &MorphOptions,
+    ) -> Result<Vec<u8>, MorphError> {
+        self.morph_many_with_options(&[MorphRule::new(from_word, to_word)], options)
+    }
+
+    /// Patch the font with multiple rules, returning the rebuilt font bytes.
+    ///
+    /// Rules are applied in the order provided. Chained or circular rule sets
+    /// are not currently analyzed or rejected.
+    fn morph_many(&self, rules: &[MorphRule<'_>]) -> Result<Vec<u8>, MorphError> {
+        self.morph_many_with_options(rules, &MorphOptions::default())
+    }
+
+    /// Patch the font with multiple rules and options, returning the rebuilt font bytes.
+    ///
+    /// Rules are applied in the order provided. Chained or circular rule sets
+    /// are not currently analyzed or rejected.
+    ///
+    /// ## Note
+    ///
+    /// For each rule where both the source and target have more than one glyph
+    /// and the lengths differ, an empty placeholder glyph will be appended to the font.
+    fn morph_many_with_options(
+        &self,
+        rules: &[MorphRule<'_>],
+        options: &MorphOptions,
     ) -> Result<Vec<u8>, MorphError>;
 }
 
 impl Morphio for FontRef<'_> {
-    fn morph_with_options(
+    fn morph_many_with_options(
         &self,
-        from_word: &str,
-        to_word: &str,
+        rules: &[MorphRule<'_>],
         options: &MorphOptions,
     ) -> Result<Vec<u8>, MorphError> {
-        morph_font(self.clone(), from_word, to_word, options)
+        morph_font(self.clone(), rules, options)
     }
 }
 
 impl Morphio for FileRef<'_> {
-    fn morph_with_options(
+    fn morph_many_with_options(
         &self,
-        from_word: &str,
-        to_word: &str,
+        rules: &[MorphRule<'_>],
         options: &MorphOptions,
     ) -> Result<Vec<u8>, MorphError> {
         match self {
-            Self::Font(font) => font.morph_with_options(from_word, to_word, options),
+            Self::Font(font) => font.morph_many_with_options(rules, options),
             Self::Collection(collection) => {
                 let fonts = collection
                     .iter()
                     .map(|font| font.map_err(MorphError::Read))
                     .map(|font| {
-                        font.and_then(|font| font.morph_with_options(from_word, to_word, options))
+                        font.and_then(|font| font.morph_many_with_options(rules, options))
                     })
                     .collect::<Result<Vec<_>, _>>()?;
                 Ok(build_ttc(fonts))
@@ -209,18 +252,27 @@ impl Morphio for FileRef<'_> {
 
 fn morph_font(
     font: FontRef<'_>,
-    from_word: &str,
-    to_word: &str,
+    rules: &[MorphRule<'_>],
     options: &MorphOptions,
 ) -> Result<Vec<u8>, MorphError> {
-    let (from_glyphs, to_glyphs) = font::word_to_glyphs(&font, from_word, to_word)?;
-    let glyph_patch = if from_glyphs.len() == to_glyphs.len() {
+    let resolved_rules = font::resolve_rules(&font, rules)?;
+    let placeholder_count = resolved_rules
+        .iter()
+        .filter(|rule| {
+            rule.from_glyphs.len() > 1
+                && rule.to_glyphs.len() > 1
+                && rule.from_glyphs.len() != rule.to_glyphs.len()
+        })
+        .count();
+    let glyph_patch = if placeholder_count == 0 {
         None
     } else {
-        Some(append_empty_placeholder_glyph(&font)?)
+        Some(append_empty_placeholder_glyphs(&font, placeholder_count)?)
     };
-    let placeholder = glyph_patch.as_ref().map(|patch| patch.placeholder);
-    let gsub = gsub::patch_gsub(&font, &from_glyphs, &to_glyphs, placeholder, options)?;
+    let placeholders = glyph_patch
+        .as_ref()
+        .map_or(&[][..], |patch| patch.placeholders.as_slice());
+    let gsub = gsub::patch_gsub(&font, &resolved_rules, placeholders, options)?;
 
     let mut builder = FontBuilder::new();
     builder.add_table(&gsub)?;
@@ -239,7 +291,7 @@ fn morph_font(
 }
 
 struct GlyphPatch {
-    placeholder: GlyphId16,
+    placeholders: Vec<GlyphId16>,
     inserted_tables: Option<InsertedGlyphTables>,
 }
 
@@ -252,7 +304,10 @@ struct InsertedGlyphTables {
     loca: Loca,
 }
 
-fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, MorphError> {
+fn append_empty_placeholder_glyphs(
+    font: &FontRef<'_>,
+    count: usize,
+) -> Result<GlyphPatch, MorphError> {
     let mut head: Head = font.head()?.to_owned_table();
     let mut hhea: Hhea = font.hhea()?.to_owned_table();
     let mut hmtx: Hmtx = font.hmtx()?.to_owned_table();
@@ -261,7 +316,15 @@ fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, Morp
     let read_glyf = font.glyf()?;
 
     let num_glyphs = maxp.num_glyphs;
-    let placeholder = read_fonts::types::GlyphId16::new(num_glyphs);
+    let count_u16 = u16::try_from(count).map_err(|_| MorphError::UnsupportedPlaceholderGlyph)?;
+    let placeholders = (0..count_u16)
+        .map(|offset| {
+            num_glyphs
+                .checked_add(offset)
+                .map(GlyphId16::new)
+                .ok_or(MorphError::UnsupportedPlaceholderGlyph)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
 
     let mut glyf_builder = GlyfLocaBuilder::new();
     for glyph_id in 0..num_glyphs {
@@ -269,22 +332,25 @@ fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, Morp
         let glyph = glyph.as_ref().map_or(Glyph::Empty, Glyph::from_table_ref);
         glyf_builder.add_glyph(&glyph)?;
     }
-    glyf_builder.add_glyph(&Glyph::Empty)?;
+    for _ in 0..count {
+        glyf_builder.add_glyph(&Glyph::Empty)?;
+    }
     let (glyf, loca, loca_format) = glyf_builder.build();
 
     maxp.num_glyphs = maxp
         .num_glyphs
-        .checked_add(1)
+        .checked_add(count_u16)
         .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-    hmtx.h_metrics.push(LongMetric::new(0, 0));
+    hmtx.h_metrics
+        .extend(std::iter::repeat_with(|| LongMetric::new(0, 0)).take(count));
     hhea.number_of_h_metrics = hhea
         .number_of_h_metrics
-        .checked_add(1)
+        .checked_add(count_u16)
         .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
     head.index_to_loc_format = i16::from(matches!(loca_format, LocaFormat::Long));
 
     Ok(GlyphPatch {
-        placeholder,
+        placeholders,
         inserted_tables: Some(InsertedGlyphTables {
             head,
             hhea,

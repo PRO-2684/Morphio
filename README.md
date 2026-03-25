@@ -52,7 +52,7 @@ Options:
 
 ## ✅ TODO
 
-- [ ] Allow morphing multiple words in one go
+- [x] Allow morphing multiple words in one go
 - [x] Allow morphing words with different lengths
 - [x] ServiceWorker
 - [x] Option for enabling/disabling word matching

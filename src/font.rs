@@ -10,6 +10,12 @@ use write_fonts::tables::layout::RangeRecord;
 
 use super::MorphError;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResolvedMorphRule {
+    pub from_glyphs: Vec<GlyphId16>,
+    pub to_glyphs: Vec<GlyphId16>,
+}
+
 /// The preferred order of `cmap` subtables to use when looking for a Unicode mapping. From [fonttools](https://github.com/fonttools/fonttools/blob/29a392f2b67be8ad0229a75e75893c8bd585d792/Lib/fontTools/ttLib/tables/_c_m_a_p.py#L82-L91).
 const CMAP_PREFERENCES: &[(PlatformId, u16)] = &[
     (PlatformId::Windows, 10),
@@ -22,20 +28,23 @@ const CMAP_PREFERENCES: &[(PlatformId, u16)] = &[
     (PlatformId::Unicode, 0),
 ];
 
-pub fn word_to_glyphs(
+pub fn resolve_rules(
     font: &FontRef<'_>,
-    from_word: &str,
-    to_word: &str,
-) -> Result<(Vec<GlyphId16>, Vec<GlyphId16>), MorphError> {
-    if from_word.is_empty() || to_word.is_empty() {
-        return Err(MorphError::EmptyWord);
-    }
-
+    rules: &[super::MorphRule<'_>],
+) -> Result<Vec<ResolvedMorphRule>, MorphError> {
     let cmap = best_cmap(font)?.ok_or(MorphError::MissingCmap)?;
-    Ok((
-        resolve_glyphs(&cmap, from_word)?,
-        resolve_glyphs(&cmap, to_word)?,
-    ))
+    rules
+        .iter()
+        .map(|rule| {
+            if rule.from.is_empty() || rule.to.is_empty() {
+                return Err(MorphError::EmptyWord);
+            }
+            Ok(ResolvedMorphRule {
+                from_glyphs: resolve_glyphs(&cmap, rule.from)?,
+                to_glyphs: resolve_glyphs(&cmap, rule.to)?,
+            })
+        })
+        .collect()
 }
 
 /// Returns the glyph ID ranges for all word characters in the font, sorted and merged. Including:

@@ -1,4 +1,4 @@
-use morphio::{MorphError, Morphio};
+use morphio::{MorphError, MorphRule, Morphio};
 use read_fonts::{FileRef, FontRef, TableProvider, types::Tag};
 use std::fs::read;
 
@@ -178,4 +178,29 @@ fn impact_adds_calt_to_all_latin_langsys_records() {
             "every latn langsys should include calt",
         );
     }
+}
+
+#[test]
+fn supports_multiple_rules_in_one_pass() {
+    let bytes = impact_bytes();
+    let font = FontRef::new(&bytes).expect("impact fixture should parse");
+    let rules = [
+        MorphRule::new("banana", "orange"),
+        MorphRule::new("x", "yz"),
+    ];
+    let morphed = font
+        .morph_many(&rules)
+        .expect("multi-rule morph should succeed");
+
+    let rebuilt = FontRef::new(&morphed).expect("morphed font should parse");
+    let gsub = rebuilt.gsub().expect("patched font should contain GSUB");
+    let feature_list = gsub
+        .feature_list()
+        .expect("patched GSUB should contain a feature list");
+    let has_calt = feature_list
+        .feature_records()
+        .iter()
+        .any(|record| record.feature_tag() == Tag::new(b"calt"));
+
+    assert!(has_calt, "patched font should expose a calt feature");
 }
