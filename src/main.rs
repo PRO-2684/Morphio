@@ -1,5 +1,5 @@
 use argh::FromArgs;
-use morphio::{MorphOptions, Morphio};
+use morphio::{MorphOptions, MorphRule, Morphio};
 use read_fonts::FileRef;
 use std::{
     fs::{read, write},
@@ -10,12 +10,6 @@ use std::{
 #[derive(FromArgs)]
 #[argh(help_triggers("-h", "--help"))]
 struct Args {
-    /// word to morph from
-    #[argh(positional)]
-    from: String,
-    /// word to morph to
-    #[argh(positional)]
-    to: String,
     /// input font file path
     #[argh(option, short = 'i')]
     input: PathBuf,
@@ -28,6 +22,9 @@ struct Args {
     /// allow overwrite output file if it exists
     #[argh(switch, short = 'y')]
     yes: bool,
+    /// pairs of words to morph
+    #[argh(positional, greedy)]
+    pairs: Vec<String>,
 }
 
 impl Args {
@@ -46,8 +43,14 @@ fn main() {
     }
     let data = read(&args.input).expect("Failed to read input font file");
     let font = FileRef::new(&data).expect("Failed to parse font file");
+    let mut rules = Vec::new();
+    for pair in args.pairs.chunks_exact(2) {
+        let from = &pair[0];
+        let to = &pair[1];
+        rules.push(MorphRule { from, to });
+    }
     let morphed = font
-        .morph_with_options(&args.from, &args.to, &args.to_morph_options())
+        .morph_many_with_options(&rules, &args.to_morph_options())
         .expect("Failed to morph font");
     write(&args.output, morphed).expect("Failed to write output font file");
 }

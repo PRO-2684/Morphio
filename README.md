@@ -35,17 +35,15 @@ cargo install morphio
 
 ```shell
 $ morphio --help
-Usage: morphio -i <input> -o <output> [-y] [--] <from> <to>
+Usage: morphio -i <input> -o <output> [-m] [-y] [pairs...]
 
 Morphio: Morphs the font, so it renders worda as wordb.
-
-Positional Arguments:
-  from              word to morph from
-  to                word to morph to
 
 Options:
   -i, --input       input font file path
   -o, --output      output font file path
+  -m, --no-word-match
+                    disable word match
   -y, --yes         allow overwrite output file if it exists
   -h, --help        display usage information
 ```
