@@ -136,6 +136,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "js-sys"
+version = "0.3.91"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b49715b7073f385ba4bc528e5747d02e66cb39c6146efb66b781f131f0fb399c"
+dependencies = [
+ "once_cell",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "kurbo"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -157,6 +167,7 @@ name = "morphio"
 version = "0.1.1"
 dependencies = [
  "argh",
+ "js-sys",
  "range-set-blaze",
  "read-fonts",
  "wasm-bindgen",

@@ -83,6 +83,8 @@ mod gsub;
 mod ttc;
 
 #[cfg(target_arch = "wasm32")]
+use js_sys::Array;
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 pub use error::MorphError;
@@ -450,5 +452,49 @@ pub fn morph_font_wasm(
 ) -> Result<Vec<u8>, JsValue> {
     let file = FileRef::new(font_data).map_err(|err| JsValue::from_str(&err.to_string()))?;
     file.morph_with_options(from_word, to_word, &options)
+        .map_err(|err| JsValue::from_str(&err.to_string()))
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(js_name = morphFontMany)]
+/// WebAssembly entry point that morphs the provided font bytes using multiple rules.
+pub fn morph_font_many_wasm(
+    font_data: &[u8],
+    rules: Array,
+    options: MorphOptions,
+) -> Result<Vec<u8>, JsValue> {
+    #[derive(Debug)]
+    struct OwnedMorphRule {
+        from: String,
+        to: String,
+    }
+
+    let owned_rules = rules
+        .iter()
+        .map(|entry| {
+            let pair = Array::from(&entry);
+            if pair.length() != 2 {
+                return Err(JsValue::from_str(
+                    "each morph rule must be a two-item array: [from, to]",
+                ));
+            }
+            let from = pair
+                .get(0)
+                .as_string()
+                .ok_or_else(|| JsValue::from_str("rule source must be a string"))?;
+            let to = pair
+                .get(1)
+                .as_string()
+                .ok_or_else(|| JsValue::from_str("rule target must be a string"))?;
+            Ok(OwnedMorphRule { from, to })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let rules = owned_rules
+        .iter()
+        .map(|rule| MorphRule::new(&rule.from, &rule.to))
+        .collect::<Vec<_>>();
+
+    let file = FileRef::new(font_data).map_err(|err| JsValue::from_str(&err.to_string()))?;
+    file.morph_many_with_options(&rules, &options)
         .map_err(|err| JsValue::from_str(&err.to_string()))
 }

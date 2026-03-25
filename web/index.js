@@ -1,4 +1,4 @@
-import init, { morphFont, MorphOptions } from "./wasm/morphio.js";
+import init, { morphFontMany, MorphOptions } from "./wasm/morphio.js";
 
 const ORIGINAL_FAMILY = "MorphioOriginalPreview";
 const MORPHED_FAMILY = "MorphioPreview";
@@ -16,8 +16,9 @@ const state = {
 
 const elements = {
     fileInput: document.querySelector("#font-file"),
-    fromWord: document.querySelector("#from-word"),
-    toWord: document.querySelector("#to-word"),
+    ruleList: document.querySelector("#rule-list"),
+    ruleTemplate: document.querySelector("#morph-rule-template"),
+    addRuleButton: document.querySelector("#add-rule-button"),
     wordMatch: document.querySelector("#word-match"),
     status: document.querySelector("#status"),
     statusText: document.querySelector("#status-text"),
@@ -57,6 +58,8 @@ async function boot() {
 
 function wireUi() {
     elements.fileInput.addEventListener("change", onFileChange);
+    elements.addRuleButton.addEventListener("click", addRuleRow);
+    elements.ruleList.addEventListener("click", onRuleListClick);
     elements.sourcePreview.addEventListener("input", mirrorPreviewText);
     elements.morphButton.addEventListener("click", morphCurrentFont);
     elements.downloadButton.addEventListener("click", downloadFont);
@@ -105,10 +108,9 @@ async function morphCurrentFont() {
     try {
         await nextFrame();
         const options = new MorphOptions(elements.wordMatch.checked);
-        const morphed = morphFont(
+        const morphed = morphFontMany(
             state.sourceBytes,
-            elements.fromWord.value,
-            elements.toWord.value,
+            collectRules(),
             options,
         );
 
@@ -232,6 +234,42 @@ function formatError(error) {
 
 function nextFrame() {
     return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+function addRuleRow() {
+    const fragment = elements.ruleTemplate.content.cloneNode(true);
+    elements.ruleList.append(fragment);
+}
+
+function onRuleListClick(event) {
+    const removeButton = event.target.closest(".remove-rule-button");
+    if (!removeButton) {
+        return;
+    }
+
+    removeButton.closest(".rule-row")?.remove();
+}
+
+function collectRules() {
+    const rows = Array.from(elements.ruleList.querySelectorAll(".rule-row"));
+    const rules = rows
+        .map((row) => ({
+            from: row.querySelector('[data-role="from"]').value.trim(),
+            to: row.querySelector('[data-role="to"]').value.trim(),
+        }))
+        .filter((rule) => rule.from || rule.to);
+
+    if (rules.length === 0) {
+        throw new Error("Add at least one morph rule.");
+    }
+
+    for (const rule of rules) {
+        if (!rule.from || !rule.to) {
+            throw new Error("Each morph rule must include both source and target words.");
+        }
+    }
+
+    return rules.map((rule) => [rule.from, rule.to]);
 }
 
 mirrorPreviewText();
