@@ -121,7 +121,8 @@ impl Default for MorphOptions {
 impl MorphOptions {
     /// Creates a new [`MorphOptions`].
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(constructor))]
-    pub fn new(word_match: bool) -> Self {
+    #[must_use]
+    pub const fn new(word_match: bool) -> Self {
         Self { word_match }
     }
 }
@@ -139,7 +140,7 @@ pub trait Morphio {
     ///
     /// See the [`MorphError`] enum for possible error cases.
     fn morph(&self, from_word: &str, to_word: &str) -> Result<Vec<u8>, MorphError> {
-        self.morph_with_options(from_word, to_word, &Default::default())
+        self.morph_with_options(from_word, to_word, &MorphOptions::default())
     }
 
     /// Patch the font with options, so it renders `from_word` as `to_word`, returning the rebuilt font bytes. Note that the two words:
@@ -274,8 +275,7 @@ fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, Morp
         let glyph = read_loca.get_glyf(GlyphId::new(u32::from(glyph_id)), &read_glyf)?;
         let glyph = glyph
             .as_ref()
-            .map(Glyph::from_table_ref)
-            .unwrap_or(Glyph::Empty);
+            .map_or(Glyph::Empty, Glyph::from_table_ref);
         glyf_builder.add_glyph(&glyph)?;
     }
     glyf_builder.add_glyph(&Glyph::Empty)?;
@@ -290,12 +290,7 @@ fn append_empty_placeholder_glyph(font: &FontRef<'_>) -> Result<GlyphPatch, Morp
         .number_of_h_metrics
         .checked_add(1)
         .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-    head.index_to_loc_format = if matches!(loca_format, write_fonts::tables::loca::LocaFormat::Long)
-    {
-        1
-    } else {
-        0
-    };
+    head.index_to_loc_format = i16::from(matches!(loca_format, write_fonts::tables::loca::LocaFormat::Long));
 
     Ok(GlyphPatch {
         placeholder,

@@ -90,7 +90,7 @@ pub fn word_glyph_ranges(font: &FontRef<'_>) -> Result<Vec<RangeRecord>, MorphEr
             None
         }
     });
-    let word_glyph_ranges = RangeSetBlaze::from_iter(word_glyph_id_iter);
+    let word_glyph_ranges: RangeSetBlaze<_> = word_glyph_id_iter.collect();
     let result = word_glyph_ranges
         .ranges()
         .scan(0, |coverage_index, r| {
@@ -140,10 +140,10 @@ fn collect_mapped_glyphs(cmap: &CmapSubtable<'_>, mapped: &mut [bool]) {
         .map(|glyph: read_fonts::types::GlyphId| glyph.to_u32())
         .collect::<BTreeSet<_>>();
     for glyph in unique_glyphs {
-        if let Ok(index) = usize::try_from(glyph) {
-            if index < mapped.len() {
-                mapped[index] = true;
-            }
+        if let Ok(index) = usize::try_from(glyph)
+            && index < mapped.len()
+        {
+            mapped[index] = true;
         }
     }
 }
