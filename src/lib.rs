@@ -122,7 +122,11 @@ impl MorphOptions {
     /// Creates a new [`MorphOptions`].
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(constructor))]
     #[must_use]
-    pub const fn new(word_match: bool) -> Self {
+    #[allow(
+        clippy::missing_const_for_fn,
+        reason = "wasm_bindgen doesn't support const fns"
+    )]
+    pub fn new(word_match: bool) -> Self {
         Self { word_match }
     }
 }
