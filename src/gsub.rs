@@ -121,6 +121,34 @@ fn append_variable_length_lookups(
     placeholder: GlyphId16,
     word_glyph_ranges: Vec<RangeRecord>,
 ) -> Result<Vec<u16>, MorphError> {
+    if from_glyphs.len() == 1 {
+        let expand_lookup = create_multiple_substitution_lookup(from_glyphs[0], to_glyphs);
+        let expand_lookup_index = push_lookup(gsub, expand_lookup)?;
+        let expand_context_index = push_lookup(
+            gsub,
+            create_contextual_lookup(
+                from_glyphs,
+                word_glyph_ranges,
+                vec![SequenceLookupRecord::new(0, expand_lookup_index)],
+            ),
+        )?;
+        return Ok(vec![expand_context_index]);
+    }
+
+    if to_glyphs.len() == 1 {
+        let collapse_lookup = create_ligature_substitution_lookup(from_glyphs, to_glyphs[0]);
+        let collapse_lookup_index = push_lookup(gsub, collapse_lookup)?;
+        let collapse_context_index = push_lookup(
+            gsub,
+            create_contextual_lookup(
+                from_glyphs,
+                word_glyph_ranges,
+                vec![SequenceLookupRecord::new(0, collapse_lookup_index)],
+            ),
+        )?;
+        return Ok(vec![collapse_context_index]);
+    }
+
     let collapse_lookup = match from_glyphs {
         [src] => create_single_substitution_lookup(*src, placeholder),
         _ => create_ligature_substitution_lookup(from_glyphs, placeholder),
