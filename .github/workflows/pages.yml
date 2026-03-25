@@ -49,6 +49,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           cargo binstall wasm-pack
       - name: Build WASM
         run: wasm-pack build --target web --no-pack
