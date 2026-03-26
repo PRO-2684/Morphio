@@ -193,7 +193,7 @@ fn morph_font(
     rules: &[MorphRule<'_>],
     options: &MorphOptions,
 ) -> Result<Vec<u8>, MorphError> {
-    let resolved_rules = font::resolve_rules(&font, rules)?;
+    let resolved_rules = font::resolve_rules(&font, rules, options.skip_missing_glyphs)?;
     let gsub = gsub::patch_gsub(&font, &resolved_rules, options)?;
 
     let mut builder = FontBuilder::new();

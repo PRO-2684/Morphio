@@ -34,6 +34,7 @@ fn main() {
     let options = MorphOptions {
         word_match_start: false, // We start with a backslash, so we don't need to match the start of a word
         word_match_end: true,
+        skip_missing_glyphs: false,
     };
     let recipe = Recipe { rules, options };
 

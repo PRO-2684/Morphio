@@ -35,18 +35,20 @@ const CMAP_PREFERENCES: &[(PlatformId, u16)] = &[
 pub fn resolve_rules(
     font: &FontRef<'_>,
     rules: &[super::MorphRule<'_>],
+    skip_missing_glyphs: bool,
 ) -> Result<Vec<ResolvedMorphRule>, MorphError> {
     let cmap = best_cmap(font)?.ok_or(MorphError::MissingCmap)?;
     rules
         .iter()
-        .map(|rule| {
+        .filter_map(|rule| {
             if rule.from.is_empty() || rule.to.is_empty() {
-                return Err(MorphError::EmptyWord);
+                return Some(Err(MorphError::EmptyWord));
             }
-            Ok(ResolvedMorphRule {
-                from_glyphs: resolve_glyphs(&cmap, rule.from)?,
-                to_glyphs: resolve_glyphs(&cmap, rule.to)?,
-            })
+            match resolve_rule(&cmap, rule) {
+                Ok(rule) => Some(Ok(rule)),
+                Err(MorphError::MissingGlyph(_)) if skip_missing_glyphs => None,
+                Err(err) => Some(Err(err)),
+            }
         })
         .collect()
 }
@@ -118,4 +120,14 @@ fn resolve_glyphs(cmap: &CmapSubtable<'_>, word: &str) -> Result<Vec<GlyphId16>,
             Ok(GlyphId16::new(glyph_u16))
         })
         .collect()
+}
+
+fn resolve_rule(
+    cmap: &CmapSubtable<'_>,
+    rule: &super::MorphRule<'_>,
+) -> Result<ResolvedMorphRule, MorphError> {
+    Ok(ResolvedMorphRule {
+        from_glyphs: resolve_glyphs(cmap, rule.from)?,
+        to_glyphs: resolve_glyphs(cmap, rule.to)?,
+    })
 }

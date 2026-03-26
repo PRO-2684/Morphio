@@ -29,6 +29,9 @@ struct Args {
     /// disable word matching at the end of the source word
     #[argh(switch)]
     no_word_match_end: bool,
+    /// skip rules that reference missing glyphs instead of failing
+    #[argh(switch)]
+    skip_missing_glyphs: bool,
     /// allow overwrite output file if it exists
     #[argh(switch, short = 'y')]
     yes: bool,
@@ -42,6 +45,7 @@ impl Args {
         MorphOptions {
             word_match_start: !(self.no_word_match || self.no_word_match_start),
             word_match_end: !(self.no_word_match || self.no_word_match_end),
+            skip_missing_glyphs: self.skip_missing_glyphs,
         }
     }
 

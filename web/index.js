@@ -27,6 +27,7 @@ const elements = {
     exportRecipeButton: document.querySelector("#export-recipe-button"),
     wordMatchStart: document.querySelector("#word-match-start"),
     wordMatchEnd: document.querySelector("#word-match-end"),
+    skipMissingGlyphs: document.querySelector("#skip-missing-glyphs"),
     status: document.querySelector("#status"),
     statusText: document.querySelector("#status-text"),
     sourcePreview: document.querySelector("#source-preview"),
@@ -114,6 +115,7 @@ async function morphCurrentFont() {
         const options = new MorphOptions(
             elements.wordMatchStart.checked,
             elements.wordMatchEnd.checked,
+            elements.skipMissingGlyphs.checked,
         );
         const morphed = morphFontMany(
             state.sourceBytes,
@@ -335,6 +337,7 @@ function exportRecipe() {
             new MorphOptions(
                 elements.wordMatchStart.checked,
                 elements.wordMatchEnd.checked,
+                elements.skipMissingGlyphs.checked,
             ),
         );
         const blob = new Blob([recipe], { type: "text/plain;charset=utf-8" });
@@ -353,6 +356,7 @@ function exportRecipe() {
 function applyRecipe(recipe) {
     elements.wordMatchStart.checked = recipe.options.word_match_start;
     elements.wordMatchEnd.checked = recipe.options.word_match_end;
+    elements.skipMissingGlyphs.checked = recipe.options.skip_missing_glyphs;
     elements.ruleList.innerHTML = "";
 
     if (recipe.rules.length === 0) {

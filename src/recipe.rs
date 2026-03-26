@@ -64,6 +64,7 @@ pub struct MorphOptions {
     /// Say we want to morph "banana" to "orange". With start matching enabled,
     /// `xbanana` will not be affected; with it disabled, `xbanana` can be
     /// rendered as `xorange`.
+    #[serde(default = "truthy")]
     pub word_match_start: bool,
     /// Whether to require a word boundary after the matched source word.
     ///
@@ -72,7 +73,11 @@ pub struct MorphOptions {
     /// Say we want to morph "banana" to "orange". With end matching enabled,
     /// `bananas` will not be affected; with it disabled, `bananas` can be
     /// rendered as `oranges`.
+    #[serde(default = "truthy")]
     pub word_match_end: bool,
+    /// Whether to skip rules that reference missing glyphs instead of failing.
+    #[serde(default = "falsy")]
+    pub skip_missing_glyphs: bool,
 }
 
 impl Default for MorphOptions {
@@ -80,6 +85,7 @@ impl Default for MorphOptions {
         Self {
             word_match_start: true,
             word_match_end: true,
+            skip_missing_glyphs: false,
         }
     }
 }
@@ -93,10 +99,11 @@ impl MorphOptions {
         clippy::missing_const_for_fn,
         reason = "wasm_bindgen doesn't support const fns"
     )]
-    pub fn new(word_match_start: bool, word_match_end: bool) -> Self {
+    pub fn new(word_match_start: bool, word_match_end: bool, skip_missing_glyphs: bool) -> Self {
         Self {
             word_match_start,
             word_match_end,
+            skip_missing_glyphs,
         }
     }
 }
@@ -136,4 +143,12 @@ impl OwnedMorphRule {
             to: to.into(),
         }
     }
+}
+
+const fn falsy() -> bool {
+    false
+}
+
+const fn truthy() -> bool {
+    true
 }
