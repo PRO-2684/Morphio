@@ -1,4 +1,4 @@
-import init, { morphFontMany, MorphOptions } from "./wasm/morphio.js";
+import init, { morphFont, MorphOptions } from "./wasm/morphio.js";
 
 const ORIGINAL_FAMILY = "MorphioOriginalPreview";
 const MORPHED_FAMILY = "MorphioPreview";
@@ -107,11 +107,7 @@ async function morphCurrentFont() {
             elements.wordMatchStart.checked,
             elements.wordMatchEnd.checked,
         );
-        const morphed = morphFontMany(
-            state.sourceBytes,
-            collectRules(),
-            options,
-        );
+        const morphed = morphFont(state.sourceBytes, collectRules(), options);
 
         state.outputBytes = morphed;
         applyPreviewFont(morphed);
@@ -264,7 +260,9 @@ function collectRules() {
 
     for (const rule of rules) {
         if (!rule.from || !rule.to) {
-            throw new Error("Each morph rule must include both source and target words.");
+            throw new Error(
+                "Each morph rule must include both source and target words.",
+            );
         }
     }
 

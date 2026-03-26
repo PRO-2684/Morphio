@@ -259,20 +259,6 @@ fn morph_font(
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen(js_name = morphFont)]
-/// WebAssembly entry point that morphs the provided font bytes and returns rebuilt font data.
-pub fn morph_font_wasm(
-    font_data: &[u8],
-    from_word: &str,
-    to_word: &str,
-    options: MorphOptions,
-) -> Result<Vec<u8>, JsValue> {
-    let file = FileRef::new(font_data).map_err(|err| JsValue::from_str(&err.to_string()))?;
-    file.morph_with_options(from_word, to_word, &options)
-        .map_err(|err| JsValue::from_str(&err.to_string()))
-}
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen(js_name = morphFontMany)]
 /// WebAssembly entry point that morphs the provided font bytes using multiple rules.
 pub fn morph_font_many_wasm(
     font_data: &[u8],
