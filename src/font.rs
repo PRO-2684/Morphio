@@ -17,9 +17,6 @@ pub struct ResolvedMorphRule {
     pub from_glyphs: Vec<GlyphId16>,
     /// Target glyph sequence to substitute.
     pub to_glyphs: Vec<GlyphId16>,
-    /// Placeholder glyph assigned to this rule when a many-to-many variable-length
-    /// rewrite requires an intermediate glyph.
-    pub placeholder: Option<GlyphId16>,
 }
 
 /// The preferred order of `cmap` subtables to use when looking for a Unicode mapping. From [fonttools](https://github.com/fonttools/fonttools/blob/29a392f2b67be8ad0229a75e75893c8bd585d792/Lib/fontTools/ttLib/tables/_c_m_a_p.py#L82-L91).
@@ -49,7 +46,6 @@ pub fn resolve_rules(
             Ok(ResolvedMorphRule {
                 from_glyphs: resolve_glyphs(&cmap, rule.from)?,
                 to_glyphs: resolve_glyphs(&cmap, rule.to)?,
-                placeholder: None,
             })
         })
         .collect()

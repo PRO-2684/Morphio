@@ -21,8 +21,6 @@ pub enum MorphError {
     Builder(BuilderError),
     /// An error occurred while writing a table.
     Write(WriteError),
-    /// The font could not accept a placeholder glyph.
-    UnsupportedPlaceholderGlyph,
 }
 
 impl MorphError {
@@ -43,9 +41,6 @@ impl fmt::Display for MorphError {
             Self::Read(err) => write!(f, "{err}"),
             Self::Builder(err) => write!(f, "failed to rebuild font: {}", err.inner),
             Self::Write(err) => write!(f, "failed to write font table: {err}"),
-            Self::UnsupportedPlaceholderGlyph => {
-                write!(f, "font could not accept a placeholder glyph")
-            }
         }
     }
 }

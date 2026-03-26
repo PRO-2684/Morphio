@@ -88,23 +88,9 @@ use js_sys::Array;
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 pub use error::MorphError;
-use read_fonts::{FileRef, FontRef, TableProvider, types::{GlyphId16, Tag}};
+use read_fonts::{FileRef, FontRef};
 use ttc::build_ttc;
-use write_fonts::{
-    FontBuilder,
-    from_obj::{FromTableRef, ToOwnedTable},
-    tables::{
-        glyf::{Glyf, GlyfLocaBuilder, Glyph},
-        head::Head,
-        hhea::Hhea,
-        hmtx::{Hmtx, LongMetric},
-        loca::{Loca, LocaFormat},
-        maxp::Maxp,
-        vhea::Vhea,
-        vmtx::{LongMetric as VLongMetric, Vmtx},
-    },
-    types::GlyphId,
-};
+use write_fonts::FontBuilder;
 
 /// Options for morphing a font.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -180,10 +166,6 @@ pub trait Morphio {
     ///
     /// If multiple fonts are present (e.g. in a TTC), all fonts will be patched.
     ///
-    /// ## Note
-    ///
-    /// If the `from_word` and `to_word` have different numbers of glyphs, and none of the numbers is 1, an empty placeholder glyph will be appended to the font.
-    ///
     /// ## Errors
     ///
     /// See the [`MorphError`] enum for possible error cases.
@@ -197,10 +179,6 @@ pub trait Morphio {
     /// - Must be fully supported by the font (i.e. all glyphs must be present)
     ///
     /// If multiple fonts are present (e.g. in a TTC), all fonts will be patched.
-    ///
-    /// ## Note
-    ///
-    /// If the `from_word` and `to_word` have different numbers of glyphs, and none of the numbers is 1, an empty placeholder glyph will be appended to the font.
     ///
     /// ## Errors
     ///
@@ -227,10 +205,6 @@ pub trait Morphio {
     /// Rules are applied in the order provided. Chained or circular rule sets
     /// are not currently analyzed or rejected.
     ///
-    /// ## Note
-    ///
-    /// For each rule where both the source and target have more than one glyph
-    /// and the lengths differ, an empty placeholder glyph will be appended to the font.
     fn morph_many_with_options(
         &self,
         rules: &[MorphRule<'_>],
@@ -260,9 +234,7 @@ impl Morphio for FileRef<'_> {
                 let fonts = collection
                     .iter()
                     .map(|font| font.map_err(MorphError::Read))
-                    .map(|font| {
-                        font.and_then(|font| font.morph_many_with_options(rules, options))
-                    })
+                    .map(|font| font.and_then(|font| font.morph_many_with_options(rules, options)))
                     .collect::<Result<Vec<_>, _>>()?;
                 Ok(build_ttc(fonts))
             }
@@ -275,186 +247,14 @@ fn morph_font(
     rules: &[MorphRule<'_>],
     options: &MorphOptions,
 ) -> Result<Vec<u8>, MorphError> {
-    let mut resolved_rules = font::resolve_rules(&font, rules)?;
-    let placeholder_count = resolved_rules
-        .iter()
-        .filter(|rule| {
-            rule.from_glyphs.len() > 1
-                && rule.to_glyphs.len() > 1
-                && rule.from_glyphs.len() != rule.to_glyphs.len()
-        })
-        .count();
-    let glyph_patch = if placeholder_count == 0 {
-        None
-    } else {
-        Some(append_empty_placeholder_glyphs(&font, placeholder_count)?)
-    };
-    if let Some(placeholders) = glyph_patch.as_ref().map(|patch| patch.placeholders.as_slice()) {
-        let mut placeholder_iter = placeholders.iter().copied();
-        for rule in &mut resolved_rules {
-            if rule.from_glyphs.len() > 1
-                && rule.to_glyphs.len() > 1
-                && rule.from_glyphs.len() != rule.to_glyphs.len()
-            {
-                rule.placeholder = Some(
-                    placeholder_iter
-                        .next()
-                        .ok_or(MorphError::UnsupportedPlaceholderGlyph)?,
-                );
-            }
-        }
-    }
+    let resolved_rules = font::resolve_rules(&font, rules)?;
     let gsub = gsub::patch_gsub(&font, &resolved_rules, options)?;
 
     let mut builder = FontBuilder::new();
     builder.add_table(&gsub)?;
-    if let Some(patch) = glyph_patch.and_then(|patch| patch.inserted_tables) {
-        builder
-            .add_table(&patch.head)?
-            .add_table(&patch.hhea)?
-            .add_table(&patch.hmtx)?
-            .add_table(&patch.maxp)?
-            .add_table(&patch.glyf)?
-            .add_table(&patch.loca)?;
-        if let Some(vhea) = &patch.vhea {
-            builder.add_table(vhea)?;
-        }
-        if let Some(vmtx) = &patch.vmtx {
-            builder.add_table(vmtx)?;
-        }
-        copy_font_tables_except(
-            &mut builder,
-            &font,
-            &[
-                Tag::new(b"GSUB"),
-                Tag::new(b"head"),
-                Tag::new(b"hhea"),
-                Tag::new(b"hmtx"),
-                Tag::new(b"maxp"),
-                Tag::new(b"loca"),
-                Tag::new(b"glyf"),
-                Tag::new(b"vhea"),
-                Tag::new(b"vmtx"),
-                Tag::new(b"hdmx"),
-                Tag::new(b"LTSH"),
-            ],
-        );
-    } else {
-        builder.copy_missing_tables(font);
-    }
+    builder.copy_missing_tables(font);
 
     Ok(builder.build())
-}
-
-/// Newly appended placeholder glyph data for a font rebuild.
-struct GlyphPatch {
-    /// Placeholder glyph IDs, in creation order.
-    placeholders: Vec<GlyphId16>,
-    /// Rebuilt tables required to persist the placeholder glyphs.
-    inserted_tables: Option<InsertedGlyphTables>,
-}
-
-/// Tables that must be replaced after appending glyphs to a TrueType font.
-struct InsertedGlyphTables {
-    head: Head,
-    hhea: Hhea,
-    hmtx: Hmtx,
-    maxp: Maxp,
-    glyf: Glyf,
-    loca: Loca,
-    vhea: Option<Vhea>,
-    vmtx: Option<Vmtx>,
-}
-
-/// Append `count` empty placeholder glyphs to the font and return the replacement tables.
-fn append_empty_placeholder_glyphs(
-    font: &FontRef<'_>,
-    count: usize,
-) -> Result<GlyphPatch, MorphError> {
-    let mut head: Head = font.head()?.to_owned_table();
-    let mut hhea: Hhea = font.hhea()?.to_owned_table();
-    let mut hmtx: Hmtx = font.hmtx()?.to_owned_table();
-    let mut maxp: Maxp = font.maxp()?.to_owned_table();
-    let read_loca = font.loca(None)?;
-    let read_glyf = font.glyf()?;
-    let mut vhea: Option<Vhea> = match font.data_for_tag(Tag::new(b"vhea")) {
-        Some(_) => Some(font.vhea()?.to_owned_table()),
-        None => None,
-    };
-    let mut vmtx: Option<Vmtx> = match font.data_for_tag(Tag::new(b"vmtx")) {
-        Some(_) => Some(font.vmtx()?.to_owned_table()),
-        None => None,
-    };
-
-    let num_glyphs = maxp.num_glyphs;
-    let count_u16 = u16::try_from(count).map_err(|_| MorphError::UnsupportedPlaceholderGlyph)?;
-    let placeholders = (0..count_u16)
-        .map(|offset| {
-            num_glyphs
-                .checked_add(offset)
-                .map(GlyphId16::new)
-                .ok_or(MorphError::UnsupportedPlaceholderGlyph)
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-
-    let mut glyf_builder = GlyfLocaBuilder::new();
-    for glyph_id in 0..num_glyphs {
-        let glyph = read_loca.get_glyf(GlyphId::new(u32::from(glyph_id)), &read_glyf)?;
-        let glyph = glyph.as_ref().map_or(Glyph::Empty, Glyph::from_table_ref);
-        glyf_builder.add_glyph(&glyph)?;
-    }
-    for _ in 0..count {
-        glyf_builder.add_glyph(&Glyph::Empty)?;
-    }
-    let (glyf, loca, loca_format) = glyf_builder.build();
-
-    maxp.num_glyphs = maxp
-        .num_glyphs
-        .checked_add(count_u16)
-        .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-    hmtx.h_metrics
-        .extend(std::iter::repeat_with(|| LongMetric::new(0, 0)).take(count));
-    hhea.number_of_h_metrics = hhea
-        .number_of_h_metrics
-        .checked_add(count_u16)
-        .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-    if let Some(vhea) = &mut vhea {
-        vhea.number_of_long_ver_metrics = vhea
-            .number_of_long_ver_metrics
-            .checked_add(count_u16)
-            .ok_or(MorphError::UnsupportedPlaceholderGlyph)?;
-    }
-    if let Some(vmtx) = &mut vmtx {
-        vmtx.v_metrics
-            .extend(std::iter::repeat_with(|| VLongMetric::new(0, 0)).take(count));
-    }
-    head.index_to_loc_format = i16::from(matches!(loca_format, LocaFormat::Long));
-
-    Ok(GlyphPatch {
-        placeholders,
-        inserted_tables: Some(InsertedGlyphTables {
-            head,
-            hhea,
-            hmtx,
-            maxp,
-            glyf,
-            loca,
-            vhea,
-            vmtx,
-        }),
-    })
-}
-
-fn copy_font_tables_except(builder: &mut FontBuilder<'_>, font: &FontRef<'_>, excluded: &[Tag]) {
-    for record in font.table_directory().table_records() {
-        let tag = record.tag();
-        if excluded.contains(&tag) {
-            continue;
-        }
-        if let Some(data) = font.table_data(tag) {
-            builder.add_raw(tag, data.as_bytes().to_vec());
-        }
-    }
 }
 
 #[cfg(target_arch = "wasm32")]

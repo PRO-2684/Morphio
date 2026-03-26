@@ -13,7 +13,10 @@ use read_fonts::{FontRef, types::Tag};
 /// Identical table payloads are shared across collection members, which keeps
 /// rebuilt TTCs much closer to the size characteristics of the original file.
 pub fn build_ttc(fonts: Vec<Vec<u8>>) -> Vec<u8> {
-    let fonts = fonts.iter().map(|font| parse_font(font)).collect::<Vec<_>>();
+    let fonts = fonts
+        .iter()
+        .map(|font| parse_font(font))
+        .collect::<Vec<_>>();
 
     let ttc_header_len = 12 + fonts.len() * 4;
     let mut directory_offsets = Vec::with_capacity(fonts.len());
@@ -122,8 +125,7 @@ fn write_font_directory(
             .expect("payload offset should have been assigned");
         ttc[record_offset..record_offset + 4].copy_from_slice(&table.tag.to_be_bytes());
         ttc[record_offset + 4..record_offset + 8].copy_from_slice(&table.checksum.to_be_bytes());
-        ttc[record_offset + 8..record_offset + 12]
-            .copy_from_slice(&payload_offset.to_be_bytes());
+        ttc[record_offset + 8..record_offset + 12].copy_from_slice(&payload_offset.to_be_bytes());
         ttc[record_offset + 12..record_offset + 16]
             .copy_from_slice(&(table.data.len() as u32).to_be_bytes());
         record_offset += 16;

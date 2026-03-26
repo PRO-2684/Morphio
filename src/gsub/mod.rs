@@ -87,17 +87,10 @@ fn append_word_substitution_lookups(
                 word_match_end,
             )?);
         } else {
-            let placeholder = if rule.from_glyphs.len() > 1 && rule.to_glyphs.len() > 1 {
-                rule.placeholder
-                    .ok_or(MorphError::UnsupportedPlaceholderGlyph)?
-            } else {
-                GlyphId16::NOTDEF
-            };
             lookup_indices.extend(append_variable_length_lookups(
                 gsub,
                 &rule.from_glyphs,
                 &rule.to_glyphs,
-                placeholder,
                 word_glyph_ranges.clone(),
                 word_match_start,
                 word_match_end,

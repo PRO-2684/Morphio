@@ -206,7 +206,7 @@ fn supports_multiple_rules_in_one_pass() {
 }
 
 #[test]
-fn supports_multiple_rules_in_collection_with_placeholder() {
+fn supports_multiple_rules_in_collection_with_unequal_lengths() {
     let bytes = msyh_bytes();
     let file = FileRef::new(&bytes).expect("fixture should parse");
     let rules = [
@@ -225,28 +225,17 @@ fn supports_multiple_rules_in_collection_with_placeholder() {
 
     for font in collection.iter() {
         let font = font.expect("collection member should parse");
-        let maxp = font.maxp().expect("patched font should contain maxp");
+        let gsub = font.gsub().expect("patched font should contain GSUB");
+        let feature_list = gsub
+            .feature_list()
+            .expect("patched GSUB should contain a feature list");
+        let has_calt = feature_list
+            .feature_records()
+            .iter()
+            .any(|record| record.feature_tag() == Tag::new(b"calt"));
         assert!(
-            font.table_data(Tag::new(b"LTSH")).is_none(),
-            "placeholder rebuild should drop stale LTSH",
-        );
-        assert!(
-            font.table_data(Tag::new(b"hdmx")).is_none(),
-            "placeholder rebuild should drop stale hdmx",
-        );
-
-        let vhea = font.vhea().expect("patched font should contain vhea");
-        let vmtx = font.vmtx().expect("patched font should contain vmtx");
-        let metric_count = vmtx.v_metrics().len() + vmtx.top_side_bearings().len();
-        assert_eq!(
-            usize::from(vhea.number_of_long_ver_metrics()),
-            vmtx.v_metrics().len(),
-            "vhea and vmtx should agree on long metric count",
-        );
-        assert_eq!(
-            usize::from(maxp.num_glyphs()),
-            metric_count,
-            "vmtx should cover every glyph after placeholder insertion",
+            has_calt,
+            "every collection font should expose a calt feature"
         );
     }
 }
