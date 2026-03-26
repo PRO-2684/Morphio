@@ -11,9 +11,9 @@ use super::{
     font::{ResolvedMorphRule, word_glyph_ranges},
 };
 use feature::{ensure_feature, ensure_script_feature};
-use n_to_n::append_n_to_n_lookups;
-use n_to_one::append_n_to_one_lookup;
-use one_to_n::append_one_to_n_lookup;
+use n_to_n::build_n_to_n_records;
+use n_to_one::build_n_to_one_record;
+use one_to_n::build_one_to_n_record;
 use one_to_one::SingleSubstitutionCache;
 use read_fonts::{
     FontRef, TableProvider, TopLevelTable,
@@ -82,98 +82,74 @@ fn append_word_substitution_lookups(
 
     for rule in rules {
         let mut single_cache = SingleSubstitutionCache::default();
+        let mut sequence_records = Vec::new();
 
         if rule.from_glyphs.len() == rule.to_glyphs.len() {
-            lookup_indices.extend(append_n_to_n_lookups(
+            sequence_records.extend(build_n_to_n_records(
                 gsub,
-                &rule.from_glyphs,
                 &rule.from_glyphs,
                 &rule.to_glyphs,
                 0,
                 &mut single_cache,
-                word_glyph_ranges.clone(),
-                word_match_start,
-                word_match_end,
             )?);
-            continue;
-        }
-
-        if rule.from_glyphs.len() == 1 {
-            lookup_indices.extend(append_one_to_n_lookup(
+        } else if rule.from_glyphs.len() == 1 {
+            sequence_records.push(build_one_to_n_record(
                 gsub,
-                &rule.from_glyphs,
                 0,
                 rule.from_glyphs[0],
                 &rule.to_glyphs,
-                word_glyph_ranges.clone(),
-                word_match_start,
-                word_match_end,
             )?);
-            continue;
-        }
-
-        if rule.to_glyphs.len() == 1 {
-            lookup_indices.extend(append_n_to_one_lookup(
+        } else if rule.to_glyphs.len() == 1 {
+            sequence_records.push(build_n_to_one_record(
                 gsub,
-                &rule.from_glyphs,
                 0,
                 &rule.from_glyphs,
                 rule.to_glyphs[0],
-                word_glyph_ranges.clone(),
-                word_match_start,
-                word_match_end,
             )?);
-            continue;
-        }
-
-        if rule.from_glyphs.len() < rule.to_glyphs.len() {
+        } else if rule.from_glyphs.len() < rule.to_glyphs.len() {
             let prefix_len = rule.from_glyphs.len() - 1;
-            lookup_indices.extend(append_n_to_n_lookups(
+            sequence_records.extend(build_n_to_n_records(
                 gsub,
-                &rule.from_glyphs,
                 &rule.from_glyphs[..prefix_len],
                 &rule.to_glyphs[..prefix_len],
                 0,
                 &mut single_cache,
-                word_glyph_ranges.clone(),
-                word_match_start,
-                word_match_end,
             )?);
-            lookup_indices.extend(append_one_to_n_lookup(
+            sequence_records.push(build_one_to_n_record(
                 gsub,
-                &rule.from_glyphs,
                 prefix_len,
                 rule.from_glyphs[prefix_len],
                 &rule.to_glyphs[prefix_len..],
-                word_glyph_ranges.clone(),
-                word_match_start,
-                word_match_end,
             )?);
+        } else {
+            let prefix_len = rule.to_glyphs.len() - 1;
+            sequence_records.extend(build_n_to_n_records(
+                gsub,
+                &rule.from_glyphs[..prefix_len],
+                &rule.to_glyphs[..prefix_len],
+                0,
+                &mut single_cache,
+            )?);
+            sequence_records.push(build_n_to_one_record(
+                gsub,
+                prefix_len,
+                &rule.from_glyphs[prefix_len..],
+                rule.to_glyphs[prefix_len],
+            )?);
+        }
+
+        if sequence_records.is_empty() {
             continue;
         }
 
-        let prefix_len = rule.to_glyphs.len() - 1;
-        lookup_indices.extend(append_n_to_n_lookups(
-            gsub,
+        let contextual_lookup = create_contextual_lookup(
             &rule.from_glyphs,
-            &rule.from_glyphs[..prefix_len],
-            &rule.to_glyphs[..prefix_len],
-            0,
-            &mut single_cache,
             word_glyph_ranges.clone(),
+            sequence_records,
             word_match_start,
             word_match_end,
-        )?);
-        lookup_indices.extend(append_n_to_one_lookup(
-            gsub,
-            &rule.from_glyphs,
-            prefix_len,
-            &rule.from_glyphs[prefix_len..],
-            rule.to_glyphs[prefix_len],
-            word_glyph_ranges.clone(),
-            word_match_start,
-            word_match_end,
-        )?);
+        );
+        lookup_indices.push(push_lookup(gsub, contextual_lookup)?);
     }
 
     Ok(lookup_indices)
