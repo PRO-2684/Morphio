@@ -53,6 +53,10 @@ Options:
 
 ## ✅ TODO
 
+- [ ] Actual shaping tests via [`harfrust`](https://github.com/harfbuzz/harfrust) (when it updates on crates.io to [use `read-fonts` 0.38.0](https://github.com/harfbuzz/harfrust/pull/348/changes#diff-40a9b26e08998f84bfd1780aef2fd166dc3c24c0ece4834f49622aedc2f0c1d7))
+    - [`UnicodeBuffer`](https://docs.rs/harfrust/latest/harfrust/struct.UnicodeBuffer.html)
+    - [`Shaper::shape`](https://docs.rs/harfrust/latest/harfrust/struct.Shaper.html#method.shape)
+    - [`GlyphBuffer`](https://docs.rs/harfrust/latest/harfrust/struct.GlyphBuffer.html)
 - [x] Recipe (configuration) support
     - Advanced settings
     - Morph rules
