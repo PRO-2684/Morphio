@@ -33,13 +33,15 @@ cargo install morphio
 
 ## 📖 Usage
 
+### 💻 CLI
+
 ```shell
 Morphio: Morphs the font, so it renders worda as wordb.
 
 Options:
   -i, --input       input font file path
   -o, --output      output font file path
-  --recipe          load morph rules and word matching options from a TOML
+  -r, --recipe      load morph rules and word matching options from a TOML
                     recipe file, ignoring command-line options
   -m, --no-word-match
                     disable both start and end word matching
@@ -47,9 +49,78 @@ Options:
                     disable word matching at the start of the source word
   --no-word-match-end
                     disable word matching at the end of the source word
+  --skip-missing-glyphs
+                    skip rules that reference missing glyphs instead of failing
   -y, --yes         allow overwrite output file if it exists
   -h, --help        display usage information
 ```
+
+Without a recipe file, pass rules as positional `FROM TO` pairs:
+
+```shell
+morphio -i input.ttf -o output.ttf banana orange from to
+```
+
+To relax word-boundary matching or skip unsupported rules:
+
+```shell
+morphio -i input.ttf -o output.ttf --no-word-match-end --skip-missing-glyphs banana orange
+```
+
+To drive the CLI from a [recipe file](#-recipes):
+
+```shell
+morphio -i input.ttf -o output.ttf -r tests/recipes/simple.toml
+```
+
+### 🌐 Web Interface
+
+The browser demo supports:
+
+- Uploading a font file
+- Adding multiple morph rules
+- Toggling advanced options:
+  - Match word start
+  - Match word end
+  - Skip missing glyphs
+- Previewing original and morphed text side by side
+- Downloading the morphed font
+- Importing and exporting recipe TOML files
+
+The web UI uses the same recipe format as the CLI and library.
+
+## 🧾 Recipes
+
+Recipes are TOML files that store:
+
+- Morph rules
+- Word-boundary matching options
+- Whether rules with missing glyphs should be skipped
+
+Example:
+
+```toml
+[options]
+word_match_start = true
+word_match_end = true
+skip_missing_glyphs = false
+
+[[rules]]
+from = "banana"
+to = "orange"
+
+[[rules]]
+from = "from"
+to = "to"
+```
+
+Notes:
+
+- `word_match_start = false` allows matches inside a longer word prefix, such as morphing `xbanana` to `xorange`.
+- `word_match_end = false` allows matches before a longer word suffix, such as morphing `bananas` to `oranges`.
+- `skip_missing_glyphs = true` ignores rules whose source or target characters are not present in the font instead of aborting the whole morph.
+
+You can find example recipes under [`tests/recipes`](tests/recipes).
 
 ## ✅ TODO
 
@@ -60,6 +131,7 @@ Options:
 - [x] Recipe (configuration) support
     - Advanced settings
     - Morph rules
+- [x] Skip rules with missing glyphs instead of failing
 - [x] Configure word matching of start and end of words separately
 - [x] Reduce TTC font sizes (table sharing?)
 - [x] Allow morphing multiple words in one go
