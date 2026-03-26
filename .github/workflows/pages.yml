@@ -43,11 +43,10 @@ jobs:
           echo "$HOME/.cargo/bin/:"
           ls $HOME/.cargo/bin/ || true
       - name: Install WASM Tools
-        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-          cargo binstall wasm-pack
+          cargo binstall wasm-pack --force
       - name: Build WASM
         run: wasm-pack build --target web --no-pack
       - name: Move Files
