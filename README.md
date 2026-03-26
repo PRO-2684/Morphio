@@ -48,11 +48,6 @@ Options:
   -h, --help        display usage information
 ```
 
-> [!NOTE]
-> For variable-length many-to-many morphs, Morphio appends empty placeholder glyphs to the font.
-> When this happens, some legacy glyph-count-dependent tables such as `LTSH` and `hdmx` may be dropped instead of rebuilt.
-> This is usually fine in modern browsers and text renderers, but very old rasterizers may render slightly differently.
-
 ## ✅ TODO
 
 - [ ] Recipe (configuration) support
@@ -75,6 +70,11 @@ Options:
     - Maybe an option for toggling which characters to consider as part of words?
 - [x] Bug fixes
     - [x] Might not work with fonts with multiple language records, e.g. `IMPACT.TTF`
+
+The following is of low priority, and may not get implemented:
+
+- Reuse 1 -> N and N -> 1 mappings
+- Determine "best split point", instead of just split in the end
 
 ## 🎉 Credits
 
