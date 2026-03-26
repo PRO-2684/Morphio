@@ -8,7 +8,7 @@
 [![Crates.io Total Downloads](https://img.shields.io/crates/d/morphio?logo=rust)](https://crates.io/crates/morphio)
 [![docs.rs](https://img.shields.io/docsrs/morphio?logo=rust)](https://docs.rs/morphio)
 
-Morphs the font, so it renders worda as wordb.
+Morphs the font, so one word renders as another.
 
 ## 📥 Installation
 
@@ -36,7 +36,7 @@ cargo install morphio
 ### 💻 CLI
 
 ```shell
-Morphio: Morphs the font, so it renders worda as wordb.
+Morphio: Morphs the font, so one word renders as another.
 
 Options:
   -i, --input       input font file path

@@ -7,7 +7,7 @@ use std::{
     path::PathBuf,
 };
 
-/// Morphio: Morphs the font, so it renders worda as wordb.
+/// Morphio: Morphs the font, so one word renders as another.
 #[derive(FromArgs)]
 #[argh(help_triggers("-h", "--help"))]
 struct Args {

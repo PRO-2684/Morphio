@@ -1,6 +1,6 @@
 //! # Morphio
 //!
-//! Morphs the font, so it renders worda as wordb.
+//! Morphs the font, so one word renders as another.
 //!
 //! ## Usage
 //!
@@ -245,7 +245,8 @@ pub fn morph_font_many_wasm(
 #[wasm_bindgen(js_name = parseRecipe)]
 /// WebAssembly entry point that parses a recipe TOML string into JS-friendly data.
 pub fn parse_recipe_wasm(recipe_toml: &str) -> Result<JsValue, JsValue> {
-    let recipe = Recipe::from_toml(recipe_toml).map_err(|err| JsValue::from_str(&err.to_string()))?;
+    let recipe =
+        Recipe::from_toml(recipe_toml).map_err(|err| JsValue::from_str(&err.to_string()))?;
     let result = Object::new();
     Reflect::set(
         &result,

@@ -1,7 +1,7 @@
 {
     "name": "Morphio",
     "short_name": "Morphio",
-    "description": "Morphs the font, so it renders worda as wordb",
+    "description": "Morphs the font, so one word renders as another",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
