@@ -84,7 +84,7 @@ mod recipe;
 mod ttc;
 
 #[cfg(target_arch = "wasm32")]
-use js_sys::Array;
+use js_sys::{Array, Object, Reflect};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
@@ -238,5 +238,59 @@ pub fn morph_font_many_wasm(
 
     let file = FileRef::new(font_data).map_err(|err| JsValue::from_str(&err.to_string()))?;
     file.morph_many_with_options(&rules, &options)
+        .map_err(|err| JsValue::from_str(&err.to_string()))
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(js_name = parseRecipe)]
+/// WebAssembly entry point that parses a recipe TOML string into JS-friendly data.
+pub fn parse_recipe_wasm(recipe_toml: &str) -> Result<JsValue, JsValue> {
+    let recipe = Recipe::from_toml(recipe_toml).map_err(|err| JsValue::from_str(&err.to_string()))?;
+    let result = Object::new();
+    Reflect::set(
+        &result,
+        &JsValue::from_str("options"),
+        &JsValue::from(recipe.options),
+    )?;
+
+    let rules = Array::new();
+    for rule in recipe.rules {
+        let pair = Array::new();
+        pair.push(&JsValue::from(rule.from));
+        pair.push(&JsValue::from(rule.to));
+        rules.push(&pair);
+    }
+    Reflect::set(&result, &JsValue::from_str("rules"), &rules)?;
+
+    Ok(result.into())
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(js_name = serializeRecipe)]
+/// WebAssembly entry point that serializes structured recipe data to TOML.
+pub fn serialize_recipe_wasm(rules: Array, options: MorphOptions) -> Result<String, JsValue> {
+    let owned_rules = rules
+        .iter()
+        .map(|entry| {
+            let pair = Array::from(&entry);
+            if pair.length() != 2 {
+                return Err(JsValue::from_str(
+                    "each morph rule must be a two-item array: [from, to]",
+                ));
+            }
+            let from = pair
+                .get(0)
+                .as_string()
+                .ok_or_else(|| JsValue::from_str("rule source must be a string"))?;
+            let to = pair
+                .get(1)
+                .as_string()
+                .ok_or_else(|| JsValue::from_str("rule target must be a string"))?;
+            Ok(OwnedMorphRule { from, to })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+
+    Recipe::new(options, owned_rules)
+        .to_toml()
         .map_err(|err| JsValue::from_str(&err.to_string()))
 }

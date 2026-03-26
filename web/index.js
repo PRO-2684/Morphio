@@ -1,8 +1,12 @@
-import init, { morphFontMany, MorphOptions } from "./wasm/morphio.js";
+import init, {
+    morphFontMany,
+    MorphOptions,
+    parseRecipe,
+    serializeRecipe,
+} from "./wasm/morphio.js";
 
 const ORIGINAL_FAMILY = "MorphioOriginalPreview";
 const MORPHED_FAMILY = "MorphioPreview";
-const DEFAULT_PREVIEW = "banana.";
 
 const state = {
     wasmReady: false,
@@ -16,9 +20,11 @@ const state = {
 
 const elements = {
     fileInput: document.querySelector("#font-file"),
+    recipeFileInput: document.querySelector("#recipe-file"),
     ruleList: document.querySelector("#rule-list"),
     ruleTemplate: document.querySelector("#morph-rule-template"),
-    addRuleButton: document.querySelector("#add-rule-button"),
+    importRecipeButton: document.querySelector("#import-recipe-button"),
+    exportRecipeButton: document.querySelector("#export-recipe-button"),
     wordMatchStart: document.querySelector("#word-match-start"),
     wordMatchEnd: document.querySelector("#word-match-end"),
     status: document.querySelector("#status"),
@@ -44,8 +50,6 @@ async function boot() {
     if ("serviceWorker" in navigator) {
         registerServiceWorker();
     }
-    hydrateFromSearchParams();
-    syncStateToUrl();
     wireUi();
 
     try {
@@ -60,13 +64,11 @@ async function boot() {
 
 function wireUi() {
     elements.fileInput.addEventListener("change", onFileChange);
-    elements.addRuleButton.addEventListener("click", addRuleRow);
+    elements.recipeFileInput.addEventListener("change", importRecipe);
     elements.ruleList.addEventListener("click", onRuleListClick);
-    elements.ruleList.addEventListener("input", syncStateToUrl);
     elements.sourcePreview.addEventListener("input", mirrorPreviewText);
-    elements.sourcePreview.addEventListener("input", syncStateToUrl);
-    elements.wordMatchStart.addEventListener("change", syncStateToUrl);
-    elements.wordMatchEnd.addEventListener("change", syncStateToUrl);
+    elements.importRecipeButton.addEventListener("click", openRecipePicker);
+    elements.exportRecipeButton.addEventListener("click", exportRecipe);
     elements.morphButton.addEventListener("click", morphCurrentFont);
     elements.downloadButton.addEventListener("click", downloadFont);
 }
@@ -197,6 +199,7 @@ function updateActionState() {
         state.wasmReady && !!state.sourceBytes && !state.isMorphing;
     elements.morphButton.disabled = !canMorph;
     elements.downloadButton.disabled = !state.outputBytes || state.isMorphing;
+    elements.exportRecipeButton.disabled = state.isMorphing;
 }
 
 function downloadFont() {
@@ -244,17 +247,21 @@ function nextFrame() {
 function addRuleRow() {
     const fragment = elements.ruleTemplate.content.cloneNode(true);
     elements.ruleList.append(fragment);
-    syncStateToUrl();
 }
 
 function onRuleListClick(event) {
+    const addButton = event.target.closest("#add-rule-button");
+    if (addButton) {
+        addRuleRow();
+        return;
+    }
+
     const removeButton = event.target.closest(".remove-rule-button");
     if (!removeButton) {
         return;
     }
 
     removeButton.closest(".rule-row")?.remove();
-    syncStateToUrl();
 }
 
 function collectRules() {
@@ -281,40 +288,6 @@ function collectRules() {
     return rules.map((rule) => [rule.from, rule.to]);
 }
 
-function hydrateFromSearchParams() {
-    const params = new URLSearchParams(window.location.search);
-    const start = params.get("start");
-    const end = params.get("end");
-    const preview = params.get("preview");
-    const fromValues = params.getAll("from");
-    const toValues = params.getAll("to");
-
-    if (start !== null) {
-        elements.wordMatchStart.checked = start !== "0";
-    }
-    if (end !== null) {
-        elements.wordMatchEnd.checked = end !== "0";
-    }
-    if (preview !== null) {
-        elements.sourcePreview.value = preview;
-    }
-
-    if (fromValues.length === 0 && toValues.length === 0) {
-        mirrorPreviewText();
-        return;
-    }
-
-    elements.ruleList.innerHTML = "";
-    const pairCount = Math.min(fromValues.length, toValues.length);
-    for (let index = 0; index < pairCount; index += 1) {
-        addRuleRowWithValues(fromValues[index], toValues[index], index === 0);
-    }
-    if (pairCount === 0) {
-        addRuleRowWithValues("banana", "orange", true);
-    }
-    mirrorPreviewText();
-}
-
 function addRuleRowWithValues(from, to, isFirstRow) {
     const fragment = elements.ruleTemplate.content.cloneNode(true);
     const row = fragment.querySelector(".rule-row");
@@ -334,31 +307,61 @@ function addRuleRowWithValues(from, to, isFirstRow) {
     elements.ruleList.append(fragment);
 }
 
-function collectRulesForUrl() {
-    return Array.from(elements.ruleList.querySelectorAll(".rule-row"))
-        .map((row) => [
-            row.querySelector('[data-role="from"]').value.trim(),
-            row.querySelector('[data-role="to"]').value.trim(),
-        ])
-        .filter(([from, to]) => from || to);
+function openRecipePicker() {
+    elements.recipeFileInput.click();
 }
 
-function syncStateToUrl() {
-    const params = new URLSearchParams();
-    params.set("start", elements.wordMatchStart.checked ? "1" : "0");
-    params.set("end", elements.wordMatchEnd.checked ? "1" : "0");
-    params.set("preview", elements.sourcePreview.value);
-
-    for (const [from, to] of collectRulesForUrl()) {
-        params.append("from", from);
-        params.append("to", to);
+async function importRecipe(event) {
+    const [file] = event.currentTarget.files ?? [];
+    if (!file) {
+        return;
     }
 
-    const query = params.toString();
-    const url = query
-        ? `${window.location.pathname}?${query}`
-        : window.location.pathname;
-    window.history.replaceState(null, "", url);
+    try {
+        const contents = await file.text();
+        applyRecipe(parseRecipe(contents));
+        setStatus("ready", `Loaded recipe: ${file.name}`);
+    } catch (error) {
+        setStatus("error", `Failed to import recipe: ${formatError(error)}`);
+    } finally {
+        event.target.value = "";
+    }
+}
+
+function exportRecipe() {
+    try {
+        const recipe = serializeRecipe(
+            collectRules(),
+            new MorphOptions(
+                elements.wordMatchStart.checked,
+                elements.wordMatchEnd.checked,
+            ),
+        );
+        const blob = new Blob([recipe], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "morphio-recipe.toml";
+        link.click();
+        URL.revokeObjectURL(url);
+        setStatus("ready", "Recipe exported.");
+    } catch (error) {
+        setStatus("error", `Failed to export recipe: ${formatError(error)}`);
+    }
+}
+
+function applyRecipe(recipe) {
+    elements.wordMatchStart.checked = recipe.options.word_match_start;
+    elements.wordMatchEnd.checked = recipe.options.word_match_end;
+    elements.ruleList.innerHTML = "";
+
+    if (recipe.rules.length === 0) {
+        addRuleRowWithValues("banana", "orange", true);
+    } else {
+        for (const [index, rule] of recipe.rules.entries()) {
+            addRuleRowWithValues(rule[0], rule[1], index === 0);
+        }
+    }
 }
 
 mirrorPreviewText();
