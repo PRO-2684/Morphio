@@ -1,0 +1,5507 @@
+[options]
+word_match_start = false
+word_match_end = true
+
+[[rules]]
+from = '\ngtr'
+to = "≯"
+
+[[rules]]
+from = '\backdprime'
+to = "‶"
+
+[[rules]]
+from = '\nvRightarrow'
+to = "⤃"
+
+[[rules]]
+from = '\rightmoon'
+to = "☽"
+
+[[rules]]
+from = '\gesles'
+to = "⪔"
+
+[[rules]]
+from = '\succnapprox'
+to = "⪺"
+
+[[rules]]
+from = '\div'
+to = "÷"
+
+[[rules]]
+from = '\lbrackextender'
+to = "⎢"
+
+[[rules]]
+from = '\precnsim'
+to = "⋨"
+
+[[rules]]
+from = '\vardiamondsuit'
+to = "♦"
+
+[[rules]]
+from = '\acwgapcirclearrow'
+to = "⟲"
+
+[[rules]]
+from = '\vee'
+to = "∨"
+
+[[rules]]
+from = '\smallblacktriangleright'
+to = "▸"
+
+[[rules]]
+from = '\gneqq'
+to = "≩"
+
+[[rules]]
+from = '\ngeq'
+to = "≱"
+
+[[rules]]
+from = '\VDash'
+to = "⊫"
+
+[[rules]]
+from = '\mathyen'
+to = "¥"
+
+[[rules]]
+from = '\bdtriplevdash'
+to = "┆"
+
+[[rules]]
+from = '\upfishtail'
+to = "⥾"
+
+[[rules]]
+from = '\vartriangleright'
+to = "⊳"
+
+[[rules]]
+from = '\upDigamma'
+to = "Ϝ"
+
+[[rules]]
+from = '\nleftrightarrow'
+to = "↮"
+
+[[rules]]
+from = '\circlellquad'
+to = "◵"
+
+[[rules]]
+from = '\daleth'
+to = "ℸ"
+
+[[rules]]
+from = '\equalparallel'
+to = "⋕"
+
+[[rules]]
+from = '\napprox'
+to = "≉"
+
+[[rules]]
+from = '\squareulblack'
+to = "◩"
+
+[[rules]]
+from = '\angdnr'
+to = "⦟"
+
+[[rules]]
+from = '\nVDash'
+to = "⊯"
+
+[[rules]]
+from = '\blkhorzoval'
+to = "⬬"
+
+[[rules]]
+from = '\nhVvert'
+to = "⫵"
+
+[[rules]]
+from = '\bullseye'
+to = "◎"
+
+[[rules]]
+from = '\Mapsto'
+to = "⤇"
+
+[[rules]]
+from = '\intcup'
+to = "⨚"
+
+[[rules]]
+from = '\mdwhtdiamond'
+to = "⬦"
+
+[[rules]]
+from = '\mathvisiblespace'
+to = "␣"
+
+[[rules]]
+from = '\kappa'
+to = "κ"
+
+[[rules]]
+from = '\leftrightarrowcircle'
+to = "⥈"
+
+[[rules]]
+from = '\curvearrowright'
+to = "↷"
+
+[[rules]]
+from = '\theta'
+to = "θ"
+
+[[rules]]
+from = '\gtreqless'
+to = "⋛"
+
+[[rules]]
+from = '\rightarrowonoplus'
+to = "⟴"
+
+[[rules]]
+from = '\vec'
+to = "⃗"
+
+[[rules]]
+from = '\blacktriangleright'
+to = "▶"
+
+[[rules]]
+from = '\leftthreetimes'
+to = "⋋"
+
+[[rules]]
+from = '\ubrbrak'
+to = "⏡"
+
+[[rules]]
+from = '\gtrdot'
+to = "⋗"
+
+[[rules]]
+from = '\simgtr'
+to = "⪞"
+
+[[rules]]
+from = '\fcmp'
+to = "⨾"
+
+[[rules]]
+from = '\aleph'
+to = "ℵ"
+
+[[rules]]
+from = '\clubsuit'
+to = "♣"
+
+[[rules]]
+from = '\glj'
+to = "⪤"
+
+[[rules]]
+from = '\supsetapprox'
+to = "⫊"
+
+[[rules]]
+from = '\eparsl'
+to = "⧣"
+
+[[rules]]
+from = '\emptysetocirc'
+to = "⦲"
+
+[[rules]]
+from = '\intbottom'
+to = "⌡"
+
+[[rules]]
+from = '\eqqslantgtr'
+to = "⪜"
+
+[[rules]]
+from = '\measuredangleleft'
+to = "⦛"
+
+[[rules]]
+from = '\Barv'
+to = "⫧"
+
+[[rules]]
+from = '\omicron'
+to = "ο"
+
+[[rules]]
+from = '\eqqsim'
+to = "⩳"
+
+[[rules]]
+from = '\mathratio'
+to = "∶"
+
+[[rules]]
+from = '\Sigma'
+to = "Σ"
+
+[[rules]]
+from = '\circledcirc'
+to = "⊚"
+
+[[rules]]
+from = '\bigslopedvee'
+to = "⩗"
+
+[[rules]]
+from = '\looparrowright'
+to = "↬"
+
+[[rules]]
+from = '\wedgemidvert'
+to = "⩚"
+
+[[rules]]
+from = '\rbrbrak'
+to = "❳"
+
+[[rules]]
+from = '\vDash'
+to = "⊨"
+
+[[rules]]
+from = '\Rbrbrak'
+to = "⟭"
+
+[[rules]]
+from = '\Upsilon'
+to = "Υ"
+
+[[rules]]
+from = '\gg'
+to = "≫"
+
+[[rules]]
+from = '\smile'
+to = "⌣"
+
+[[rules]]
+from = '\dashVdash'
+to = "⟛"
+
+[[rules]]
+from = '\rbrackubar'
+to = "⦌"
+
+[[rules]]
+from = '\ell'
+to = "ℓ"
+
+[[rules]]
+from = '\ointctrclockwise'
+to = "∳"
+
+[[rules]]
+from = '\Join'
+to = "⨝"
+
+[[rules]]
+from = '\squarehfill'
+to = "▤"
+
+[[rules]]
+from = '\blackrighthalfcircle'
+to = "◗"
+
+[[rules]]
+from = '\mdblklozenge'
+to = "⬧"
+
+[[rules]]
+from = '\gtcir'
+to = "⩺"
+
+[[rules]]
+from = '\llarc'
+to = "◟"
+
+[[rules]]
+from = '\lgblkcircle'
+to = "⬤"
+
+[[rules]]
+from = '\measanglerdtose'
+to = "⦪"
+
+[[rules]]
+from = '\gtrapprox'
+to = "⪆"
+
+[[rules]]
+from = '\Hermaphrodite'
+to = "⚥"
+
+[[rules]]
+from = '\nsucc'
+to = "⊁"
+
+[[rules]]
+from = '\mapsdown'
+to = "↧"
+
+[[rules]]
+from = '\blocklowhalf'
+to = "▄"
+
+[[rules]]
+from = '\rgroup'
+to = "⟯"
+
+[[rules]]
+from = '\oslash'
+to = "⊘"
+
+[[rules]]
+from = '\lesdoto'
+to = "⪁"
+
+[[rules]]
+from = '\righttail'
+to = "⤚"
+
+[[rules]]
+from = '\tminus'
+to = "⧿"
+
+[[rules]]
+from = '\rbrackurtick'
+to = "⦐"
+
+[[rules]]
+from = '\nsim'
+to = "≁"
+
+[[rules]]
+from = '\supsetcirc'
+to = "⟄"
+
+[[rules]]
+from = '\circleulquad'
+to = "◴"
+
+[[rules]]
+from = '\suplarr'
+to = "⥻"
+
+[[rules]]
+from = '\lesdot'
+to = "⩿"
+
+[[rules]]
+from = '\mdlgblkdiamond'
+to = "◆"
+
+[[rules]]
+from = '\lllnest'
+to = "⫷"
+
+[[rules]]
+from = '\nwsearrow'
+to = "⤡"
+
+[[rules]]
+from = '\nisd'
+to = "⋺"
+
+[[rules]]
+from = '\leftthreearrows'
+to = "⬱"
+
+[[rules]]
+from = '\upwhitearrow'
+to = "⇧"
+
+[[rules]]
+from = '\bigbot'
+to = "⟘"
+
+[[rules]]
+from = '\gtreqqless'
+to = "⪌"
+
+[[rules]]
+from = '\Question'
+to = "⁇"
+
+[[rules]]
+from = '\matheth'
+to = "ð"
+
+[[rules]]
+from = '\acwcirclearrow'
+to = "⥀"
+
+[[rules]]
+from = '\rightwhitearrow'
+to = "⇨"
+
+[[rules]]
+from = '\neuter'
+to = "⚲"
+
+[[rules]]
+from = '\Exclam'
+to = "‼"
+
+[[rules]]
+from = '\succneqq'
+to = "⪶"
+
+[[rules]]
+from = '\nprec'
+to = "⊀"
+
+[[rules]]
+from = '\circlelefthalfblack'
+to = "◐"
+
+[[rules]]
+from = '\concavediamondtickright'
+to = "⟣"
+
+[[rules]]
+from = '\diamondtopblack'
+to = "⬘"
+
+[[rules]]
+from = '\subsetneqq'
+to = "⫋"
+
+[[rules]]
+from = '\langle'
+to = "⟨"
+
+[[rules]]
+from = '\QED'
+to = "∎"
+
+[[rules]]
+from = '\lmoustache'
+to = "⎰"
+
+[[rules]]
+from = '\elinters'
+to = "⏧"
+
+[[rules]]
+from = '\lbrbrak'
+to = "❲"
+
+[[rules]]
+from = '\leftdasharrow'
+to = "⇠"
+
+[[rules]]
+from = '\triangleplus'
+to = "⨹"
+
+[[rules]]
+from = '\rightarrowtail'
+to = "↣"
+
+[[rules]]
+from = '\cwopencirclearrow'
+to = "↻"
+
+[[rules]]
+from = '\precapprox'
+to = "⪷"
+
+[[rules]]
+from = '\equivDD'
+to = "⩸"
+
+[[rules]]
+from = '\nleftarrow'
+to = "↚"
+
+[[rules]]
+from = '\cupdot'
+to = "⊍"
+
+[[rules]]
+from = '\diceii'
+to = "⚁"
+
+[[rules]]
+from = '\top'
+to = "⊤"
+
+[[rules]]
+from = '\upharpoonleft'
+to = "↿"
+
+[[rules]]
+from = '\ddotseq'
+to = "⩷"
+
+[[rules]]
+from = '\dottimes'
+to = "⨰"
+
+[[rules]]
+from = '\pitchfork'
+to = "⋔"
+
+[[rules]]
+from = '\ulcorner'
+to = "⌜"
+
+[[rules]]
+from = '\gleichstark'
+to = "⧦"
+
+[[rules]]
+from = '\prurel'
+to = "⊰"
+
+[[rules]]
+from = '\hookleftarrow'
+to = "↩"
+
+[[rules]]
+from = '\between'
+to = "≬"
+
+[[rules]]
+from = '\rightarrowshortleftarrow'
+to = "⥂"
+
+[[rules]]
+from = '\rightarrowbackapprox'
+to = "⭈"
+
+[[rules]]
+from = '\precnapprox'
+to = "⪹"
+
+[[rules]]
+from = '\stareq'
+to = "≛"
+
+[[rules]]
+from = '\flat'
+to = "♭"
+
+[[rules]]
+from = '\downtriangleleftblack'
+to = "⧨"
+
+[[rules]]
+from = '\bigslopedwedge'
+to = "⩘"
+
+[[rules]]
+from = '\eqqcolon'
+to = "≕"
+
+[[rules]]
+from = '\veedoublebar'
+to = "⩣"
+
+[[rules]]
+from = '\Longleftarrow'
+to = "⟸"
+
+[[rules]]
+from = '\doublebarvee'
+to = "⩢"
+
+[[rules]]
+from = '\Delta'
+to = "Δ"
+
+[[rules]]
+from = '\veebar'
+to = "⊻"
+
+[[rules]]
+from = '\Phi'
+to = "Φ"
+
+[[rules]]
+from = '\disjquant'
+to = "⨈"
+
+[[rules]]
+from = '\nlessgtr'
+to = "≸"
+
+[[rules]]
+from = '\curlyvee'
+to = "⋎"
+
+[[rules]]
+from = '\gescc'
+to = "⪩"
+
+[[rules]]
+from = '\llblacktriangle'
+to = "◣"
+
+[[rules]]
+from = '\supsup'
+to = "⫖"
+
+[[rules]]
+from = '\dashcolon'
+to = "∹"
+
+[[rules]]
+from = '\draftingarrow'
+to = "➛"
+
+[[rules]]
+from = '\sumtop'
+to = "⎲"
+
+[[rules]]
+from = '\nVtwoheadrightarrow'
+to = "⤁"
+
+[[rules]]
+from = '\enclosecircle'
+to = "⃝"
+
+[[rules]]
+from = '\Iota'
+to = "Ι"
+
+[[rules]]
+from = '\geqslant'
+to = "⩾"
+
+[[rules]]
+from = '\preceq'
+to = "⪯"
+
+[[rules]]
+from = '\iint'
+to = "∬"
+
+[[rules]]
+from = '\Chi'
+to = "Χ"
+
+[[rules]]
+from = '\updownharpoonleftleft'
+to = "⥑"
+
+[[rules]]
+from = '\hrectangleblack'
+to = "▬"
+
+[[rules]]
+from = '\forall'
+to = "∀"
+
+[[rules]]
+from = '\beth'
+to = "ℶ"
+
+[[rules]]
+from = '\fourvdots'
+to = "⦙"
+
+[[rules]]
+from = '\gneq'
+to = "⪈"
+
+[[rules]]
+from = '\mdlgwhtdiamond'
+to = "◇"
+
+[[rules]]
+from = '\perp'
+to = "⟂"
+
+[[rules]]
+from = '\lbracklend'
+to = "⎣"
+
+[[rules]]
+from = '\tieconcat'
+to = "⁀"
+
+[[rules]]
+from = '\blockthreeqtrshaded'
+to = "▓"
+
+[[rules]]
+from = '\leftcurvedarrow'
+to = "⬿"
+
+[[rules]]
+from = '\impliedby'
+to = "⟸"
+
+[[rules]]
+from = '\amalg'
+to = "⨿"
+
+[[rules]]
+from = '\commaminus'
+to = "⨩"
+
+[[rules]]
+from = '\rightdowncurvedarrow'
+to = "⤷"
+
+[[rules]]
+from = '\astrosun'
+to = "☉"
+
+[[rules]]
+from = '\curvearrowleft'
+to = "↶"
+
+[[rules]]
+from = '\langledot'
+to = "⦑"
+
+[[rules]]
+from = '\ntrianglerighteq'
+to = "⋭"
+
+[[rules]]
+from = '\cupbarcap'
+to = "⩈"
+
+[[rules]]
+from = '\uminus'
+to = "⩁"
+
+[[rules]]
+from = '\sqint'
+to = "⨖"
+
+[[rules]]
+from = '\measanglelutonw'
+to = "⦩"
+
+[[rules]]
+from = '\rightarrowapprox'
+to = "⥵"
+
+[[rules]]
+from = '\Nwarrow'
+to = "⇖"
+
+[[rules]]
+from = '\upharpoonsleftright'
+to = "⥣"
+
+[[rules]]
+from = '\squareneswfill'
+to = "▨"
+
+[[rules]]
+from = '\hkswarrow'
+to = "⤦"
+
+[[rules]]
+from = '\boxbox'
+to = "⧈"
+
+[[rules]]
+from = '\smallin'
+to = "∊"
+
+[[rules]]
+from = '\awint'
+to = "⨑"
+
+[[rules]]
+from = '\gtlpar'
+to = "⦠"
+
+[[rules]]
+from = '\leftdowncurvedarrow'
+to = "⤶"
+
+[[rules]]
+from = '\leftdotarrow'
+to = "⬸"
+
+[[rules]]
+from = '\leftharpoonupbar'
+to = "⥚"
+
+[[rules]]
+from = '\invnot'
+to = "⌐"
+
+[[rules]]
+from = '\congdot'
+to = "⩭"
+
+[[rules]]
+from = '\sharp'
+to = "♯"
+
+[[rules]]
+from = '\whthorzoval'
+to = "⬭"
+
+[[rules]]
+from = '\equalleftarrow'
+to = "⭀"
+
+[[rules]]
+from = '\APLnotslash'
+to = "⌿"
+
+[[rules]]
+from = '\partial'
+to = "∂"
+
+[[rules]]
+from = '\hrectangle'
+to = "▭"
+
+[[rules]]
+from = '\threedangle'
+to = "⟀"
+
+[[rules]]
+from = '\multimapinv'
+to = "⟜"
+
+[[rules]]
+from = '\rfloor'
+to = "⌋"
+
+[[rules]]
+from = '\nvleftarrow'
+to = "⇷"
+
+[[rules]]
+from = '\sansLmirrored'
+to = "⅃"
+
+[[rules]]
+from = '\squarevfill'
+to = "▥"
+
+[[rules]]
+from = '\upand'
+to = "⅋"
+
+[[rules]]
+from = '\vartriangle'
+to = "▵"
+
+[[rules]]
+from = '\pm'
+to = "±"
+
+[[rules]]
+from = '\errbarblacksquare'
+to = "⧯"
+
+[[rules]]
+from = '\dsol'
+to = "⧶"
+
+[[rules]]
+from = '\diamondrightblack'
+to = "⬗"
+
+[[rules]]
+from = '\gggnest'
+to = "⫸"
+
+[[rules]]
+from = '\boxbar'
+to = "◫"
+
+[[rules]]
+from = '\gtquest'
+to = "⩼"
+
+[[rules]]
+from = '\implies'
+to = "⟹"
+
+[[rules]]
+from = '\sun'
+to = "☼"
+
+[[rules]]
+from = '\vrectangle'
+to = "▯"
+
+[[rules]]
+from = '\nasymp'
+to = "≭"
+
+[[rules]]
+from = '\iinfin'
+to = "⧜"
+
+[[rules]]
+from = '\bsolhsub'
+to = "⟈"
+
+[[rules]]
+from = '\leftarrowbsimilar'
+to = "⭋"
+
+[[rules]]
+from = '\tona'
+to = "⤧"
+
+[[rules]]
+from = '\boxdot'
+to = "⊡"
+
+[[rules]]
+from = '\parallel'
+to = "∥"
+
+[[rules]]
+from = '\egsdot'
+to = "⪘"
+
+[[rules]]
+from = '\measuredrightangle'
+to = "⊾"
+
+[[rules]]
+from = '\rightanglemdot'
+to = "⦝"
+
+[[rules]]
+from = '\leftrightarrow'
+to = "↔"
+
+[[rules]]
+from = '\dashrightharpoondown'
+to = "⥭"
+
+[[rules]]
+from = '\urcorner'
+to = "⌝"
+
+[[rules]]
+from = '\Rvzigzag'
+to = "⧛"
+
+[[rules]]
+from = '\leftharpoonsupdown'
+to = "⥢"
+
+[[rules]]
+from = '\midbarvee'
+to = "⩝"
+
+[[rules]]
+from = '\leftouterjoin'
+to = "⟕"
+
+[[rules]]
+from = '\alpha'
+to = "α"
+
+[[rules]]
+from = '\varhexagonblack'
+to = "⬢"
+
+[[rules]]
+from = '\upsilon'
+to = "υ"
+
+[[rules]]
+from = '\circledtwodots'
+to = "⚇"
+
+[[rules]]
+from = '\danger'
+to = "☡"
+
+[[rules]]
+from = '\sqsupsetneq'
+to = "⋥"
+
+[[rules]]
+from = '\mdlgwhtsquare'
+to = "□"
+
+[[rules]]
+from = '\veeonwedge'
+to = "⩙"
+
+[[rules]]
+from = '\lowint'
+to = "⨜"
+
+[[rules]]
+from = '\updownharpoonrightleft'
+to = "⥌"
+
+[[rules]]
+from = '\varheartsuit'
+to = "♥"
+
+[[rules]]
+from = '\nni'
+to = "∌"
+
+[[rules]]
+from = '\blackcircledownarrow'
+to = "⧭"
+
+[[rules]]
+from = '\circledparallel'
+to = "⦷"
+
+[[rules]]
+from = '\leftharpoonup'
+to = "↼"
+
+[[rules]]
+from = '\barleftarrow'
+to = "⇤"
+
+[[rules]]
+from = '\subrarr'
+to = "⥹"
+
+[[rules]]
+from = '\uparrowbarred'
+to = "⤉"
+
+[[rules]]
+from = '\nVtwoheadleftarrow'
+to = "⬵"
+
+[[rules]]
+from = '\zeta'
+to = "ζ"
+
+[[rules]]
+from = '\bardownharpoonright'
+to = "⥝"
+
+[[rules]]
+from = '\updownarrows'
+to = "⇅"
+
+[[rules]]
+from = '\urarc'
+to = "◝"
+
+[[rules]]
+from = '\cirbot'
+to = "⟟"
+
+[[rules]]
+from = '\supseteq'
+to = "⊇"
+
+[[rules]]
+from = '\succeqq'
+to = "⪴"
+
+[[rules]]
+from = '\boxminus'
+to = "⊟"
+
+[[rules]]
+from = '\rvzigzag'
+to = "⧙"
+
+[[rules]]
+from = '\Uparrow'
+to = "⇑"
+
+[[rules]]
+from = '\turnangle'
+to = "⦢"
+
+[[rules]]
+from = '\longrightsquigarrow'
+to = "⟿"
+
+[[rules]]
+from = '\blacktriangleleft'
+to = "◀"
+
+[[rules]]
+from = '\dottedcircle'
+to = "◌"
+
+[[rules]]
+from = '\lneqq'
+to = "≨"
+
+[[rules]]
+from = '\invwhiteupperhalfcircle'
+to = "◚"
+
+[[rules]]
+from = '\rightimply'
+to = "⥰"
+
+[[rules]]
+from = '\errbardiamond'
+to = "⧰"
+
+[[rules]]
+from = '\minusfdots'
+to = "⨫"
+
+[[rules]]
+from = '\olcross'
+to = "⦻"
+
+[[rules]]
+from = '\vartheta'
+to = "ϑ"
+
+[[rules]]
+from = '\csube'
+to = "⫑"
+
+[[rules]]
+from = '\suphsol'
+to = "⟉"
+
+[[rules]]
+from = '\times'
+to = "×"
+
+[[rules]]
+from = '\fltns'
+to = "⏥"
+
+[[rules]]
+from = '\angle'
+to = "∠"
+
+[[rules]]
+from = '\olessthan'
+to = "⧀"
+
+[[rules]]
+from = '\succeq'
+to = "⪰"
+
+[[rules]]
+from = '\bigcup'
+to = "⋃"
+
+[[rules]]
+from = '\fbowtie'
+to = "⧓"
+
+[[rules]]
+from = '\simrdots'
+to = "⩫"
+
+[[rules]]
+from = '\rightarrowbsimilar'
+to = "⭌"
+
+[[rules]]
+from = '\eqqslantless'
+to = "⪛"
+
+[[rules]]
+from = '\smallni'
+to = "∍"
+
+[[rules]]
+from = '\squareleftblack'
+to = "◧"
+
+[[rules]]
+from = '\lnapprox'
+to = "⪉"
+
+[[rules]]
+from = '\vbraceextender'
+to = "⎪"
+
+[[rules]]
+from = '\cdots'
+to = "⋯"
+
+[[rules]]
+from = '\topbot'
+to = "⌶"
+
+[[rules]]
+from = '\leftrightharpoonsup'
+to = "⥦"
+
+[[rules]]
+from = '\intcap'
+to = "⨙"
+
+[[rules]]
+from = '\revangleubar'
+to = "⦥"
+
+[[rules]]
+from = '\sumint'
+to = "⨋"
+
+[[rules]]
+from = '\vartriangleleft'
+to = "⊲"
+
+[[rules]]
+from = '\rbracklend'
+to = "⎦"
+
+[[rules]]
+from = '\rightharpoonup'
+to = "⇀"
+
+[[rules]]
+from = '\eqless'
+to = "⋜"
+
+[[rules]]
+from = '\ominus'
+to = "⊖"
+
+[[rules]]
+from = '\vdots'
+to = "⋮"
+
+[[rules]]
+from = '\forkv'
+to = "⫙"
+
+[[rules]]
+from = '\concavediamondtickleft'
+to = "⟢"
+
+[[rules]]
+from = '\APLnotbackslash'
+to = "⍀"
+
+[[rules]]
+from = '\nmid'
+to = "∤"
+
+[[rules]]
+from = '\Prec'
+to = "⪻"
+
+[[rules]]
+from = '\Searrow'
+to = "⇘"
+
+[[rules]]
+from = '\laplac'
+to = "⧠"
+
+[[rules]]
+from = '\ge'
+to = "≥"
+
+[[rules]]
+from = '\upharpoonright'
+to = "↾"
+
+[[rules]]
+from = '\circledequal'
+to = "⊜"
+
+[[rules]]
+from = '\mdsmwhtsquare'
+to = "◽"
+
+[[rules]]
+from = '\biginterleave'
+to = "⫼"
+
+[[rules]]
+from = '\minusdot'
+to = "⨪"
+
+[[rules]]
+from = '\eqeqeq'
+to = "⩶"
+
+[[rules]]
+from = '\nsime'
+to = "≄"
+
+[[rules]]
+from = '\rfbowtie'
+to = "⧒"
+
+[[rules]]
+from = '\twoheadmapsto'
+to = "⤅"
+
+[[rules]]
+from = '\barupharpoonright'
+to = "⥔"
+
+[[rules]]
+from = '\Xi'
+to = "Ξ"
+
+[[rules]]
+from = '\nequiv'
+to = "≢"
+
+[[rules]]
+from = '\squarellblack'
+to = "⬕"
+
+[[rules]]
+from = '\Supset'
+to = "⋑"
+
+[[rules]]
+from = '\diamondleftarrow'
+to = "⤝"
+
+[[rules]]
+from = '\backsimeq'
+to = "⋍"
+
+[[rules]]
+from = '\dotsminusdots'
+to = "∺"
+
+[[rules]]
+from = '\diamondleftblack'
+to = "⬖"
+
+[[rules]]
+from = '\blacklefthalfcircle'
+to = "◖"
+
+[[rules]]
+from = '\measeq'
+to = "≞"
+
+[[rules]]
+from = '\downzigzagarrow'
+to = "↯"
+
+[[rules]]
+from = '\Zeta'
+to = "Ζ"
+
+[[rules]]
+from = '\downharpoonrightbar'
+to = "⥕"
+
+[[rules]]
+from = '\interleave'
+to = "⫴"
+
+[[rules]]
+from = '\nRightarrow'
+to = "⇏"
+
+[[rules]]
+from = '\le'
+to = "≤"
+
+[[rules]]
+from = '\oint'
+to = "∮"
+
+[[rules]]
+from = '\wr'
+to = "≀"
+
+[[rules]]
+from = '\blockfull'
+to = "█"
+
+[[rules]]
+from = '\enclosetriangle'
+to = "⃤"
+
+[[rules]]
+from = '\bbrktbrk'
+to = "⎶"
+
+[[rules]]
+from = '\vlongdash'
+to = "⟝"
+
+[[rules]]
+from = '\lparenlend'
+to = "⎝"
+
+[[rules]]
+from = '\boxcircle'
+to = "⧇"
+
+[[rules]]
+from = '\eqcirc'
+to = "≖"
+
+[[rules]]
+from = '\bigcupdot'
+to = "⨃"
+
+[[rules]]
+from = '\LLeftarrow'
+to = "⭅"
+
+[[rules]]
+from = '\lblkbrbrak'
+to = "⦗"
+
+[[rules]]
+from = '\circlelrquad'
+to = "◶"
+
+[[rules]]
+from = '\doubleplus'
+to = "⧺"
+
+[[rules]]
+from = '\nwarrow'
+to = "↖"
+
+[[rules]]
+from = '\succ'
+to = "≻"
+
+[[rules]]
+from = '\dprime'
+to = "″"
+
+[[rules]]
+from = '\plustrif'
+to = "⨨"
+
+[[rules]]
+from = '\omega'
+to = "ω"
+
+[[rules]]
+from = '\ll'
+to = "≪"
+
+[[rules]]
+from = '\revemptyset'
+to = "⦰"
+
+[[rules]]
+from = '\downrightcurvedarrow'
+to = "⤵"
+
+[[rules]]
+from = '\leftbkarrow'
+to = "⤌"
+
+[[rules]]
+from = '\vbrtri'
+to = "⧐"
+
+[[rules]]
+from = '\nsubset'
+to = "⊄"
+
+[[rules]]
+from = '\looparrowleft'
+to = "↫"
+
+[[rules]]
+from = '\cwcirclearrow'
+to = "⥁"
+
+[[rules]]
+from = '\downdownarrows'
+to = "⇊"
+
+[[rules]]
+from = '\longrightarrow'
+to = "⟶"
+
+[[rules]]
+from = '\iddots'
+to = "⋰"
+
+[[rules]]
+from = '\errbarblackcircle'
+to = "⧳"
+
+[[rules]]
+from = '\acwleftarcarrow'
+to = "⤹"
+
+[[rules]]
+from = '\complement'
+to = "∁"
+
+[[rules]]
+from = '\underparen'
+to = "⏝"
+
+[[rules]]
+from = '\medblackstar'
+to = "⭑"
+
+[[rules]]
+from = '\approxident'
+to = "≋"
+
+[[rules]]
+from = '\lftimes'
+to = "⧔"
+
+[[rules]]
+from = '\tplus'
+to = "⧾"
+
+[[rules]]
+from = '\dbkarrow'
+to = "⤏"
+
+[[rules]]
+from = '\frown'
+to = "⌢"
+
+[[rules]]
+from = '\closure'
+to = "⁐"
+
+[[rules]]
+from = '\arceq'
+to = "≘"
+
+[[rules]]
+from = '\nhpar'
+to = "⫲"
+
+[[rules]]
+from = '\varniobar'
+to = "⋽"
+
+[[rules]]
+from = '\PropertyLine'
+to = "⅊"
+
+[[rules]]
+from = '\Pi'
+to = "Π"
+
+[[rules]]
+from = '\cup'
+to = "∪"
+
+[[rules]]
+from = '\pushout'
+to = "⟔"
+
+[[rules]]
+from = '\nvleftarrowtail'
+to = "⬹"
+
+[[rules]]
+from = '\cwrightarcarrow'
+to = "⤸"
+
+[[rules]]
+from = '\supsetplus'
+to = "⫀"
+
+[[rules]]
+from = '\smwhtsquare'
+to = "▫"
+
+[[rules]]
+from = '\wp'
+to = "℘"
+
+[[rules]]
+from = '\leftarrow'
+to = "←"
+
+[[rules]]
+from = '\trianglelefteq'
+to = "⊴"
+
+[[rules]]
+from = '\ltlarr'
+to = "⥶"
+
+[[rules]]
+from = '\otimeslhrim'
+to = "⨴"
+
+[[rules]]
+from = '\downupharpoonsleftright'
+to = "⥯"
+
+[[rules]]
+from = '\mdwhtsquare'
+to = "◻"
+
+[[rules]]
+from = '\equivVert'
+to = "⩨"
+
+[[rules]]
+from = '\leftfishtail'
+to = "⥼"
+
+[[rules]]
+from = '\trapezium'
+to = "⏢"
+
+[[rules]]
+from = '\supsub'
+to = "⫔"
+
+[[rules]]
+from = '\psi'
+to = "ψ"
+
+[[rules]]
+from = '\barrightharpoondown'
+to = "⥟"
+
+[[rules]]
+from = '\leftwavearrow'
+to = "↜"
+
+[[rules]]
+from = '\Succ'
+to = "⪼"
+
+[[rules]]
+from = '\leftarrowsubset'
+to = "⥺"
+
+[[rules]]
+from = '\rangle'
+to = "⟩"
+
+[[rules]]
+from = '\fisheye'
+to = "◉"
+
+[[rules]]
+from = '\updownarrowbar'
+to = "↨"
+
+[[rules]]
+from = '\underleftarrow'
+to = "⃮"
+
+[[rules]]
+from = '\plussim'
+to = "⨦"
+
+[[rules]]
+from = '\rblkbrbrak'
+to = "⦘"
+
+[[rules]]
+from = '\gnapprox'
+to = "⪊"
+
+[[rules]]
+from = '\nLeftrightarrow'
+to = "⇎"
+
+[[rules]]
+from = '\horizbar'
+to = "―"
+
+[[rules]]
+from = '\hknearrow'
+to = "⤤"
+
+[[rules]]
+from = '\dddot'
+to = "⃛"
+
+[[rules]]
+from = '\bigblacktriangledown'
+to = "▼"
+
+[[rules]]
+from = '\otimes'
+to = "⊗"
+
+[[rules]]
+from = '\nis'
+to = "⋼"
+
+[[rules]]
+from = '\mapsto'
+to = "↦"
+
+[[rules]]
+from = '\odotslashdot'
+to = "⦼"
+
+[[rules]]
+from = '\scurel'
+to = "⊱"
+
+[[rules]]
+from = '\rightharpoonupbar'
+to = "⥓"
+
+[[rules]]
+from = '\squarelrblack'
+to = "◪"
+
+[[rules]]
+from = '\npreccurlyeq'
+to = "⋠"
+
+[[rules]]
+from = '\Longmapsto'
+to = "⟾"
+
+[[rules]]
+from = '\lessgtr'
+to = "≶"
+
+[[rules]]
+from = '\rbracelend'
+to = "⎭"
+
+[[rules]]
+from = '\gesdoto'
+to = "⪂"
+
+[[rules]]
+from = '\leftarrowless'
+to = "⥷"
+
+[[rules]]
+from = '\boxplus'
+to = "⊞"
+
+[[rules]]
+from = '\nvtwoheadrightarrow'
+to = "⤀"
+
+[[rules]]
+from = '\infty'
+to = "∞"
+
+[[rules]]
+from = '\blockrighthalf'
+to = "▐"
+
+[[rules]]
+from = '\btimes'
+to = "⨲"
+
+[[rules]]
+from = '\prod'
+to = "∏"
+
+[[rules]]
+from = '\wedge'
+to = "∧"
+
+[[rules]]
+from = '\uplus'
+to = "⊎"
+
+[[rules]]
+from = '\blockqtrshaded'
+to = "░"
+
+[[rules]]
+from = '\leftrightharpoonupdown'
+to = "⥊"
+
+[[rules]]
+from = '\parallelogramblack'
+to = "▰"
+
+[[rules]]
+from = '\rightharpoonupdash'
+to = "⥬"
+
+[[rules]]
+from = '\in'
+to = "∈"
+
+[[rules]]
+from = '\capwedge'
+to = "⩄"
+
+[[rules]]
+from = '\supsetdot'
+to = "⪾"
+
+[[rules]]
+from = '\longleftsquigarrow'
+to = "⬳"
+
+[[rules]]
+from = '\Rparenless'
+to = "⦖"
+
+[[rules]]
+from = '\Kappa'
+to = "Κ"
+
+[[rules]]
+from = '\circlebottomhalfblack'
+to = "◒"
+
+[[rules]]
+from = '\risingdotseq'
+to = "≓"
+
+[[rules]]
+from = '\Lt'
+to = "⪡"
+
+[[rules]]
+from = '\downtrianglerightblack'
+to = "⧩"
+
+[[rules]]
+from = '\whtvertoval'
+to = "⬯"
+
+[[rules]]
+from = '\intprod'
+to = "⨼"
+
+[[rules]]
+from = '\lltriangle'
+to = "◺"
+
+[[rules]]
+from = '\angleubar'
+to = "⦤"
+
+[[rules]]
+from = '\mdsmblkcircle'
+to = "⦁"
+
+[[rules]]
+from = '\Tau'
+to = "Τ"
+
+[[rules]]
+from = '\supsetneq'
+to = "⊋"
+
+[[rules]]
+from = '\lesges'
+to = "⪓"
+
+[[rules]]
+from = '\hermitmatrix'
+to = "⊹"
+
+[[rules]]
+from = '\smblkdiamond'
+to = "⬩"
+
+[[rules]]
+from = '\leftarrowx'
+to = "⬾"
+
+[[rules]]
+from = '\plushat'
+to = "⨣"
+
+[[rules]]
+from = '\curlywedge'
+to = "⋏"
+
+[[rules]]
+from = '\lvboxline'
+to = "⎸"
+
+[[rules]]
+from = '\botsemicircle'
+to = "◡"
+
+[[rules]]
+from = '\leqslant'
+to = "⩽"
+
+[[rules]]
+from = '\lessapprox'
+to = "⪅"
+
+[[rules]]
+from = '\bigsqcup'
+to = "⨆"
+
+[[rules]]
+from = '\checkmark'
+to = "✓"
+
+[[rules]]
+from = '\Vbar'
+to = "⫫"
+
+[[rules]]
+from = '\gtrarr'
+to = "⥸"
+
+[[rules]]
+from = '\gsiml'
+to = "⪐"
+
+[[rules]]
+from = '\lsime'
+to = "⪍"
+
+[[rules]]
+from = '\delta'
+to = "δ"
+
+[[rules]]
+from = '\submult'
+to = "⫁"
+
+[[rules]]
+from = '\ultriangle'
+to = "◸"
+
+[[rules]]
+from = '\barupharpoonleft'
+to = "⥘"
+
+[[rules]]
+from = '\mid'
+to = "∣"
+
+[[rules]]
+from = '\subsetneq'
+to = "⊊"
+
+[[rules]]
+from = '\hatapprox'
+to = "⩯"
+
+[[rules]]
+from = '\bullet'
+to = "•"
+
+[[rules]]
+from = '\measangledltosw'
+to = "⦯"
+
+[[rules]]
+from = '\models'
+to = "⊧"
+
+[[rules]]
+from = '\circledstar'
+to = "✪"
+
+[[rules]]
+from = '\errbarblackdiamond'
+to = "⧱"
+
+[[rules]]
+from = '\Psi'
+to = "Ψ"
+
+[[rules]]
+from = '\lneq'
+to = "⪇"
+
+[[rules]]
+from = '\boxdiag'
+to = "⧄"
+
+[[rules]]
+from = '\gtrsim'
+to = "≳"
+
+[[rules]]
+from = '\leftarrowshortrightarrow'
+to = "⥃"
+
+[[rules]]
+from = '\rightfishtail'
+to = "⥽"
+
+[[rules]]
+from = '\dotequiv'
+to = "⩧"
+
+[[rules]]
+from = '\twoheadmapsfrom'
+to = "⬶"
+
+[[rules]]
+from = '\twonotes'
+to = "♫"
+
+[[rules]]
+from = '\elsdot'
+to = "⪗"
+
+[[rules]]
+from = '\downdasharrow'
+to = "⇣"
+
+[[rules]]
+from = '\cupovercap'
+to = "⩆"
+
+[[rules]]
+from = '\downharpoonsleftright'
+to = "⥥"
+
+[[rules]]
+from = '\fourthroot'
+to = "∜"
+
+[[rules]]
+from = '\Re'
+to = "ℜ"
+
+[[rules]]
+from = '\quarternote'
+to = "♩"
+
+[[rules]]
+from = '\eqqless'
+to = "⪙"
+
+[[rules]]
+from = '\gesdotol'
+to = "⪄"
+
+[[rules]]
+from = '\obslash'
+to = "⦸"
+
+[[rules]]
+from = '\equalrightarrow'
+to = "⥱"
+
+[[rules]]
+from = '\nvleftrightarrow'
+to = "⇹"
+
+[[rules]]
+from = '\DashVDash'
+to = "⟚"
+
+[[rules]]
+from = '\rrparenthesis'
+to = "⦈"
+
+[[rules]]
+from = '\closedvarcupsmashprod'
+to = "⩐"
+
+[[rules]]
+from = '\rightarrowdiamond'
+to = "⤞"
+
+[[rules]]
+from = '\longmapsfrom'
+to = "⟻"
+
+[[rules]]
+from = '\toea'
+to = "⤨"
+
+[[rules]]
+from = '\Equiv'
+to = "≣"
+
+[[rules]]
+from = '\leq'
+to = "≤"
+
+[[rules]]
+from = '\asteraccent'
+to = "⃰"
+
+[[rules]]
+from = '\preceqq'
+to = "⪳"
+
+[[rules]]
+from = '\nvdash'
+to = "⊬"
+
+[[rules]]
+from = '\bagmember'
+to = "⋿"
+
+[[rules]]
+from = '\Lvzigzag'
+to = "⧚"
+
+[[rules]]
+from = '\overleftarrow'
+to = "⃖"
+
+[[rules]]
+from = '\measangleldtosw'
+to = "⦫"
+
+[[rules]]
+from = '\ltrivb'
+to = "⧏"
+
+[[rules]]
+from = '\circledwhitebullet'
+to = "⦾"
+
+[[rules]]
+from = '\Eulerconst'
+to = "ℇ"
+
+[[rules]]
+from = '\ltquest'
+to = "⩻"
+
+[[rules]]
+from = '\Longrightarrow'
+to = "⟹"
+
+[[rules]]
+from = '\leftrightharpoondownup'
+to = "⥋"
+
+[[rules]]
+from = '\leftrightharpoondowndown'
+to = "⥐"
+
+[[rules]]
+from = '\nsqsupseteq'
+to = "⋣"
+
+[[rules]]
+from = '\overrightharpoon'
+to = "⃑"
+
+[[rules]]
+from = '\smte'
+to = "⪬"
+
+[[rules]]
+from = '\nvLeftrightarrow'
+to = "⤄"
+
+[[rules]]
+from = '\rbraceuend'
+to = "⎫"
+
+[[rules]]
+from = '\blacktriangledown'
+to = "▾"
+
+[[rules]]
+from = '\varhexagon'
+to = "⬡"
+
+[[rules]]
+from = '\Im'
+to = "ℑ"
+
+[[rules]]
+from = '\xsol'
+to = "⧸"
+
+[[rules]]
+from = '\prec'
+to = "≺"
+
+[[rules]]
+from = '\swarrow'
+to = "↙"
+
+[[rules]]
+from = '\subsetdot'
+to = "⪽"
+
+[[rules]]
+from = '\pullback'
+to = "⟓"
+
+[[rules]]
+from = '\emptysetoarr'
+to = "⦳"
+
+[[rules]]
+from = '\house'
+to = "⌂"
+
+[[rules]]
+from = '\sansLturned'
+to = "⅂"
+
+[[rules]]
+from = '\prime'
+to = "′"
+
+[[rules]]
+from = '\nsqsubseteq'
+to = "⋢"
+
+[[rules]]
+from = '\bigtimes'
+to = "⨉"
+
+[[rules]]
+from = '\bsimilarleftarrow'
+to = "⭁"
+
+[[rules]]
+from = '\viewdata'
+to = "⌗"
+
+[[rules]]
+from = '\revnmid'
+to = "⫮"
+
+[[rules]]
+from = '\turnednot'
+to = "⌙"
+
+[[rules]]
+from = '\minusrdots'
+to = "⨬"
+
+[[rules]]
+from = '\varnothing'
+to = "∅"
+
+[[rules]]
+from = '\bNot'
+to = "⫭"
+
+[[rules]]
+from = '\upuparrows'
+to = "⇈"
+
+[[rules]]
+from = '\leftarrowplus'
+to = "⥆"
+
+[[rules]]
+from = '\vrectangleblack'
+to = "▮"
+
+[[rules]]
+from = '\nsupset'
+to = "⊅"
+
+[[rules]]
+from = '\approx'
+to = "≈"
+
+[[rules]]
+from = '\rAngle'
+to = "⟫"
+
+[[rules]]
+from = '\eighthnote'
+to = "♪"
+
+[[rules]]
+from = '\uprightcurvearrow'
+to = "⤴"
+
+[[rules]]
+from = '\lesdotor'
+to = "⪃"
+
+[[rules]]
+from = '\gtcc'
+to = "⪧"
+
+[[rules]]
+from = '\gesdot'
+to = "⪀"
+
+[[rules]]
+from = '\lesseqqgtr'
+to = "⪋"
+
+[[rules]]
+from = '\Not'
+to = "⫬"
+
+[[rules]]
+from = '\circeq'
+to = "≗"
+
+[[rules]]
+from = '\neovnwarrow'
+to = "⤱"
+
+[[rules]]
+from = '\eqslantless'
+to = "⪕"
+
+[[rules]]
+from = '\mdlgblkcircle'
+to = "●"
+
+[[rules]]
+from = '\lesseqgtr'
+to = "⋚"
+
+[[rules]]
+from = '\downharpoonleftbar'
+to = "⥙"
+
+[[rules]]
+from = '\chi'
+to = "χ"
+
+[[rules]]
+from = '\measanglerutone'
+to = "⦨"
+
+[[rules]]
+from = '\leftrightharpoons'
+to = "⇋"
+
+[[rules]]
+from = '\seovnearrow'
+to = "⤭"
+
+[[rules]]
+from = '\downarrowbar'
+to = "⤓"
+
+[[rules]]
+from = '\rightleftarrows'
+to = "⇄"
+
+[[rules]]
+from = '\sim'
+to = "∼"
+
+[[rules]]
+from = '\bigotimes'
+to = "⨂"
+
+[[rules]]
+from = '\bigtriangleleft'
+to = "⨞"
+
+[[rules]]
+from = '\vardoublebarwedge'
+to = "⌆"
+
+[[rules]]
+from = '\upint'
+to = "⨛"
+
+[[rules]]
+from = '\vysmblksquare'
+to = "⬝"
+
+[[rules]]
+from = '\mdblkdiamond'
+to = "⬥"
+
+[[rules]]
+from = '\Vvert'
+to = "⦀"
+
+[[rules]]
+from = '\nlesssim'
+to = "≴"
+
+[[rules]]
+from = '\rightthreetimes'
+to = "⋌"
+
+[[rules]]
+from = '\Omicron'
+to = "Ο"
+
+[[rules]]
+from = '\Vee'
+to = "⩔"
+
+[[rules]]
+from = '\Otimes'
+to = "⨷"
+
+[[rules]]
+from = '\rceil'
+to = "⌉"
+
+[[rules]]
+from = '\imageof'
+to = "⊷"
+
+[[rules]]
+from = '\lescc'
+to = "⪨"
+
+[[rules]]
+from = '\eqqplus'
+to = "⩱"
+
+[[rules]]
+from = '\triangleleftblack'
+to = "◭"
+
+[[rules]]
+from = '\Swarrow'
+to = "⇙"
+
+[[rules]]
+from = '\sqcup'
+to = "⊔"
+
+[[rules]]
+from = '\equiv'
+to = "≡"
+
+[[rules]]
+from = '\carriagereturn'
+to = "↵"
+
+[[rules]]
+from = '\leftarrowapprox'
+to = "⭊"
+
+[[rules]]
+from = '\lessdot'
+to = "⋖"
+
+[[rules]]
+from = '\circledast'
+to = "⊛"
+
+[[rules]]
+from = '\rightrightarrows'
+to = "⇉"
+
+[[rules]]
+from = '\precsim'
+to = "≾"
+
+[[rules]]
+from = '\Lambda'
+to = "Λ"
+
+[[rules]]
+from = '\ddagger'
+to = "‡"
+
+[[rules]]
+from = '\parallelogram'
+to = "▱"
+
+[[rules]]
+from = '\nVtwoheadrightarrowtail'
+to = "⤘"
+
+[[rules]]
+from = '\leftmoon'
+to = "☾"
+
+[[rules]]
+from = '\lgroup'
+to = "⟮"
+
+[[rules]]
+from = '\lbrackuend'
+to = "⎡"
+
+[[rules]]
+from = '\nexists'
+to = "∄"
+
+[[rules]]
+from = '\midcir'
+to = "⫰"
+
+[[rules]]
+from = '\blackinwhitesquare'
+to = "▣"
+
+[[rules]]
+from = '\vectimes'
+to = "⨯"
+
+[[rules]]
+from = '\blocklefthalf'
+to = "▌"
+
+[[rules]]
+from = '\ggg'
+to = "⋙"
+
+[[rules]]
+from = '\subsim'
+to = "⫇"
+
+[[rules]]
+from = '\isinE'
+to = "⋹"
+
+[[rules]]
+from = '\ddddot'
+to = "⃜"
+
+[[rules]]
+from = '\lBrace'
+to = "⦃"
+
+[[rules]]
+from = '\preccurlyeq'
+to = "≼"
+
+[[rules]]
+from = '\backcong'
+to = "≌"
+
+[[rules]]
+from = '\obrbrak'
+to = "⏠"
+
+[[rules]]
+from = '\widebridgeabove'
+to = "⃩"
+
+[[rules]]
+from = '\Bumpeq'
+to = "≎"
+
+[[rules]]
+from = '\circlerighthalfblack'
+to = "◑"
+
+[[rules]]
+from = '\talloblong'
+to = "⫾"
+
+[[rules]]
+from = '\leftrightsquigarrow'
+to = "↭"
+
+[[rules]]
+from = '\cupvee'
+to = "⩅"
+
+[[rules]]
+from = '\cirE'
+to = "⧃"
+
+[[rules]]
+from = '\Planckconst'
+to = "ℎ"
+
+[[rules]]
+from = '\Ddownarrow'
+to = "⤋"
+
+[[rules]]
+from = '\squoval'
+to = "▢"
+
+[[rules]]
+from = '\vysmblkcircle'
+to = "∙"
+
+[[rules]]
+from = '\varcarriagereturn'
+to = "⏎"
+
+[[rules]]
+from = '\notin'
+to = "∉"
+
+[[rules]]
+from = '\glE'
+to = "⪒"
+
+[[rules]]
+from = '\bigstar'
+to = "★"
+
+[[rules]]
+from = '\sum'
+to = "∑"
+
+[[rules]]
+from = '\Alpha'
+to = "Α"
+
+[[rules]]
+from = '\diameter'
+to = "⌀"
+
+[[rules]]
+from = '\fdiagovnearrow'
+to = "⤯"
+
+[[rules]]
+from = '\asymp'
+to = "≍"
+
+[[rules]]
+from = '\Vvdash'
+to = "⊪"
+
+[[rules]]
+from = '\varveebar'
+to = "⩡"
+
+[[rules]]
+from = '\cwgapcirclearrow'
+to = "⟳"
+
+[[rules]]
+from = '\nwovnearrow'
+to = "⤲"
+
+[[rules]]
+from = '\varrho'
+to = "ϱ"
+
+[[rules]]
+from = '\blackcircleulquadwhite'
+to = "◕"
+
+[[rules]]
+from = '\Uuparrow'
+to = "⤊"
+
+[[rules]]
+from = '\smalltriangleleft'
+to = "◃"
+
+[[rules]]
+from = '\rightleftharpoonsdown'
+to = "⥩"
+
+[[rules]]
+from = '\lbrackubar'
+to = "⦋"
+
+[[rules]]
+from = '\csupe'
+to = "⫒"
+
+[[rules]]
+from = '\leqq'
+to = "≦"
+
+[[rules]]
+from = '\sinewave'
+to = "∿"
+
+[[rules]]
+from = '\downarrowbarred'
+to = "⤈"
+
+[[rules]]
+from = '\arabichad'
+to = "𞻱"
+
+[[rules]]
+from = '\epsilon'
+to = "ϵ"
+
+[[rules]]
+from = '\hknwarrow'
+to = "⤣"
+
+[[rules]]
+from = '\twoheadrightarrow'
+to = "↠"
+
+[[rules]]
+from = '\circledownarrow'
+to = "⧬"
+
+[[rules]]
+from = '\Leftrightarrow'
+to = "⇔"
+
+[[rules]]
+from = '\rparenextender'
+to = "⎟"
+
+[[rules]]
+from = '\lnsim'
+to = "⋦"
+
+[[rules]]
+from = '\subsup'
+to = "⫓"
+
+[[rules]]
+from = '\intextender'
+to = "⎮"
+
+[[rules]]
+from = '\circlevertfill'
+to = "◍"
+
+[[rules]]
+from = '\lbag'
+to = "⟅"
+
+[[rules]]
+from = '\wedgeq'
+to = "≙"
+
+[[rules]]
+from = '\nparallel'
+to = "∦"
+
+[[rules]]
+from = '\veeodot'
+to = "⩒"
+
+[[rules]]
+from = '\varphi'
+to = "φ"
+
+[[rules]]
+from = '\blackpointerright'
+to = "►"
+
+[[rules]]
+from = '\squareurquad'
+to = "◳"
+
+[[rules]]
+from = '\partialmeetcontraction'
+to = "⪣"
+
+[[rules]]
+from = '\cap'
+to = "∩"
+
+[[rules]]
+from = '\supsim'
+to = "⫈"
+
+[[rules]]
+from = '\propto'
+to = "∝"
+
+[[rules]]
+from = '\wideangleup'
+to = "⦧"
+
+[[rules]]
+from = '\turnediota'
+to = "℩"
+
+[[rules]]
+from = '\mdsmwhtcircle'
+to = "⚬"
+
+[[rules]]
+from = '\overleftharpoon'
+to = "⃐"
+
+[[rules]]
+from = '\biguplus'
+to = "⨄"
+
+[[rules]]
+from = '\leftrightharpoonsdown'
+to = "⥧"
+
+[[rules]]
+from = '\lesssim'
+to = "≲"
+
+[[rules]]
+from = '\dualmap'
+to = "⧟"
+
+[[rules]]
+from = '\plussubtwo'
+to = "⨧"
+
+[[rules]]
+from = '\oiint'
+to = "∯"
+
+[[rules]]
+from = '\niobar'
+to = "⋾"
+
+[[rules]]
+from = '\perps'
+to = "⫡"
+
+[[rules]]
+from = '\sphericalangle'
+to = "∢"
+
+[[rules]]
+from = '\twocaps'
+to = "⩋"
+
+[[rules]]
+from = '\lBrack'
+to = "⟦"
+
+[[rules]]
+from = '\lbracklltick'
+to = "⦏"
+
+[[rules]]
+from = '\DDownarrow'
+to = "⟱"
+
+[[rules]]
+from = '\nVdash'
+to = "⊮"
+
+[[rules]]
+from = '\simless'
+to = "⪝"
+
+[[rules]]
+from = '\pluseqq'
+to = "⩲"
+
+[[rules]]
+from = '\mlcp'
+to = "⫛"
+
+[[rules]]
+from = '\leftleftarrows'
+to = "⇇"
+
+[[rules]]
+from = '\obot'
+to = "⦺"
+
+[[rules]]
+from = '\nvrightarrow'
+to = "⇸"
+
+[[rules]]
+from = '\Mapsfrom'
+to = "⤆"
+
+[[rules]]
+from = '\squarerightblack'
+to = "◨"
+
+[[rules]]
+from = '\cirmid'
+to = "⫯"
+
+[[rules]]
+from = '\bigsqcap'
+to = "⨅"
+
+[[rules]]
+from = '\varkappa'
+to = "ϰ"
+
+[[rules]]
+from = '\sqrtbottom'
+to = "⎷"
+
+[[rules]]
+from = '\disin'
+to = "⋲"
+
+[[rules]]
+from = '\mdlgblklozenge'
+to = "⧫"
+
+[[rules]]
+from = '\bigtriangleup'
+to = "△"
+
+[[rules]]
+from = '\leftsquigarrow'
+to = "⇜"
+
+[[rules]]
+from = '\downarrow'
+to = "↓"
+
+[[rules]]
+from = '\overparen'
+to = "⏜"
+
+[[rules]]
+from = '\nless'
+to = "≮"
+
+[[rules]]
+from = '\rbrackextender'
+to = "⎥"
+
+[[rules]]
+from = '\veedot'
+to = "⟇"
+
+[[rules]]
+from = '\scpolint'
+to = "⨓"
+
+[[rules]]
+from = '\bsimilarrightarrow'
+to = "⭇"
+
+[[rules]]
+from = '\rightbkarrow'
+to = "⤍"
+
+[[rules]]
+from = '\rdiagovsearrow'
+to = "⤰"
+
+[[rules]]
+from = '\similarrightarrow'
+to = "⥲"
+
+[[rules]]
+from = '\supdsub'
+to = "⫘"
+
+[[rules]]
+from = '\subsetapprox'
+to = "⫉"
+
+[[rules]]
+from = '\ringplus'
+to = "⨢"
+
+[[rules]]
+from = '\rmoustache'
+to = "⎱"
+
+[[rules]]
+from = '\ngtrless'
+to = "≹"
+
+[[rules]]
+from = '\medwhitestar'
+to = "⭐"
+
+[[rules]]
+from = '\trslash'
+to = "⫻"
+
+[[rules]]
+from = '\llangle'
+to = "⦉"
+
+[[rules]]
+from = '\upharpoonrightbar'
+to = "⥜"
+
+[[rules]]
+from = '\Nearrow'
+to = "⇗"
+
+[[rules]]
+from = '\mdlgwhtcircle'
+to = "○"
+
+[[rules]]
+from = '\circletophalfblack'
+to = "◓"
+
+[[rules]]
+from = '\Sqcup'
+to = "⩏"
+
+[[rules]]
+from = '\triangles'
+to = "⧌"
+
+[[rules]]
+from = '\csub'
+to = "⫏"
+
+[[rules]]
+from = '\eqsim'
+to = "≂"
+
+[[rules]]
+from = '\Dashv'
+to = "⫤"
+
+[[rules]]
+from = '\rBrack'
+to = "⟧"
+
+[[rules]]
+from = '\smwhitestar'
+to = "⭒"
+
+[[rules]]
+from = '\UUparrow'
+to = "⟰"
+
+[[rules]]
+from = '\assert'
+to = "⊦"
+
+[[rules]]
+from = '\lfbowtie'
+to = "⧑"
+
+[[rules]]
+from = '\twoheadleftarrowtail'
+to = "⬻"
+
+[[rules]]
+from = '\pi'
+to = "π"
+
+[[rules]]
+from = '\downwhitearrow'
+to = "⇩"
+
+[[rules]]
+from = '\cwundercurvearrow'
+to = "⤾"
+
+[[rules]]
+from = '\varVdash'
+to = "⫦"
+
+[[rules]]
+from = '\errbarcircle'
+to = "⧲"
+
+[[rules]]
+from = '\vBar'
+to = "⫨"
+
+[[rules]]
+from = '\hourglass'
+to = "⧖"
+
+[[rules]]
+from = '\nvartriangleleft'
+to = "⋪"
+
+[[rules]]
+from = '\rftimes'
+to = "⧕"
+
+[[rules]]
+from = '\smashtimes'
+to = "⨳"
+
+[[rules]]
+from = '\equivVvert'
+to = "⩩"
+
+[[rules]]
+from = '\rsqhook'
+to = "⫎"
+
+[[rules]]
+from = '\dotminus'
+to = "∸"
+
+[[rules]]
+from = '\rtriltri'
+to = "⧎"
+
+[[rules]]
+from = '\varpi'
+to = "ϖ"
+
+[[rules]]
+from = '\diceiv'
+to = "⚃"
+
+[[rules]]
+from = '\odiv'
+to = "⨸"
+
+[[rules]]
+from = '\longdivision'
+to = "⟌"
+
+[[rules]]
+from = '\tosa'
+to = "⤩"
+
+[[rules]]
+from = '\eqslantgtr'
+to = "⪖"
+
+[[rules]]
+from = '\barleftharpoonup'
+to = "⥒"
+
+[[rules]]
+from = '\rvboxline'
+to = "⎹"
+
+[[rules]]
+from = '\lrcorner'
+to = "⌟"
+
+[[rules]]
+from = '\nVtwoheadleftarrowtail'
+to = "⬽"
+
+[[rules]]
+from = '\underbracket'
+to = "⎵"
+
+[[rules]]
+from = '\subseteq'
+to = "⊆"
+
+[[rules]]
+from = '\ltcc'
+to = "⪦"
+
+[[rules]]
+from = '\nVleftrightarrow'
+to = "⇼"
+
+[[rules]]
+from = '\Yup'
+to = "⅄"
+
+[[rules]]
+from = '\leftwhitearrow'
+to = "⇦"
+
+[[rules]]
+from = '\bardownharpoonleft'
+to = "⥡"
+
+[[rules]]
+from = '\lll'
+to = "⋘"
+
+[[rules]]
+from = '\Sqcap'
+to = "⩎"
+
+[[rules]]
+from = '\gamma'
+to = "γ"
+
+[[rules]]
+from = '\capbarcup'
+to = "⩉"
+
+[[rules]]
+from = '\circleonrightarrow'
+to = "⇴"
+
+[[rules]]
+from = '\dashv'
+to = "⊣"
+
+[[rules]]
+from = '\oiiint'
+to = "∰"
+
+[[rules]]
+from = '\inttop'
+to = "⌠"
+
+[[rules]]
+from = '\wedgebar'
+to = "⩟"
+
+[[rules]]
+from = '\Colon'
+to = "∷"
+
+[[rules]]
+from = '\RRightarrow'
+to = "⭆"
+
+[[rules]]
+from = '\bigwhitestar'
+to = "☆"
+
+[[rules]]
+from = '\measangleultonw'
+to = "⦭"
+
+[[rules]]
+from = '\drbkarrow'
+to = "⤐"
+
+[[rules]]
+from = '\barleftarrowrightarrowbar'
+to = "↹"
+
+[[rules]]
+from = '\rightarrowx'
+to = "⥇"
+
+[[rules]]
+from = '\whitepointerright'
+to = "▻"
+
+[[rules]]
+from = '\inversewhitecircle'
+to = "◙"
+
+[[rules]]
+from = '\neswarrow'
+to = "⤢"
+
+[[rules]]
+from = '\acidfree'
+to = "♾"
+
+[[rules]]
+from = '\dagger'
+to = "†"
+
+[[rules]]
+from = '\upbackepsilon'
+to = "϶"
+
+[[rules]]
+from = '\nu'
+to = "ν"
+
+[[rules]]
+from = '\curvearrowleftplus'
+to = "⤽"
+
+[[rules]]
+from = '\trianglerighteq'
+to = "⊵"
+
+[[rules]]
+from = '\harrowextender'
+to = "⎯"
+
+[[rules]]
+from = '\dsub'
+to = "⩤"
+
+[[rules]]
+from = '\leftdbkarrow'
+to = "⤎"
+
+[[rules]]
+from = '\supseteqq'
+to = "⫆"
+
+[[rules]]
+from = '\diceiii'
+to = "⚂"
+
+[[rules]]
+from = '\intbar'
+to = "⨍"
+
+[[rules]]
+from = '\ldots'
+to = "…"
+
+[[rules]]
+from = '\bigwedge'
+to = "⋀"
+
+[[rules]]
+from = '\precneqq'
+to = "⪵"
+
+[[rules]]
+from = '\parsim'
+to = "⫳"
+
+[[rules]]
+from = '\varisins'
+to = "⋳"
+
+[[rules]]
+from = '\vysmwhtsquare'
+to = "⬞"
+
+[[rules]]
+from = '\lbracemid'
+to = "⎨"
+
+[[rules]]
+from = '\varointclockwise'
+to = "∲"
+
+[[rules]]
+from = '\squarehvfill'
+to = "▦"
+
+[[rules]]
+from = '\mdblksquare'
+to = "◼"
+
+[[rules]]
+from = '\barV'
+to = "⫪"
+
+[[rules]]
+from = '\eta'
+to = "η"
+
+[[rules]]
+from = '\strns'
+to = "⏤"
+
+[[rules]]
+from = '\eqvparsl'
+to = "⧥"
+
+[[rules]]
+from = '\arabicmaj'
+to = "𞻰"
+
+[[rules]]
+from = '\boxonbox'
+to = "⧉"
+
+[[rules]]
+from = '\eqqgtr'
+to = "⪚"
+
+[[rules]]
+from = '\lbracelend'
+to = "⎩"
+
+[[rules]]
+from = '\subedot'
+to = "⫃"
+
+[[rules]]
+from = '\rangledot'
+to = "⦒"
+
+[[rules]]
+from = '\Downarrow'
+to = "⇓"
+
+[[rules]]
+from = '\updownharpoonrightright'
+to = "⥏"
+
+[[rules]]
+from = '\overleftrightarrow'
+to = "⃡"
+
+[[rules]]
+from = '\overbrace'
+to = "⏞"
+
+[[rules]]
+from = '\hexagon'
+to = "⎔"
+
+[[rules]]
+from = '\leftharpoonupdash'
+to = "⥪"
+
+[[rules]]
+from = '\nsupseteq'
+to = "⊉"
+
+[[rules]]
+from = '\nvtwoheadleftarrow'
+to = "⬴"
+
+[[rules]]
+from = '\lozengeminus'
+to = "⟠"
+
+[[rules]]
+from = '\Longmapsfrom'
+to = "⟽"
+
+[[rules]]
+from = '\Rdsh'
+to = "↳"
+
+[[rules]]
+from = '\upharpoonleftbar'
+to = "⥠"
+
+[[rules]]
+from = '\gtrless'
+to = "≷"
+
+[[rules]]
+from = '\eqdot'
+to = "⩦"
+
+[[rules]]
+from = '\wedgeodot'
+to = "⩑"
+
+[[rules]]
+from = '\leftrightharpoonupup'
+to = "⥎"
+
+[[rules]]
+from = '\circledrightdot'
+to = "⚆"
+
+[[rules]]
+from = '\twoheaduparrow'
+to = "↟"
+
+[[rules]]
+from = '\Cap'
+to = "⋒"
+
+[[rules]]
+from = '\lgE'
+to = "⪑"
+
+[[rules]]
+from = '\urblacktriangle'
+to = "◥"
+
+[[rules]]
+from = '\isinvb'
+to = "⋸"
+
+[[rules]]
+from = '\leftharpoonaccent'
+to = "⃐"
+
+[[rules]]
+from = '\fint'
+to = "⨏"
+
+[[rules]]
+from = '\tripleplus'
+to = "⧻"
+
+[[rules]]
+from = '\rightarrowsimilar'
+to = "⥴"
+
+[[rules]]
+from = '\female'
+to = "♀"
+
+[[rules]]
+from = '\isindot'
+to = "⋵"
+
+[[rules]]
+from = '\bigtop'
+to = "⟙"
+
+[[rules]]
+from = '\Coloneq'
+to = "⩴"
+
+[[rules]]
+from = '\trprime'
+to = "‴"
+
+[[rules]]
+from = '\similarleftarrow'
+to = "⭉"
+
+[[rules]]
+from = '\rbracemid'
+to = "⎬"
+
+[[rules]]
+from = '\updownarrow'
+to = "↕"
+
+[[rules]]
+from = '\gnsim'
+to = "⋧"
+
+[[rules]]
+from = '\rparenuend'
+to = "⎞"
+
+[[rules]]
+from = '\measuredangle'
+to = "∡"
+
+[[rules]]
+from = '\vertoverlay'
+to = "⃒"
+
+[[rules]]
+from = '\Rrightarrow'
+to = "⇛"
+
+[[rules]]
+from = '\sqsubset'
+to = "⊏"
+
+[[rules]]
+from = '\rdiagovfdiag'
+to = "⤫"
+
+[[rules]]
+from = '\Vert'
+to = "‖"
+
+[[rules]]
+from = '\divideontimes'
+to = "⋇"
+
+[[rules]]
+from = '\whitesquaretickright'
+to = "⟥"
+
+[[rules]]
+from = '\zproject'
+to = "⨡"
+
+[[rules]]
+from = '\cirscir'
+to = "⧂"
+
+[[rules]]
+from = '\mu'
+to = "μ"
+
+[[rules]]
+from = '\squarelrquad'
+to = "◲"
+
+[[rules]]
+from = '\nVleftarrowtail'
+to = "⬺"
+
+[[rules]]
+from = '\Gt'
+to = "⪢"
+
+[[rules]]
+from = '\underleftharpoondown'
+to = "⃭"
+
+[[rules]]
+from = '\rightanglesqr'
+to = "⦜"
+
+[[rules]]
+from = '\smwhtcircle'
+to = "◦"
+
+[[rules]]
+from = '\topsemicircle'
+to = "◠"
+
+[[rules]]
+from = '\intx'
+to = "⨘"
+
+[[rules]]
+from = '\vDdash'
+to = "⫢"
+
+[[rules]]
+from = '\blacksmiley'
+to = "☻"
+
+[[rules]]
+from = '\Mu'
+to = "Μ"
+
+[[rules]]
+from = '\triangledown'
+to = "▿"
+
+[[rules]]
+from = '\isins'
+to = "⋴"
+
+[[rules]]
+from = '\qprime'
+to = "⁗"
+
+[[rules]]
+from = '\circlehbar'
+to = "⦵"
+
+[[rules]]
+from = '\vzigzag'
+to = "⦚"
+
+[[rules]]
+from = '\rightharpoondownbar'
+to = "⥗"
+
+[[rules]]
+from = '\questeq'
+to = "≟"
+
+[[rules]]
+from = '\to'
+to = "→"
+
+[[rules]]
+from = '\intclockwise'
+to = "∱"
+
+[[rules]]
+from = '\supedot'
+to = "⫄"
+
+[[rules]]
+from = '\APLboxquestion'
+to = "⍰"
+
+[[rules]]
+from = '\sphericalangleup'
+to = "⦡"
+
+[[rules]]
+from = '\rho'
+to = "ρ"
+
+[[rules]]
+from = '\succneq'
+to = "⪲"
+
+[[rules]]
+from = '\rightarrowplus'
+to = "⥅"
+
+[[rules]]
+from = '\sslash'
+to = "⫽"
+
+[[rules]]
+from = '\intprodr'
+to = "⨽"
+
+[[rules]]
+from = '\sumbottom'
+to = "⎳"
+
+[[rules]]
+from = '\precneq'
+to = "⪱"
+
+[[rules]]
+from = '\twoheaddownarrow'
+to = "↡"
+
+[[rules]]
+from = '\diamondcdot'
+to = "⟐"
+
+[[rules]]
+from = '\blackinwhitediamond'
+to = "◈"
+
+[[rules]]
+from = '\Updownarrow'
+to = "⇕"
+
+[[rules]]
+from = '\fdiagovrdiag'
+to = "⤬"
+
+[[rules]]
+from = '\surd'
+to = "√"
+
+[[rules]]
+from = '\rightharpoondown'
+to = "⇁"
+
+[[rules]]
+from = '\geq'
+to = "≥"
+
+[[rules]]
+from = '\twoheaduparrowcircle'
+to = "⥉"
+
+[[rules]]
+from = '\circleurquad'
+to = "◷"
+
+[[rules]]
+from = '\bowtie'
+to = "⋈"
+
+[[rules]]
+from = '\dingasterisk'
+to = "✽"
+
+[[rules]]
+from = '\Rho'
+to = "Ρ"
+
+[[rules]]
+from = '\triangleminus'
+to = "⨺"
+
+[[rules]]
+from = '\ogreaterthan'
+to = "⧁"
+
+[[rules]]
+from = '\uparrowoncircle'
+to = "⦽"
+
+[[rules]]
+from = '\smwhtlozenge'
+to = "⬫"
+
+[[rules]]
+from = '\nvrightarrowtail'
+to = "⤔"
+
+[[rules]]
+from = '\nabla'
+to = "∇"
+
+[[rules]]
+from = '\beta'
+to = "β"
+
+[[rules]]
+from = '\varisinobar'
+to = "⋶"
+
+[[rules]]
+from = '\sigma'
+to = "σ"
+
+[[rules]]
+from = '\backtrprime'
+to = "‷"
+
+[[rules]]
+from = '\llcorner'
+to = "⌞"
+
+[[rules]]
+from = '\vBarv'
+to = "⫩"
+
+[[rules]]
+from = '\wedgeonwedge'
+to = "⩕"
+
+[[rules]]
+from = '\triangleubar'
+to = "⧋"
+
+[[rules]]
+from = '\rightarrowbar'
+to = "⇥"
+
+[[rules]]
+from = '\xbsol'
+to = "⧹"
+
+[[rules]]
+from = '\triangleodot'
+to = "⧊"
+
+[[rules]]
+from = '\oplusrhrim'
+to = "⨮"
+
+[[rules]]
+from = '\subsetplus'
+to = "⪿"
+
+[[rules]]
+from = '\ltimes'
+to = "⋉"
+
+[[rules]]
+from = '\longdashv'
+to = "⟞"
+
+[[rules]]
+from = '\pentagonblack'
+to = "⬟"
+
+[[rules]]
+from = '\star'
+to = "⋆"
+
+[[rules]]
+from = '\mp'
+to = "∓"
+
+[[rules]]
+from = '\angles'
+to = "⦞"
+
+[[rules]]
+from = '\lefttail'
+to = "⤙"
+
+[[rules]]
+from = '\thermod'
+to = "⧧"
+
+[[rules]]
+from = '\pentagon'
+to = "⬠"
+
+[[rules]]
+from = '\leftarrowonoplus'
+to = "⬲"
+
+[[rules]]
+from = '\bigblacktriangleup'
+to = "▲"
+
+[[rules]]
+from = '\updownharpoonsleftright'
+to = "⥮"
+
+[[rules]]
+from = '\Lparengtr'
+to = "⦕"
+
+[[rules]]
+from = '\wideangledown'
+to = "⦦"
+
+[[rules]]
+from = '\lparenextender'
+to = "⎜"
+
+[[rules]]
+from = '\smt'
+to = "⪪"
+
+[[rules]]
+from = '\simlE'
+to = "⪟"
+
+[[rules]]
+from = '\rparenlend'
+to = "⎠"
+
+[[rules]]
+from = '\backprime'
+to = "‵"
+
+[[rules]]
+from = '\rightarrow'
+to = "→"
+
+[[rules]]
+from = '\rightarrowsupset'
+to = "⭄"
+
+[[rules]]
+from = '\Angstrom'
+to = "Å"
+
+[[rules]]
+from = '\benzenr'
+to = "⏣"
+
+[[rules]]
+from = '\mdsmblksquare'
+to = "◾"
+
+[[rules]]
+from = '\succsim'
+to = "≿"
+
+[[rules]]
+from = '\subset'
+to = "⊂"
+
+[[rules]]
+from = '\obar'
+to = "⌽"
+
+[[rules]]
+from = '\ngtrsim'
+to = "≵"
+
+[[rules]]
+from = '\sqsubseteq'
+to = "⊑"
+
+[[rules]]
+from = '\leftarrowbackapprox'
+to = "⭂"
+
+[[rules]]
+from = '\lbrackultick'
+to = "⦍"
+
+[[rules]]
+from = '\triangleright'
+to = "▷"
+
+[[rules]]
+from = '\supmult'
+to = "⫂"
+
+[[rules]]
+from = '\neg'
+to = "¬"
+
+[[rules]]
+from = '\Omega'
+to = "Ω"
+
+[[rules]]
+from = '\mathsection'
+to = "§"
+
+[[rules]]
+from = '\smblkcircle'
+to = "•"
+
+[[rules]]
+from = '\leftharpoondown'
+to = "↽"
+
+[[rules]]
+from = '\lceil'
+to = "⌈"
+
+[[rules]]
+from = '\enclosediamond'
+to = "⃟"
+
+[[rules]]
+from = '\bumpeq'
+to = "≏"
+
+[[rules]]
+from = '\succnsim'
+to = "⋩"
+
+[[rules]]
+from = '\fracslash'
+to = "⁄"
+
+[[rules]]
+from = '\shortuptack'
+to = "⫠"
+
+[[rules]]
+from = '\nVrightarrowtail'
+to = "⤕"
+
+[[rules]]
+from = '\Leftarrow'
+to = "⇐"
+
+[[rules]]
+from = '\overbracket'
+to = "⎴"
+
+[[rules]]
+from = '\twoheadleftdbkarrow'
+to = "⬷"
+
+[[rules]]
+from = '\blockhalfshaded'
+to = "▒"
+
+[[rules]]
+from = '\eqeq'
+to = "⩵"
+
+[[rules]]
+from = '\blkvertoval'
+to = "⬮"
+
+[[rules]]
+from = '\APLboxupcaret'
+to = "⍓"
+
+[[rules]]
+from = '\coloneqq'
+to = "≔"
+
+[[rules]]
+from = '\ularc'
+to = "◜"
+
+[[rules]]
+from = '\wedgedoublebar'
+to = "⩠"
+
+[[rules]]
+from = '\lAngle'
+to = "⟪"
+
+[[rules]]
+from = '\supsetneqq'
+to = "⫌"
+
+[[rules]]
+from = '\wedgedot'
+to = "⟑"
+
+[[rules]]
+from = '\veeeq'
+to = "≚"
+
+[[rules]]
+from = '\simplus'
+to = "⨤"
+
+[[rules]]
+from = '\rightarrowgtr'
+to = "⭃"
+
+[[rules]]
+from = '\simeq'
+to = "≃"
+
+[[rules]]
+from = '\invlazys'
+to = "∾"
+
+[[rules]]
+from = '\sqrt'
+to = "√"
+
+[[rules]]
+from = '\mdwhtlozenge'
+to = "⬨"
+
+[[rules]]
+from = '\lsimg'
+to = "⪏"
+
+[[rules]]
+from = '\iff'
+to = "⟺"
+
+[[rules]]
+from = '\longleftarrow'
+to = "⟵"
+
+[[rules]]
+from = '\iiiint'
+to = "⨌"
+
+[[rules]]
+from = '\approxeqq'
+to = "⩰"
+
+[[rules]]
+from = '\bigcap'
+to = "⋂"
+
+[[rules]]
+from = '\origof'
+to = "⊶"
+
+[[rules]]
+from = '\revangle'
+to = "⦣"
+
+[[rules]]
+from = '\Ldsh'
+to = "↲"
+
+[[rules]]
+from = '\mho'
+to = "℧"
+
+[[rules]]
+from = '\Rightarrow'
+to = "⇒"
+
+[[rules]]
+from = '\natural'
+to = "♮"
+
+[[rules]]
+from = '\male'
+to = "♂"
+
+[[rules]]
+from = '\updigamma'
+to = "ϝ"
+
+[[rules]]
+from = '\squareulquad'
+to = "◰"
+
+[[rules]]
+from = '\Zbar'
+to = "Ƶ"
+
+[[rules]]
+from = '\searrow'
+to = "↘"
+
+[[rules]]
+from = '\ncong'
+to = "≇"
+
+[[rules]]
+from = '\smalltriangleright'
+to = "▹"
+
+[[rules]]
+from = '\nvtwoheadleftarrowtail'
+to = "⬼"
+
+[[rules]]
+from = '\topcir'
+to = "⫱"
+
+[[rules]]
+from = '\rightwavearrow'
+to = "↝"
+
+[[rules]]
+from = '\lambda'
+to = "λ"
+
+[[rules]]
+from = '\dashleftharpoondown'
+to = "⥫"
+
+[[rules]]
+from = '\closedvarcup'
+to = "⩌"
+
+[[rules]]
+from = '\measangleurtone'
+to = "⦬"
+
+[[rules]]
+from = '\twoheadleftarrow'
+to = "↞"
+
+[[rules]]
+from = '\barwedge'
+to = "⊼"
+
+[[rules]]
+from = '\Vdash'
+to = "⊩"
+
+[[rules]]
+from = '\trianglecdot'
+to = "◬"
+
+[[rules]]
+from = '\acwopencirclearrow'
+to = "↺"
+
+[[rules]]
+from = '\rppolint'
+to = "⨒"
+
+[[rules]]
+from = '\bigodot'
+to = "⨀"
+
+[[rules]]
+from = '\squareurblack'
+to = "⬔"
+
+[[rules]]
+from = '\triangleleft'
+to = "◁"
+
+[[rules]]
+from = '\leftrightarrowtriangle'
+to = "⇿"
+
+[[rules]]
+from = '\dicev'
+to = "⚄"
+
+[[rules]]
+from = '\circleurquadblack'
+to = "◔"
+
+[[rules]]
+from = '\nLeftarrow'
+to = "⇍"
+
+[[rules]]
+from = '\errbarsquare'
+to = "⧮"
+
+[[rules]]
+from = '\lsqhook'
+to = "⫍"
+
+[[rules]]
+from = '\npolint'
+to = "⨔"
+
+[[rules]]
+from = '\rrangle'
+to = "⦊"
+
+[[rules]]
+from = '\modtwosum'
+to = "⨊"
+
+[[rules]]
+from = '\linefeed'
+to = "↴"
+
+[[rules]]
+from = '\xi'
+to = "ξ"
+
+[[rules]]
+from = '\lgwhtsquare'
+to = "⬜"
+
+[[rules]]
+from = '\Finv'
+to = "Ⅎ"
+
+[[rules]]
+from = '\ulblacktriangle'
+to = "◤"
+
+[[rules]]
+from = '\nvartriangleright'
+to = "⋫"
+
+[[rules]]
+from = '\nleq'
+to = "≰"
+
+[[rules]]
+from = '\rBrace'
+to = "⦄"
+
+[[rules]]
+from = '\boxbslash'
+to = "⧅"
+
+[[rules]]
+from = '\zpipe'
+to = "⨠"
+
+[[rules]]
+from = '\bot'
+to = "⊥"
+
+[[rules]]
+from = '\whitearrowupfrombar'
+to = "⇪"
+
+[[rules]]
+from = '\rightdasharrow'
+to = "⇢"
+
+[[rules]]
+from = '\DashV'
+to = "⫥"
+
+[[rules]]
+from = '\sqsupset'
+to = "⊐"
+
+[[rules]]
+from = '\circledbullet'
+to = "⦿"
+
+[[rules]]
+from = '\smblksquare'
+to = "▪"
+
+[[rules]]
+from = '\rightangle'
+to = "∟"
+
+[[rules]]
+from = '\nVleftarrow'
+to = "⇺"
+
+[[rules]]
+from = '\rightharpoonaccent'
+to = "⃑"
+
+[[rules]]
+from = '\barcup'
+to = "⩂"
+
+[[rules]]
+from = '\plusdot'
+to = "⨥"
+
+[[rules]]
+from = '\rightcurvedarrow'
+to = "⤳"
+
+[[rules]]
+from = '\lgwhtcircle'
+to = "◯"
+
+[[rules]]
+from = '\rcurvyangle'
+to = "⧽"
+
+[[rules]]
+from = '\profline'
+to = "⌒"
+
+[[rules]]
+from = '\ruledelayed'
+to = "⧴"
+
+[[rules]]
+from = '\bigoplus'
+to = "⨁"
+
+[[rules]]
+from = '\overrightarrow'
+to = "⃗"
+
+[[rules]]
+from = '\cirfnint'
+to = "⨐"
+
+[[rules]]
+from = '\lparenless'
+to = "⦓"
+
+[[rules]]
+from = '\doteq'
+to = "≐"
+
+[[rules]]
+from = '\doublebarwedge'
+to = "⩞"
+
+[[rules]]
+from = '\rightdotarrow'
+to = "⤑"
+
+[[rules]]
+from = '\enclosesquare'
+to = "⃞"
+
+[[rules]]
+from = '\geqq'
+to = "≧"
+
+[[rules]]
+from = '\Rsh'
+to = "↱"
+
+[[rules]]
+from = '\triangletimes'
+to = "⨻"
+
+[[rules]]
+from = '\suphsub'
+to = "⫗"
+
+[[rules]]
+from = '\subseteqq'
+to = "⫅"
+
+[[rules]]
+from = '\rightleftharpoons'
+to = "⇌"
+
+[[rules]]
+from = '\rparengtr'
+to = "⦔"
+
+[[rules]]
+from = '\blacktriangle'
+to = "▴"
+
+[[rules]]
+from = '\blackcircledrightdot'
+to = "⚈"
+
+[[rules]]
+from = '\diamondsuit'
+to = "♢"
+
+[[rules]]
+from = '\capdot'
+to = "⩀"
+
+[[rules]]
+from = '\hyphenbullet'
+to = "⁃"
+
+[[rules]]
+from = '\profsurf'
+to = "⌓"
+
+[[rules]]
+from = '\supset'
+to = "⊃"
+
+[[rules]]
+from = '\operp'
+to = "⦹"
+
+[[rules]]
+from = '\cdotp'
+to = "·"
+
+[[rules]]
+from = '\Cup'
+to = "⋓"
+
+[[rules]]
+from = '\varspadesuit'
+to = "♤"
+
+[[rules]]
+from = '\rightarrowtriangle'
+to = "⇾"
+
+[[rules]]
+from = '\conjquant'
+to = "⨇"
+
+[[rules]]
+from = '\mathparagraph'
+to = "¶"
+
+[[rules]]
+from = '\mathsterling'
+to = "£"
+
+[[rules]]
+from = '\barovernorthwestarrow'
+to = "↸"
+
+[[rules]]
+from = '\eqdef'
+to = "≝"
+
+[[rules]]
+from = '\underrightharpoondown'
+to = "⃬"
+
+[[rules]]
+from = '\circleddash'
+to = "⊝"
+
+[[rules]]
+from = '\rightthreearrows'
+to = "⇶"
+
+[[rules]]
+from = '\barrightarrowdiamond'
+to = "⤠"
+
+[[rules]]
+from = '\lcurvyangle'
+to = "⧼"
+
+[[rules]]
+from = '\nvtwoheadrightarrowtail'
+to = "⤗"
+
+[[rules]]
+from = '\barleftharpoondown'
+to = "⥖"
+
+[[rules]]
+from = '\eqgtr'
+to = "⋝"
+
+[[rules]]
+from = '\leftdbltail'
+to = "⤛"
+
+[[rules]]
+from = '\cdot'
+to = "⋅"
+
+[[rules]]
+from = '\intlarhk'
+to = "⨗"
+
+[[rules]]
+from = '\updownharpoonleftright'
+to = "⥍"
+
+[[rules]]
+from = '\rightsquigarrow'
+to = "⇝"
+
+[[rules]]
+from = '\curlyeqsucc'
+to = "⋟"
+
+[[rules]]
+from = '\threeunderdot'
+to = "⃨"
+
+[[rules]]
+from = '\underrightarrow'
+to = "⃯"
+
+[[rules]]
+from = '\emptysetoarrl'
+to = "⦴"
+
+[[rules]]
+from = '\lrtriangleeq'
+to = "⧡"
+
+[[rules]]
+from = '\ddots'
+to = "⋱"
+
+[[rules]]
+from = '\dicei'
+to = "⚀"
+
+[[rules]]
+from = '\Beta'
+to = "Β"
+
+[[rules]]
+from = '\Game'
+to = "⅁"
+
+[[rules]]
+from = '\squarebotblack'
+to = "⬓"
+
+[[rules]]
+from = '\therefore'
+to = "∴"
+
+[[rules]]
+from = '\circleonleftarrow'
+to = "⬰"
+
+[[rules]]
+from = '\mapsfrom'
+to = "↤"
+
+[[rules]]
+from = '\barvee'
+to = "⊽"
+
+[[rules]]
+from = '\shortdowntack'
+to = "⫟"
+
+[[rules]]
+from = '\simgE'
+to = "⪠"
+
+[[rules]]
+from = '\downharpoonright'
+to = "⇂"
+
+[[rules]]
+from = '\Longleftrightarrow'
+to = "⟺"
+
+[[rules]]
+from = '\uparrow'
+to = "↑"
+
+[[rules]]
+from = '\ntrianglelefteq'
+to = "⋬"
+
+[[rules]]
+from = '\squarellquad'
+to = "◱"
+
+[[rules]]
+from = '\because'
+to = "∵"
+
+[[rules]]
+from = '\circledvert'
+to = "⦶"
+
+[[rules]]
+from = '\threedotcolon'
+to = "⫶"
+
+[[rules]]
+from = '\nrightarrow'
+to = "↛"
+
+[[rules]]
+from = '\spadesuit'
+to = "♠"
+
+[[rules]]
+from = '\Gamma'
+to = "Γ"
+
+[[rules]]
+from = '\iota'
+to = "ι"
+
+[[rules]]
+from = '\odot'
+to = "⊙"
+
+[[rules]]
+from = '\Subset'
+to = "⋐"
+
+[[rules]]
+from = '\minus'
+to = "−"
+
+[[rules]]
+from = '\subsetcirc'
+to = "⟃"
+
+[[rules]]
+from = '\varstar'
+to = "✶"
+
+[[rules]]
+from = '\subsub'
+to = "⫕"
+
+[[rules]]
+from = '\annuity'
+to = "⃧"
+
+[[rules]]
+from = '\divslash'
+to = "∕"
+
+[[rules]]
+from = '\caretinsert'
+to = "‸"
+
+[[rules]]
+from = '\asteq'
+to = "⩮"
+
+[[rules]]
+from = '\conictaper'
+to = "⌲"
+
+[[rules]]
+from = '\backsim'
+to = "∽"
+
+[[rules]]
+from = '\tieinfty'
+to = "⧝"
+
+[[rules]]
+from = '\intercal'
+to = "⊺"
+
+[[rules]]
+from = '\varnis'
+to = "⋻"
+
+[[rules]]
+from = '\cuberoot'
+to = "∛"
+
+[[rules]]
+from = '\ne'
+to = "≠"
+
+[[rules]]
+from = '\towa'
+to = "⤪"
+
+[[rules]]
+from = '\capovercup'
+to = "⩇"
+
+[[rules]]
+from = '\downuparrows'
+to = "⇵"
+
+[[rules]]
+from = '\blackcircledtwodots'
+to = "⚉"
+
+[[rules]]
+from = '\twocups'
+to = "⩊"
+
+[[rules]]
+from = '\Lbrbrak'
+to = "⟬"
+
+[[rules]]
+from = '\hzigzag'
+to = "〰"
+
+[[rules]]
+from = '\bumpeqq'
+to = "⪮"
+
+[[rules]]
+from = '\iiint'
+to = "∭"
+
+[[rules]]
+from = '\blackdiamonddownarrow'
+to = "⧪"
+
+[[rules]]
+from = '\leqqslant'
+to = "⫹"
+
+[[rules]]
+from = '\succcurlyeq'
+to = "≽"
+
+[[rules]]
+from = '\nHuparrow'
+to = "⇞"
+
+[[rules]]
+from = '\multimap'
+to = "⊸"
+
+[[rules]]
+from = '\phi'
+to = "ϕ"
+
+[[rules]]
+from = '\downharpoonleft'
+to = "⇃"
+
+[[rules]]
+from = '\barcap'
+to = "⩃"
+
+[[rules]]
+from = '\boxtimes'
+to = "⊠"
+
+[[rules]]
+from = '\veeonvee'
+to = "⩖"
+
+[[rules]]
+from = '\hksearrow'
+to = "⤥"
+
+[[rules]]
+from = '\enleadertwodots'
+to = "‥"
+
+[[rules]]
+from = '\diamondleftarrowbar'
+to = "⤟"
+
+[[rules]]
+from = '\fallingdotseq'
+to = "≒"
+
+[[rules]]
+from = '\blanksymbol'
+to = "␢"
+
+[[rules]]
+from = '\Nu'
+to = "Ν"
+
+[[rules]]
+from = '\sqcap'
+to = "⊓"
+
+[[rules]]
+from = '\varTheta'
+to = "ϴ"
+
+[[rules]]
+from = '\trianglerightblack'
+to = "◮"
+
+[[rules]]
+from = '\setminus'
+to = "⧵"
+
+[[rules]]
+from = '\forks'
+to = "⫝̸"
+
+[[rules]]
+from = '\whitesquaretickleft'
+to = "⟤"
+
+[[rules]]
+from = '\curvearrowrightminus'
+to = "⤼"
+
+[[rules]]
+from = '\triangleq'
+to = "≜"
+
+[[rules]]
+from = '\urtriangle'
+to = "◹"
+
+[[rules]]
+from = '\mdlgblksquare'
+to = "■"
+
+[[rules]]
+from = '\Wedge'
+to = "⩓"
+
+[[rules]]
+from = '\rightpentagonblack'
+to = "⭓"
+
+[[rules]]
+from = '\mdwhtcircle'
+to = "⚪"
+
+[[rules]]
+from = '\succapprox'
+to = "⪸"
+
+[[rules]]
+from = '\leftarrowtriangle'
+to = "⇽"
+
+[[rules]]
+from = '\leftarrowtail'
+to = "↢"
+
+[[rules]]
+from = '\hslash'
+to = "ℏ"
+
+[[rules]]
+from = '\postalmark'
+to = "〒"
+
+[[rules]]
+from = '\nVrightarrow'
+to = "⇻"
+
+[[rules]]
+from = '\upin'
+to = "⟒"
+
+[[rules]]
+from = '\dicevi'
+to = "⚅"
+
+[[rules]]
+from = '\exists'
+to = "∃"
+
+[[rules]]
+from = '\simminussim'
+to = "⩬"
+
+[[rules]]
+from = '\leftrightarrows'
+to = "⇆"
+
+[[rules]]
+from = '\ni'
+to = "∋"
+
+[[rules]]
+from = '\gimel'
+to = "ℷ"
+
+[[rules]]
+from = '\varclubsuit'
+to = "♧"
+
+[[rules]]
+from = '\csup'
+to = "⫐"
+
+[[rules]]
+from = '\nvinfty'
+to = "⧞"
+
+[[rules]]
+from = '\nHdownarrow'
+to = "⇟"
+
+[[rules]]
+from = '\concavediamond'
+to = "⟡"
+
+[[rules]]
+from = '\lfloor'
+to = "⌊"
+
+[[rules]]
+from = '\veemidvert'
+to = "⩛"
+
+[[rules]]
+from = '\acwoverarcarrow'
+to = "⤺"
+
+[[rules]]
+from = '\rParen'
+to = "⦆"
+
+[[rules]]
+from = '\shortrightarrowleftarrow'
+to = "⥄"
+
+[[rules]]
+from = '\isinobar'
+to = "⋷"
+
+[[rules]]
+from = '\shortlefttack'
+to = "⫞"
+
+[[rules]]
+from = '\whitepointerleft'
+to = "◅"
+
+[[rules]]
+from = '\rbrackuend'
+to = "⎤"
+
+[[rules]]
+from = '\rightleftharpoonsup'
+to = "⥨"
+
+[[rules]]
+from = '\inversebullet'
+to = "◘"
+
+[[rules]]
+from = '\sqsubsetneq'
+to = "⋤"
+
+[[rules]]
+from = '\squaretopblack'
+to = "⬒"
+
+[[rules]]
+from = '\smallblacktriangleleft'
+to = "◂"
+
+[[rules]]
+from = '\cong'
+to = "≅"
+
+[[rules]]
+from = '\ltcir'
+to = "⩹"
+
+[[rules]]
+from = '\baruparrow'
+to = "⤒"
+
+[[rules]]
+from = '\vysmwhtcircle'
+to = "∘"
+
+[[rules]]
+from = '\nvLeftarrow'
+to = "⤂"
+
+[[rules]]
+from = '\squarecrossfill'
+to = "▩"
+
+[[rules]]
+from = '\rangledownzigzagarrow'
+to = "⍼"
+
+[[rules]]
+from = '\sqsupseteq'
+to = "⊒"
+
+[[rules]]
+from = '\lrblacktriangle'
+to = "◢"
+
+[[rules]]
+from = '\varepsilon'
+to = "ε"
+
+[[rules]]
+from = '\closedvarcap'
+to = "⩍"
+
+[[rules]]
+from = '\underbrace'
+to = "⏟"
+
+[[rules]]
+from = '\diamondbotblack'
+to = "⬙"
+
+[[rules]]
+from = '\rtimes'
+to = "⋊"
+
+[[rules]]
+from = '\cupleftarrow'
+to = "⊌"
+
+[[rules]]
+from = '\imath'
+to = "𝚤"
+
+[[rules]]
+from = '\heartsuit'
+to = "♡"
+
+[[rules]]
+from = '\zcmp'
+to = "⨟"
+
+[[rules]]
+from = '\rightdbltail'
+to = "⤜"
+
+[[rules]]
+from = '\late'
+to = "⪭"
+
+[[rules]]
+from = '\simneqq'
+to = "≆"
+
+[[rules]]
+from = '\downfishtail'
+to = "⥿"
+
+[[rules]]
+from = '\dotsim'
+to = "⩪"
+
+[[rules]]
+from = '\nearrow'
+to = "↗"
+
+[[rules]]
+from = '\leftarrowsimilar'
+to = "⥳"
+
+[[rules]]
+from = '\timesbar'
+to = "⨱"
+
+[[rules]]
+from = '\shuffle'
+to = "⧢"
+
+[[rules]]
+from = '\mdlgwhtlozenge'
+to = "◊"
+
+[[rules]]
+from = '\lrarc'
+to = "◞"
+
+[[rules]]
+from = '\smeparsl'
+to = "⧤"
+
+[[rules]]
+from = '\gsime'
+to = "⪎"
+
+[[rules]]
+from = '\measangledrtose'
+to = "⦮"
+
+[[rules]]
+from = '\twoheadrightarrowtail'
+to = "⤖"
+
+[[rules]]
+from = '\varlrtriangle'
+to = "⊿"
+
+[[rules]]
+from = '\blackhourglass'
+to = "⧗"
+
+[[rules]]
+from = '\approxeq'
+to = "≊"
+
+[[rules]]
+from = '\smwhtdiamond'
+to = "⋄"
+
+[[rules]]
+from = '\fullouterjoin'
+to = "⟗"
+
+[[rules]]
+from = '\pointint'
+to = "⨕"
+
+[[rules]]
+from = '\blockuphalf'
+to = "▀"
+
+[[rules]]
+from = '\Lleftarrow'
+to = "⇚"
+
+[[rules]]
+from = '\smallsetminus'
+to = "∖"
+
+[[rules]]
+from = '\typecolon'
+to = "⦂"
+
+[[rules]]
+from = '\curlyeqprec'
+to = "⋞"
+
+[[rules]]
+from = '\dashV'
+to = "⫣"
+
+[[rules]]
+from = '\ccwundercurvearrow'
+to = "⤿"
+
+[[rules]]
+from = '\maltese'
+to = "✠"
+
+[[rules]]
+from = '\updasharrow'
+to = "⇡"
+
+[[rules]]
+from = '\gla'
+to = "⪥"
+
+[[rules]]
+from = '\rightharpoonsupdown'
+to = "⥤"
+
+[[rules]]
+from = '\whiteinwhitetriangle'
+to = "⟁"
+
+[[rules]]
+from = '\longmapsto'
+to = "⟼"
+
+[[rules]]
+from = '\opluslhrim'
+to = "⨭"
+
+[[rules]]
+from = '\rbag'
+to = "⟆"
+
+[[rules]]
+from = '\nsucccurlyeq'
+to = "⋡"
+
+[[rules]]
+from = '\topfork'
+to = "⫚"
+
+[[rules]]
+from = '\smblklozenge'
+to = "⬪"
+
+[[rules]]
+from = '\coprod'
+to = "∐"
+
+[[rules]]
+from = '\vdash'
+to = "⊢"
+
+[[rules]]
+from = '\dottedsquare'
+to = "⬚"
+
+[[rules]]
+from = '\boxast'
+to = "⧆"
+
+[[rules]]
+from = '\int'
+to = "∫"
+
+[[rules]]
+from = '\bigtriangledown'
+to = "▽"
+
+[[rules]]
+from = '\hexagonblack'
+to = "⬣"
+
+[[rules]]
+from = '\dotplus'
+to = "∔"
+
+[[rules]]
+from = '\lgblksquare'
+to = "⬛"
+
+[[rules]]
+from = '\longleftrightarrow'
+to = "⟷"
+
+[[rules]]
+from = '\mapsup'
+to = "↥"
+
+[[rules]]
+from = '\Lsh'
+to = "↰"
+
+[[rules]]
+from = '\neovsearrow'
+to = "⤮"
+
+[[rules]]
+from = '\lbraceuend'
+to = "⎧"
+
+[[rules]]
+from = '\varbarwedge'
+to = "⌅"
+
+[[rules]]
+from = '\lParen'
+to = "⦅"
+
+[[rules]]
+from = '\llparenthesis'
+to = "⦇"
+
+[[rules]]
+from = '\geqqslant'
+to = "⫺"
+
+[[rules]]
+from = '\forksnot'
+to = "⫝"
+
+[[rules]]
+from = '\rsub'
+to = "⩥"
+
+[[rules]]
+from = '\rsolbar'
+to = "⧷"
+
+[[rules]]
+from = '\ast'
+to = "∗"
+
+[[rules]]
+from = '\euro'
+to = "€"
+
+[[rules]]
+from = '\accurrent'
+to = "⏦"
+
+[[rules]]
+from = '\triangleserifs'
+to = "⧍"
+
+[[rules]]
+from = '\increment'
+to = "∆"
+
+[[rules]]
+from = '\Epsilon'
+to = "Ε"
+
+[[rules]]
+from = '\intBar'
+to = "⨎"
+
+[[rules]]
+from = '\bigvee'
+to = "⋁"
+
+[[rules]]
+from = '\kernelcontraction'
+to = "∻"
+
+[[rules]]
+from = '\lvzigzag'
+to = "⧘"
+
+[[rules]]
+from = '\leftharpoondownbar'
+to = "⥞"
+
+[[rules]]
+from = '\squarenwsefill'
+to = "▧"
+
+[[rules]]
+from = '\nsubseteq'
+to = "⊈"
+
+[[rules]]
+from = '\twolowline'
+to = "‗"
+
+[[rules]]
+from = '\lrtriangle'
+to = "◿"
+
+[[rules]]
+from = '\sqlozenge'
+to = "⌑"
+
+[[rules]]
+from = '\varsigma'
+to = "ς"
+
+[[rules]]
+from = '\rightouterjoin'
+to = "⟖"
+
+[[rules]]
+from = '\varhexagonlrbonds'
+to = "⌬"
+
+[[rules]]
+from = '\jmath'
+to = "𝚥"
+
+[[rules]]
+from = '\otimeshat'
+to = "⨶"
+
+[[rules]]
+from = '\Theta'
+to = "Θ"
+
+[[rules]]
+from = '\acwunderarcarrow'
+to = "⤻"
+
+[[rules]]
+from = '\Doteq'
+to = "≑"
+
+[[rules]]
+from = '\otimesrhrim'
+to = "⨵"
+
+[[rules]]
+from = '\bigtalloblong'
+to = "⫿"
+
+[[rules]]
+from = '\mdblkcircle'
+to = "⚫"
+
+[[rules]]
+from = '\nvDash'
+to = "⊭"
+
+[[rules]]
+from = '\blackpointerleft'
+to = "◄"
+
+[[rules]]
+from = '\hookrightarrow'
+to = "↪"
+
+[[rules]]
+from = '\tau'
+to = "τ"
+
+[[rules]]
+from = '\emptysetobar'
+to = "⦱"
+
+[[rules]]
+from = '\invwhitelowerhalfcircle'
+to = "◛"
+
+[[rules]]
+from = '\midbarwedge'
+to = "⩜"
+
+[[rules]]
+from = '\rbracklrtick'
+to = "⦎"
+
+[[rules]]
+from = '\barrightharpoonup'
+to = "⥛"
+
+[[rules]]
+from = '\lparenuend'
+to = "⎛"
+
+[[rules]]
+from = '\rightpentagon'
+to = "⭔"
+
+[[rules]]
+from = '\lat'
+to = "⪫"
+
+[[rules]]
+from = '\oplus'
+to = "⊕"
+
+[[rules]]
+from = '\Eta'
+to = "Η"

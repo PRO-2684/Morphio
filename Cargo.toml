@@ -34,6 +34,9 @@ crate-type = ["cdylib", "rlib"]
 name = "morphio"
 required-features = ["cli"]
 
+[dev-dependencies]
+serde_json = "1.0.149"
+
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }{ archive-suffix }"
 bin-dir = "{ bin }{ binary-ext }"
