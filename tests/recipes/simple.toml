@@ -1,0 +1,7 @@
+[options]
+word_match_start = true
+word_match_end = true
+
+[[rules]]
+from = "Microsoft"
+to = "Microslop"

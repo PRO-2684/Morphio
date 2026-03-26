@@ -1,4 +1,4 @@
-import init, { morphFont, MorphOptions } from "./wasm/morphio.js";
+import init, { morphFontMany, MorphOptions } from "./wasm/morphio.js";
 
 const ORIGINAL_FAMILY = "MorphioOriginalPreview";
 const MORPHED_FAMILY = "MorphioPreview";
@@ -44,6 +44,8 @@ async function boot() {
     if ("serviceWorker" in navigator) {
         registerServiceWorker();
     }
+    hydrateFromSearchParams();
+    syncStateToUrl();
     wireUi();
 
     try {
@@ -60,7 +62,11 @@ function wireUi() {
     elements.fileInput.addEventListener("change", onFileChange);
     elements.addRuleButton.addEventListener("click", addRuleRow);
     elements.ruleList.addEventListener("click", onRuleListClick);
+    elements.ruleList.addEventListener("input", syncStateToUrl);
     elements.sourcePreview.addEventListener("input", mirrorPreviewText);
+    elements.sourcePreview.addEventListener("input", syncStateToUrl);
+    elements.wordMatchStart.addEventListener("change", syncStateToUrl);
+    elements.wordMatchEnd.addEventListener("change", syncStateToUrl);
     elements.morphButton.addEventListener("click", morphCurrentFont);
     elements.downloadButton.addEventListener("click", downloadFont);
 }
@@ -107,7 +113,11 @@ async function morphCurrentFont() {
             elements.wordMatchStart.checked,
             elements.wordMatchEnd.checked,
         );
-        const morphed = morphFont(state.sourceBytes, collectRules(), options);
+        const morphed = morphFontMany(
+            state.sourceBytes,
+            collectRules(),
+            options,
+        );
 
         state.outputBytes = morphed;
         applyPreviewFont(morphed);
@@ -234,6 +244,7 @@ function nextFrame() {
 function addRuleRow() {
     const fragment = elements.ruleTemplate.content.cloneNode(true);
     elements.ruleList.append(fragment);
+    syncStateToUrl();
 }
 
 function onRuleListClick(event) {
@@ -243,6 +254,7 @@ function onRuleListClick(event) {
     }
 
     removeButton.closest(".rule-row")?.remove();
+    syncStateToUrl();
 }
 
 function collectRules() {
@@ -267,6 +279,86 @@ function collectRules() {
     }
 
     return rules.map((rule) => [rule.from, rule.to]);
+}
+
+function hydrateFromSearchParams() {
+    const params = new URLSearchParams(window.location.search);
+    const start = params.get("start");
+    const end = params.get("end");
+    const preview = params.get("preview");
+    const fromValues = params.getAll("from");
+    const toValues = params.getAll("to");
+
+    if (start !== null) {
+        elements.wordMatchStart.checked = start !== "0";
+    }
+    if (end !== null) {
+        elements.wordMatchEnd.checked = end !== "0";
+    }
+    if (preview !== null) {
+        elements.sourcePreview.value = preview;
+    }
+
+    if (fromValues.length === 0 && toValues.length === 0) {
+        mirrorPreviewText();
+        return;
+    }
+
+    elements.ruleList.innerHTML = "";
+    const pairCount = Math.min(fromValues.length, toValues.length);
+    for (let index = 0; index < pairCount; index += 1) {
+        addRuleRowWithValues(fromValues[index], toValues[index], index === 0);
+    }
+    if (pairCount === 0) {
+        addRuleRowWithValues("banana", "orange", true);
+    }
+    mirrorPreviewText();
+}
+
+function addRuleRowWithValues(from, to, isFirstRow) {
+    const fragment = elements.ruleTemplate.content.cloneNode(true);
+    const row = fragment.querySelector(".rule-row");
+    row.querySelector('[data-role="from"]').value = from;
+    row.querySelector('[data-role="to"]').value = to;
+
+    if (isFirstRow) {
+        row.querySelector(".remove-rule-button")?.remove();
+        const addButton = document.createElement("button");
+        addButton.id = "add-rule-button";
+        addButton.className = "secondary rule-action-button";
+        addButton.type = "button";
+        addButton.textContent = "+";
+        row.append(addButton);
+    }
+
+    elements.ruleList.append(fragment);
+}
+
+function collectRulesForUrl() {
+    return Array.from(elements.ruleList.querySelectorAll(".rule-row"))
+        .map((row) => [
+            row.querySelector('[data-role="from"]').value.trim(),
+            row.querySelector('[data-role="to"]').value.trim(),
+        ])
+        .filter(([from, to]) => from || to);
+}
+
+function syncStateToUrl() {
+    const params = new URLSearchParams();
+    params.set("start", elements.wordMatchStart.checked ? "1" : "0");
+    params.set("end", elements.wordMatchEnd.checked ? "1" : "0");
+    params.set("preview", elements.sourcePreview.value);
+
+    for (const [from, to] of collectRulesForUrl()) {
+        params.append("from", from);
+        params.append("to", to);
+    }
+
+    const query = params.toString();
+    const url = query
+        ? `${window.location.pathname}?${query}`
+        : window.location.pathname;
+    window.history.replaceState(null, "", url);
 }
 
 mirrorPreviewText();

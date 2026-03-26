@@ -1,4 +1,4 @@
-use morphio::{MorphError, MorphOptions, MorphRule, Morphio};
+use morphio::{MorphError, MorphOptions, MorphRule, Morphio, Recipe};
 use read_fonts::{FileRef, FontRef, TableProvider, types::Tag};
 use std::fs::read;
 
@@ -8,6 +8,12 @@ fn msyh_bytes() -> Vec<u8> {
 
 fn impact_bytes() -> Vec<u8> {
     read("tests/fonts/IMPACT.TTF").expect("impact fixture should exist")
+}
+
+fn recipe(path: &str) -> Recipe {
+    let contents = read(path).expect("recipe fixture should exist");
+    let contents = String::from_utf8(contents).expect("recipe fixture should be utf-8");
+    Recipe::from_toml(&contents).expect("recipe fixture should parse")
 }
 
 #[test]
@@ -266,4 +272,37 @@ fn supports_disabling_end_word_match_only() {
         FontRef::new(&morphed).is_ok(),
         "morphed font should remain parseable"
     );
+}
+
+#[test]
+fn parses_simple_recipe_fixture() {
+    let recipe = recipe("tests/recipes/simple.toml");
+
+    assert_eq!(recipe.options, MorphOptions::new(true, true));
+    assert_eq!(recipe.rules.len(), 1);
+    assert_eq!(recipe.rules[0].from, "Microsoft");
+    assert_eq!(recipe.rules[0].to, "Microslop");
+}
+
+#[test]
+fn recipe_fixture_morphs_font() {
+    let bytes = impact_bytes();
+    let font = FontRef::new(&bytes).expect("impact fixture should parse");
+    let recipe = recipe("tests/recipes/coverage.toml");
+
+    let morphed = font
+        .morph_with_recipe(&recipe)
+        .expect("recipe-based morph should succeed");
+
+    let rebuilt = FontRef::new(&morphed).expect("morphed font should parse");
+    let gsub = rebuilt.gsub().expect("patched font should contain GSUB");
+    let feature_list = gsub
+        .feature_list()
+        .expect("patched GSUB should contain a feature list");
+    let has_calt = feature_list
+        .feature_records()
+        .iter()
+        .any(|record| record.feature_tag() == Tag::new(b"calt"));
+
+    assert!(has_calt, "patched font should expose a calt feature");
 }

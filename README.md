@@ -34,23 +34,26 @@ cargo install morphio
 ## 📖 Usage
 
 ```shell
-$ morphio --help
-Usage: morphio -i <input> -o <output> [-m] [-y] [pairs...]
-
 Morphio: Morphs the font, so it renders worda as wordb.
 
 Options:
   -i, --input       input font file path
   -o, --output      output font file path
+  --recipe          load morph rules and word matching options from a TOML
+                    recipe file, ignoring command-line options
   -m, --no-word-match
-                    disable word match
+                    disable both start and end word matching
+  --no-word-match-start
+                    disable word matching at the start of the source word
+  --no-word-match-end
+                    disable word matching at the end of the source word
   -y, --yes         allow overwrite output file if it exists
   -h, --help        display usage information
 ```
 
 ## ✅ TODO
 
-- [ ] Recipe (configuration) support
+- [x] Recipe (configuration) support
     - Advanced settings
     - Morph rules
 - [x] Configure word matching of start and end of words separately

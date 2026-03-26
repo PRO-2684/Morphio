@@ -1,8 +1,9 @@
 use argh::FromArgs;
-use morphio::{MorphOptions, MorphRule, Morphio};
+use morphio::{MorphOptions, Morphio, OwnedMorphRule, Recipe};
 use read_fonts::FileRef;
 use std::{
-    fs::{read, write},
+    fs::{File, read, write},
+    io::read_to_string,
     path::PathBuf,
 };
 
@@ -16,6 +17,9 @@ struct Args {
     /// output font file path
     #[argh(option, short = 'o')]
     output: PathBuf,
+    /// load morph rules and word matching options from a TOML recipe file, ignoring command-line options
+    #[argh(option, short = 'r')]
+    recipe: Option<PathBuf>,
     /// disable both start and end word matching
     #[argh(switch, short = 'm')]
     no_word_match: bool,
@@ -34,10 +38,39 @@ struct Args {
 }
 
 impl Args {
-    fn to_morph_options(&self) -> MorphOptions {
+    fn get_morph_options(&self) -> MorphOptions {
         MorphOptions {
             word_match_start: !(self.no_word_match || self.no_word_match_start),
             word_match_end: !(self.no_word_match || self.no_word_match_end),
+        }
+    }
+
+    fn get_morph_rules(&self) -> Result<Vec<OwnedMorphRule>, String> {
+        if !self.pairs.chunks_exact(2).remainder().is_empty() {
+            return Err(
+                "Expected an even number of positional words: FROM TO [FROM TO ...]".into(),
+            );
+        }
+
+        Ok(self
+            .pairs
+            .chunks_exact(2)
+            .map(|pair| OwnedMorphRule::new(&pair[0], &pair[1]))
+            .collect())
+    }
+
+    fn to_recipe(&self) -> Result<Recipe, String> {
+        if let Some(path) = &self.recipe {
+            let file =
+                File::open(path).map_err(|err| format!("Failed to open recipe file: {err}"))?;
+            let data =
+                read_to_string(file).map_err(|err| format!("Failed to read recipe file: {err}"))?;
+            Recipe::from_toml(&data).map_err(|err| format!("Failed to parse recipe file: {err}"))
+        } else {
+            Ok(Recipe::new(
+                self.get_morph_options(),
+                self.get_morph_rules()?,
+            ))
         }
     }
 }
@@ -48,16 +81,18 @@ fn main() {
         eprintln!("Output file already exists. Use -y to overwrite.");
         std::process::exit(1);
     }
+    let recipe = match args.to_recipe() {
+        Ok(recipe) => recipe,
+        Err(err) => {
+            eprintln!("{err}");
+            std::process::exit(1);
+        }
+    };
+
     let data = read(&args.input).expect("Failed to read input font file");
     let font = FileRef::new(&data).expect("Failed to parse font file");
-    let mut rules = Vec::new();
-    for pair in args.pairs.chunks_exact(2) {
-        let from = &pair[0];
-        let to = &pair[1];
-        rules.push(MorphRule { from, to });
-    }
     let morphed = font
-        .morph_many_with_options(&rules, &args.to_morph_options())
+        .morph_with_recipe(&recipe)
         .expect("Failed to morph font");
     write(&args.output, morphed).expect("Failed to write output font file");
 }

@@ -1,0 +1,34 @@
+[options]
+word_match_start = true
+word_match_end = true
+
+[[rules]] # N -> N
+from = "abc"
+to = "def"
+
+[[rules]] # 1 -> M
+from = "g"
+to = "hij"
+
+[[rules]] # N -> 1
+from = "klm"
+to = "n"
+
+[[rules]] # N -> M (N > M)
+from = "opqr"
+to = "st"
+
+[[rules]] # N -> M (N < M)
+from = "uv"
+to = "wxyz"
+
+[[rules]] # 1 -> 1
+from = "@"
+to = "#"
+
+# Test with:
+# abc
+# g
+# klm
+# opqr
+# uv

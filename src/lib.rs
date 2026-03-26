@@ -80,6 +80,7 @@
 mod error;
 mod font;
 mod gsub;
+mod recipe;
 mod ttc;
 
 #[cfg(target_arch = "wasm32")]
@@ -89,73 +90,9 @@ use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 pub use error::MorphError;
 use read_fonts::{FileRef, FontRef};
+pub use recipe::{MorphOptions, MorphRule, OwnedMorphRule, Recipe};
 use ttc::build_ttc;
 use write_fonts::FontBuilder;
-
-/// Options for morphing a font.
-#[derive(Debug, Clone, PartialEq, Eq)]
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-pub struct MorphOptions {
-    /// Whether to require a word boundary before the matched source word.
-    ///
-    /// ## Example
-    ///
-    /// Say we want to morph "banana" to "orange". With start matching enabled,
-    /// `xbanana` will not be affected; with it disabled, `xbanana` can be
-    /// rendered as `xorange`.
-    pub word_match_start: bool,
-    /// Whether to require a word boundary after the matched source word.
-    ///
-    /// ## Example
-    ///
-    /// Say we want to morph "banana" to "orange". With end matching enabled,
-    /// `bananas` will not be affected; with it disabled, `bananas` can be
-    /// rendered as `oranges`.
-    pub word_match_end: bool,
-}
-
-impl Default for MorphOptions {
-    fn default() -> Self {
-        Self {
-            word_match_start: true,
-            word_match_end: true,
-        }
-    }
-}
-
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-impl MorphOptions {
-    /// Creates a new [`MorphOptions`].
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(constructor))]
-    #[must_use]
-    #[allow(
-        clippy::missing_const_for_fn,
-        reason = "wasm_bindgen doesn't support const fns"
-    )]
-    pub fn new(word_match_start: bool, word_match_end: bool) -> Self {
-        Self {
-            word_match_start,
-            word_match_end,
-        }
-    }
-}
-
-/// A single morph rule.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct MorphRule<'a> {
-    /// Source word.
-    pub from: &'a str,
-    /// Target word.
-    pub to: &'a str,
-}
-
-impl<'a> MorphRule<'a> {
-    /// Creates a new [`MorphRule`].
-    #[must_use]
-    pub const fn new(from: &'a str, to: &'a str) -> Self {
-        Self { from, to }
-    }
-}
 
 /// The main trait for "morphing" text.
 pub trait Morphio {
@@ -204,12 +141,21 @@ pub trait Morphio {
     ///
     /// Rules are applied in the order provided. Chained or circular rule sets
     /// are not currently analyzed or rejected.
-    ///
     fn morph_many_with_options(
         &self,
         rules: &[MorphRule<'_>],
         options: &MorphOptions,
     ) -> Result<Vec<u8>, MorphError>;
+
+    /// Patch the font with a recipe, returning the rebuilt font bytes.
+    fn morph_with_recipe(&self, recipe: &Recipe) -> Result<Vec<u8>, MorphError> {
+        let rules = recipe
+            .rules
+            .iter()
+            .map(|rule| MorphRule::new(&rule.from, &rule.to))
+            .collect::<Vec<_>>();
+        self.morph_many_with_options(&rules, &recipe.options)
+    }
 }
 
 impl Morphio for FontRef<'_> {
@@ -258,19 +204,13 @@ fn morph_font(
 }
 
 #[cfg(target_arch = "wasm32")]
-#[wasm_bindgen(js_name = morphFont)]
+#[wasm_bindgen(js_name = morphFontMany)]
 /// WebAssembly entry point that morphs the provided font bytes using multiple rules.
 pub fn morph_font_many_wasm(
     font_data: &[u8],
     rules: Array,
     options: MorphOptions,
 ) -> Result<Vec<u8>, JsValue> {
-    #[derive(Debug)]
-    struct OwnedMorphRule {
-        from: String,
-        to: String,
-    }
-
     let owned_rules = rules
         .iter()
         .map(|entry| {
