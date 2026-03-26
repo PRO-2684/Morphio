@@ -1,20 +1,24 @@
 //! Internal helpers for building and wiring GSUB tables.
 
-mod equal;
 mod feature;
-mod variable;
+mod n_to_n;
+mod n_to_one;
+mod one_to_n;
+mod one_to_one;
 
 use super::{
     MorphError, MorphOptions,
     font::{ResolvedMorphRule, word_glyph_ranges},
 };
-use equal::append_equal_length_lookups;
 use feature::{ensure_feature, ensure_script_feature};
+use n_to_n::append_n_to_n_lookups;
+use n_to_one::append_n_to_one_lookup;
+use one_to_n::append_one_to_n_lookup;
+use one_to_one::SingleSubstitutionCache;
 use read_fonts::{
     FontRef, TableProvider, TopLevelTable,
     types::{GlyphId16, Tag},
 };
-use variable::append_variable_length_lookups;
 use write_fonts::{
     from_obj::ToOwnedTable,
     tables::{
@@ -77,25 +81,99 @@ fn append_word_substitution_lookups(
     let mut lookup_indices = Vec::new();
 
     for rule in rules {
+        let mut single_cache = SingleSubstitutionCache::default();
+
         if rule.from_glyphs.len() == rule.to_glyphs.len() {
-            lookup_indices.extend(append_equal_length_lookups(
+            lookup_indices.extend(append_n_to_n_lookups(
                 gsub,
                 &rule.from_glyphs,
+                &rule.from_glyphs,
                 &rule.to_glyphs,
+                0,
+                &mut single_cache,
                 word_glyph_ranges.clone(),
                 word_match_start,
                 word_match_end,
             )?);
-        } else {
-            lookup_indices.extend(append_variable_length_lookups(
-                gsub,
-                &rule.from_glyphs,
-                &rule.to_glyphs,
-                word_glyph_ranges.clone(),
-                word_match_start,
-                word_match_end,
-            )?);
+            continue;
         }
+
+        if rule.from_glyphs.len() == 1 {
+            lookup_indices.extend(append_one_to_n_lookup(
+                gsub,
+                &rule.from_glyphs,
+                0,
+                rule.from_glyphs[0],
+                &rule.to_glyphs,
+                word_glyph_ranges.clone(),
+                word_match_start,
+                word_match_end,
+            )?);
+            continue;
+        }
+
+        if rule.to_glyphs.len() == 1 {
+            lookup_indices.extend(append_n_to_one_lookup(
+                gsub,
+                &rule.from_glyphs,
+                0,
+                &rule.from_glyphs,
+                rule.to_glyphs[0],
+                word_glyph_ranges.clone(),
+                word_match_start,
+                word_match_end,
+            )?);
+            continue;
+        }
+
+        if rule.from_glyphs.len() < rule.to_glyphs.len() {
+            let prefix_len = rule.from_glyphs.len() - 1;
+            lookup_indices.extend(append_n_to_n_lookups(
+                gsub,
+                &rule.from_glyphs,
+                &rule.from_glyphs[..prefix_len],
+                &rule.to_glyphs[..prefix_len],
+                0,
+                &mut single_cache,
+                word_glyph_ranges.clone(),
+                word_match_start,
+                word_match_end,
+            )?);
+            lookup_indices.extend(append_one_to_n_lookup(
+                gsub,
+                &rule.from_glyphs,
+                prefix_len,
+                rule.from_glyphs[prefix_len],
+                &rule.to_glyphs[prefix_len..],
+                word_glyph_ranges.clone(),
+                word_match_start,
+                word_match_end,
+            )?);
+            continue;
+        }
+
+        let prefix_len = rule.to_glyphs.len() - 1;
+        lookup_indices.extend(append_n_to_n_lookups(
+            gsub,
+            &rule.from_glyphs,
+            &rule.from_glyphs[..prefix_len],
+            &rule.to_glyphs[..prefix_len],
+            0,
+            &mut single_cache,
+            word_glyph_ranges.clone(),
+            word_match_start,
+            word_match_end,
+        )?);
+        lookup_indices.extend(append_n_to_one_lookup(
+            gsub,
+            &rule.from_glyphs,
+            prefix_len,
+            &rule.from_glyphs[prefix_len..],
+            rule.to_glyphs[prefix_len],
+            word_glyph_ranges.clone(),
+            word_match_start,
+            word_match_end,
+        )?);
     }
 
     Ok(lookup_indices)
