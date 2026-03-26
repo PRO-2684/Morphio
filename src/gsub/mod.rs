@@ -37,7 +37,7 @@ const LATN_TAG: Tag = Tag::new(b"latn");
 pub fn patch_gsub(
     font: &FontRef<'_>,
     rules: &[ResolvedMorphRule],
-    options: &MorphOptions,
+    options: MorphOptions,
 ) -> Result<Gsub, MorphError> {
     let mut gsub = load_gsub(font)?;
     let lookup_indices = append_word_substitution_lookups(

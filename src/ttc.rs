@@ -12,7 +12,7 @@ use read_fonts::{FontRef, types::Tag};
 ///
 /// Identical table payloads are shared across collection members, which keeps
 /// rebuilt TTCs much closer to the size characteristics of the original file.
-pub fn build_ttc(fonts: Vec<Vec<u8>>) -> Vec<u8> {
+pub fn build_ttc(fonts: &[Vec<u8>]) -> Vec<u8> {
     let fonts = fonts
         .iter()
         .map(|font| parse_font(font))

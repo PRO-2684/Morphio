@@ -38,12 +38,9 @@ fn rejects_missing_glyphs() {
 fn can_skip_rules_with_missing_glyphs() {
     let bytes = msyh_bytes();
     let font = FontRef::from_index(&bytes, 0).expect("fixture should parse");
-    let rules = [
-        MorphRule::new("abc", "xyz"),
-        MorphRule::new("abc", "😀bc"),
-    ];
+    let rules = [MorphRule::new("abc", "xyz"), MorphRule::new("abc", "😀bc")];
     let morphed = font
-        .morph_many_with_options(&rules, &MorphOptions::new(true, true, true))
+        .morph_many_with_options(&rules, MorphOptions::new(true, true, true))
         .expect("missing-glyph rules should be skipped");
 
     let rebuilt = FontRef::new(&morphed).expect("patched font should parse as sfnt");
@@ -275,7 +272,7 @@ fn supports_disabling_start_word_match_only() {
     let bytes = impact_bytes();
     let font = FontRef::new(&bytes).expect("impact fixture should parse");
     let morphed = font
-        .morph_with_options("banana", "orange", &MorphOptions::new(false, true, false))
+        .morph_with_options("banana", "orange", MorphOptions::new(false, true, false))
         .expect("start-only relaxed morph should succeed");
 
     assert!(
@@ -289,7 +286,7 @@ fn supports_disabling_end_word_match_only() {
     let bytes = impact_bytes();
     let font = FontRef::new(&bytes).expect("impact fixture should parse");
     let morphed = font
-        .morph_with_options("banana", "orange", &MorphOptions::new(true, false, false))
+        .morph_with_options("banana", "orange", MorphOptions::new(true, false, false))
         .expect("end-only relaxed morph should succeed");
 
     assert!(

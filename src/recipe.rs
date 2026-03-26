@@ -23,16 +23,24 @@ pub struct Recipe {
 impl Recipe {
     /// Creates a new recipe from morph options and rules.
     #[must_use]
-    pub fn new(options: MorphOptions, rules: Vec<OwnedMorphRule>) -> Self {
+    pub const fn new(options: MorphOptions, rules: Vec<OwnedMorphRule>) -> Self {
         Self { options, rules }
     }
 
     /// Parses a recipe from a TOML string.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if deserialization fails, e.g. due to invalid TOML syntax or missing fields.
     pub fn from_toml(toml_str: &str) -> Result<Self, DeError> {
         from_str(toml_str)
     }
 
     /// Serializes the recipe to a TOML string.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if serialization fails.
     pub fn to_toml(&self) -> Result<String, SerError> {
         to_string_pretty(self)
     }

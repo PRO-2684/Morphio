@@ -76,6 +76,7 @@
 
 #![deny(missing_docs)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, clippy::cargo)]
+#![allow(clippy::multiple_crate_versions, reason = "Dependency")]
 
 mod error;
 mod font;
@@ -124,7 +125,7 @@ pub trait Morphio {
         &self,
         from_word: &str,
         to_word: &str,
-        options: &MorphOptions,
+        options: MorphOptions,
     ) -> Result<Vec<u8>, MorphError> {
         self.morph_many_with_options(&[MorphRule::new(from_word, to_word)], options)
     }
@@ -133,28 +134,40 @@ pub trait Morphio {
     ///
     /// Rules are applied in the order provided. Chained or circular rule sets
     /// are not currently analyzed or rejected.
+    ///
+    /// ## Errors
+    ///
+    /// See the [`MorphError`] enum for possible error cases.
     fn morph_many(&self, rules: &[MorphRule<'_>]) -> Result<Vec<u8>, MorphError> {
-        self.morph_many_with_options(rules, &MorphOptions::default())
+        self.morph_many_with_options(rules, MorphOptions::default())
     }
 
     /// Patch the font with multiple rules and options, returning the rebuilt font bytes.
     ///
     /// Rules are applied in the order provided. Chained or circular rule sets
     /// are not currently analyzed or rejected.
+    ///
+    /// ## Errors
+    ///
+    /// See the [`MorphError`] enum for possible error cases.
     fn morph_many_with_options(
         &self,
         rules: &[MorphRule<'_>],
-        options: &MorphOptions,
+        options: MorphOptions,
     ) -> Result<Vec<u8>, MorphError>;
 
     /// Patch the font with a recipe, returning the rebuilt font bytes.
+    ///
+    /// ## Errors
+    ///
+    /// See the [`MorphError`] enum for possible error cases.
     fn morph_with_recipe(&self, recipe: &Recipe) -> Result<Vec<u8>, MorphError> {
         let rules = recipe
             .rules
             .iter()
             .map(|rule| MorphRule::new(&rule.from, &rule.to))
             .collect::<Vec<_>>();
-        self.morph_many_with_options(&rules, &recipe.options)
+        self.morph_many_with_options(&rules, recipe.options)
     }
 }
 
@@ -162,7 +175,7 @@ impl Morphio for FontRef<'_> {
     fn morph_many_with_options(
         &self,
         rules: &[MorphRule<'_>],
-        options: &MorphOptions,
+        options: MorphOptions,
     ) -> Result<Vec<u8>, MorphError> {
         morph_font(self.clone(), rules, options)
     }
@@ -172,7 +185,7 @@ impl Morphio for FileRef<'_> {
     fn morph_many_with_options(
         &self,
         rules: &[MorphRule<'_>],
-        options: &MorphOptions,
+        options: MorphOptions,
     ) -> Result<Vec<u8>, MorphError> {
         match self {
             Self::Font(font) => font.morph_many_with_options(rules, options),
@@ -182,7 +195,7 @@ impl Morphio for FileRef<'_> {
                     .map(|font| font.map_err(MorphError::Read))
                     .map(|font| font.and_then(|font| font.morph_many_with_options(rules, options)))
                     .collect::<Result<Vec<_>, _>>()?;
-                Ok(build_ttc(fonts))
+                Ok(build_ttc(&fonts))
             }
         }
     }
@@ -191,7 +204,7 @@ impl Morphio for FileRef<'_> {
 fn morph_font(
     font: FontRef<'_>,
     rules: &[MorphRule<'_>],
-    options: &MorphOptions,
+    options: MorphOptions,
 ) -> Result<Vec<u8>, MorphError> {
     let resolved_rules = font::resolve_rules(&font, rules, options.skip_missing_glyphs)?;
     let gsub = gsub::patch_gsub(&font, &resolved_rules, options)?;
@@ -237,7 +250,7 @@ pub fn morph_font_many_wasm(
         .collect::<Vec<_>>();
 
     let file = FileRef::new(font_data).map_err(|err| JsValue::from_str(&err.to_string()))?;
-    file.morph_many_with_options(&rules, &options)
+    file.morph_many_with_options(&rules, options)
         .map_err(|err| JsValue::from_str(&err.to_string()))
 }
 

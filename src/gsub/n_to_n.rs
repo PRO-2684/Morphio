@@ -20,9 +20,7 @@ pub fn build_n_to_n_records(
 
     let mut sequence_records = Vec::new();
     for (offset, (&src, &dst)) in from_glyphs.iter().zip(to_glyphs.iter()).enumerate() {
-        if let Some(record) =
-            single_cache.sequence_record(gsub, start_index + offset, src, dst)?
-        {
+        if let Some(record) = single_cache.sequence_record(gsub, start_index + offset, src, dst)? {
             sequence_records.push(record);
         }
     }
