@@ -1,5 +1,7 @@
 use morphio::{MorphError, MorphOptions, MorphRule, Morphio, Recipe};
-use read_fonts::{FileRef, FontRef, TableProvider, types::Tag};
+use read_fonts::{
+    FileRef, FontRef, TableProvider, tables::gsub::SubstitutionSubtables, types::Tag,
+};
 use std::fs::read;
 
 fn msyh_bytes() -> Vec<u8> {
@@ -14,6 +16,40 @@ fn recipe(path: &str) -> Recipe {
     let contents = read(path).expect("recipe fixture should exist");
     let contents = String::from_utf8(contents).expect("recipe fixture should be utf-8");
     Recipe::from_toml(&contents).expect("recipe fixture should parse")
+}
+
+#[derive(Debug, Default, PartialEq, Eq)]
+struct LookupKindCounts {
+    single: usize,
+    multiple: usize,
+    ligature: usize,
+    chain_contextual: usize,
+}
+
+fn lookup_kind_counts(font: &FontRef<'_>) -> LookupKindCounts {
+    let Ok(gsub) = font.gsub() else {
+        return LookupKindCounts::default();
+    };
+    let lookup_list = gsub
+        .lookup_list()
+        .expect("GSUB lookup list should decode when GSUB exists");
+
+    let mut counts = LookupKindCounts::default();
+    for lookup in lookup_list.lookups().iter() {
+        let lookup = lookup.expect("lookup should resolve");
+        let subtables = lookup.subtables().expect("lookup subtables should resolve");
+        match subtables {
+            SubstitutionSubtables::Single(_) => counts.single += 1,
+            SubstitutionSubtables::Multiple(_) => counts.multiple += 1,
+            SubstitutionSubtables::Ligature(_) => counts.ligature += 1,
+            SubstitutionSubtables::ChainContextual(_) => {
+                counts.chain_contextual += 1;
+            }
+            _ => {}
+        }
+    }
+
+    counts
 }
 
 #[test]
@@ -307,6 +343,51 @@ fn supports_multiple_rules_in_one_pass() {
 }
 
 #[test]
+fn shares_primitive_lookups_until_sources_conflict() {
+    let bytes = impact_bytes();
+    let font = FontRef::new(&bytes).expect("impact fixture should parse");
+    let before = lookup_kind_counts(&font);
+    let rules = [
+        MorphRule::new("ab", "cd"),
+        MorphRule::new("ef", "gh"),
+        MorphRule::new("ax", "yz"),
+        MorphRule::new("lm", "nox"),
+        MorphRule::new("pq", "rsi"),
+        MorphRule::new("tm", "uzz"),
+        MorphRule::new("uvw", "xy"),
+        MorphRule::new("rst", "pq"),
+        MorphRule::new("mst", "nz"),
+    ];
+    let morphed = font
+        .morph_many_with_options(&rules, MorphOptions::new(false, false, false))
+        .expect("multi-rule morph should succeed");
+
+    let rebuilt = FontRef::new(&morphed).expect("morphed font should parse");
+    let after = lookup_kind_counts(&rebuilt);
+
+    assert_eq!(
+        after.single - before.single,
+        2,
+        "single substitutions should share one lookup until a source glyph conflicts",
+    );
+    assert_eq!(
+        after.multiple - before.multiple,
+        2,
+        "multiple substitutions should share one lookup until a source glyph conflicts",
+    );
+    assert_eq!(
+        after.ligature - before.ligature,
+        2,
+        "ligature substitutions should share one lookup until a source sequence conflicts",
+    );
+    assert_eq!(
+        after.chain_contextual - before.chain_contextual,
+        1,
+        "all rules should share one chained contextual lookup",
+    );
+}
+
+#[test]
 fn orders_prefix_overlaps_longest_first_in_shared_contextual_lookup() {
     let bytes = impact_bytes();
     let font = FontRef::new(&bytes).expect("impact fixture should parse");
@@ -325,7 +406,9 @@ fn orders_prefix_overlaps_longest_first_in_shared_contextual_lookup() {
         .iter()
         .find(|record| record.feature_tag() == Tag::new(b"calt"))
         .expect("patched font should expose calt");
-    let calt_feature = calt_record.feature(feature_list.offset_data()).expect("calt feature should resolve");
+    let calt_feature = calt_record
+        .feature(feature_list.offset_data())
+        .expect("calt feature should resolve");
     let contextual_lookup_index = calt_feature
         .lookup_list_indices()
         .last()
@@ -342,9 +425,7 @@ fn orders_prefix_overlaps_longest_first_in_shared_contextual_lookup() {
         .expect("lookup should resolve")
         .subtables()
         .expect("lookup subtables should resolve");
-    let read_fonts::tables::gsub::SubstitutionSubtables::ChainContextual(chain_lookup) =
-        chain_lookup
-    else {
+    let SubstitutionSubtables::ChainContextual(chain_lookup) = chain_lookup else {
         panic!("calt lookup should be chained contextual");
     };
     let subtable_lengths = chain_lookup

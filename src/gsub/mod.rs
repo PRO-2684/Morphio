@@ -13,8 +13,8 @@ use super::{
 use std::cmp::Reverse;
 use feature::{ensure_all_scripts_feature, ensure_feature, ensure_script_feature};
 use n_to_n::build_n_to_n_records;
-use n_to_one::build_n_to_one_record;
-use one_to_n::build_one_to_n_record;
+use n_to_one::LigatureSubstitutionCache;
+use one_to_n::MultipleSubstitutionCache;
 use one_to_one::SingleSubstitutionCache;
 use read_fonts::{
     FontRef, TableProvider, TopLevelTable,
@@ -23,7 +23,7 @@ use read_fonts::{
 use write_fonts::{
     from_obj::ToOwnedTable,
     tables::{
-        gsub::{Gsub, SingleSubst, SubstitutionChainContext, SubstitutionLookup},
+        gsub::{Gsub, SubstitutionChainContext, SubstitutionLookup},
         layout::{
             ChainedSequenceContext, CoverageTable, FeatureList, Lookup, LookupFlag, LookupList,
             RangeRecord, ScriptList, SequenceLookupRecord,
@@ -86,12 +86,14 @@ fn append_word_substitution_lookups(
     };
 
     let mut contextual_subtables = Vec::new();
+    let mut single_cache = SingleSubstitutionCache::default();
+    let mut multiple_cache = MultipleSubstitutionCache::default();
+    let mut ligature_cache = LigatureSubstitutionCache::default();
 
     let mut ordered_rules = rules.iter().enumerate().collect::<Vec<_>>();
     ordered_rules.sort_by_key(|(index, rule)| (Reverse(rule.from_glyphs.len()), *index));
 
     for (_, rule) in ordered_rules {
-        let mut single_cache = SingleSubstitutionCache::default();
         let mut sequence_records = Vec::new();
 
         if rule.from_glyphs.len() == rule.to_glyphs.len() {
@@ -103,14 +105,14 @@ fn append_word_substitution_lookups(
                 &mut single_cache,
             )?);
         } else if rule.from_glyphs.len() == 1 {
-            sequence_records.push(build_one_to_n_record(
+            sequence_records.push(multiple_cache.sequence_record(
                 gsub,
                 0,
                 rule.from_glyphs[0],
                 &rule.to_glyphs,
             )?);
         } else if rule.to_glyphs.len() == 1 {
-            sequence_records.push(build_n_to_one_record(
+            sequence_records.push(ligature_cache.sequence_record(
                 gsub,
                 0,
                 &rule.from_glyphs,
@@ -125,7 +127,7 @@ fn append_word_substitution_lookups(
                 0,
                 &mut single_cache,
             )?);
-            sequence_records.push(build_one_to_n_record(
+            sequence_records.push(multiple_cache.sequence_record(
                 gsub,
                 prefix_len,
                 rule.from_glyphs[prefix_len],
@@ -140,7 +142,7 @@ fn append_word_substitution_lookups(
                 0,
                 &mut single_cache,
             )?);
-            sequence_records.push(build_n_to_one_record(
+            sequence_records.push(ligature_cache.sequence_record(
                 gsub,
                 prefix_len,
                 &rule.from_glyphs[prefix_len..],
@@ -168,12 +170,6 @@ fn append_word_substitution_lookups(
     let contextual_lookup =
         SubstitutionLookup::ChainContextual(Lookup::new(LookupFlag::empty(), contextual_subtables));
     Ok(Some(push_lookup(gsub, contextual_lookup)?))
-}
-
-fn create_single_substitution_lookup(src: GlyphId16, dst: GlyphId16) -> SubstitutionLookup {
-    let coverage = CoverageTable::format_1(vec![src]);
-    let subtable = SingleSubst::format_2(coverage, vec![dst]);
-    SubstitutionLookup::Single(Lookup::new(LookupFlag::empty(), vec![subtable]))
 }
 
 fn create_contextual_subtables(
