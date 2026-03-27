@@ -1,7 +1,5 @@
 //! Helpers for `N -> 1` substitutions.
 
-use std::collections::BTreeMap;
-
 use read_fonts::{tables::layout::LookupFlag, types::GlyphId16};
 use write_fonts::tables::{
     gsub::{Gsub, Ligature, LigatureSet, LigatureSubstFormat1, SubstitutionLookup},
@@ -9,19 +7,22 @@ use write_fonts::tables::{
     varc::CoverageTable,
 };
 
-use super::{MorphError, push_lookup};
+use std::collections::BTreeMap;
 
-#[derive(Debug)]
-struct LigatureLookupBucket {
-    lookup_index: u16,
-    mappings: BTreeMap<Vec<GlyphId16>, GlyphId16>,
-}
+use super::{MorphError, shared::SharedLookupCache};
 
 /// Reuses non-conflicting `N -> 1` lookups across rules.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct LigatureSubstitutionCache {
-    lookup_indices: BTreeMap<(Vec<GlyphId16>, GlyphId16), u16>,
-    buckets: Vec<LigatureLookupBucket>,
+    cache: SharedLookupCache<Vec<GlyphId16>, GlyphId16>,
+}
+
+impl Default for LigatureSubstitutionCache {
+    fn default() -> Self {
+        Self {
+            cache: SharedLookupCache::new(build_ligature_lookup),
+        }
+    }
 }
 
 impl LigatureSubstitutionCache {
@@ -33,43 +34,10 @@ impl LigatureSubstitutionCache {
         src: &[GlyphId16],
         dst: GlyphId16,
     ) -> Result<SequenceLookupRecord, MorphError> {
-        let key = (src.to_vec(), dst);
-        let lookup_index = if let Some(index) = self.lookup_indices.get(&key) {
-            *index
-        } else {
-            let index = self.insert_mapping(gsub, src, dst)?;
-            self.lookup_indices.insert(key, index);
-            index
-        };
+        let lookup_index = self.cache.lookup_index(gsub, src.to_vec(), dst)?;
         let sequence_index = u16::try_from(sequence_index)
             .map_err(|_| MorphError::malformed("sequence index exceeds u16::MAX"))?;
         Ok(SequenceLookupRecord::new(sequence_index, lookup_index))
-    }
-
-    fn insert_mapping(
-        &mut self,
-        gsub: &mut Gsub,
-        src: &[GlyphId16],
-        dst: GlyphId16,
-    ) -> Result<u16, MorphError> {
-        if let Some(bucket) = self
-            .buckets
-            .iter_mut()
-            .find(|bucket| !bucket.mappings.contains_key(src))
-        {
-            bucket.mappings.insert(src.to_vec(), dst);
-            overwrite_lookup(gsub, bucket.lookup_index, build_ligature_lookup(&bucket.mappings));
-            return Ok(bucket.lookup_index);
-        }
-
-        let mut mappings = BTreeMap::new();
-        mappings.insert(src.to_vec(), dst);
-        let lookup_index = push_lookup(gsub, build_ligature_lookup(&mappings))?;
-        self.buckets.push(LigatureLookupBucket {
-            lookup_index,
-            mappings,
-        });
-        Ok(lookup_index)
     }
 }
 
@@ -95,13 +63,14 @@ fn build_ligature_lookup(mappings: &BTreeMap<Vec<GlyphId16>, GlyphId16>) -> Subs
                     .cmp(&lhs_src.len())
                     .then_with(|| lhs_src.cmp(rhs_src))
             });
-            LigatureSet::new(ligatures.into_iter().map(|(_, ligature)| ligature).collect())
+            LigatureSet::new(
+                ligatures
+                    .into_iter()
+                    .map(|(_, ligature)| ligature)
+                    .collect(),
+            )
         })
         .collect();
     let subtable = LigatureSubstFormat1::new(coverage, ligature_sets);
     SubstitutionLookup::Ligature(Lookup::new(LookupFlag::empty(), vec![subtable]))
-}
-
-fn overwrite_lookup(gsub: &mut Gsub, lookup_index: u16, lookup: SubstitutionLookup) {
-    gsub.lookup_list.lookups[usize::from(lookup_index)] = lookup.into();
 }

@@ -5,12 +5,12 @@ mod n_to_n;
 mod n_to_one;
 mod one_to_n;
 mod one_to_one;
+mod shared;
 
 use super::{
     MorphError, MorphOptions,
     font::{ResolvedMorphRule, word_glyph_ranges},
 };
-use std::cmp::Reverse;
 use feature::{ensure_all_scripts_feature, ensure_feature, ensure_script_feature};
 use n_to_n::build_n_to_n_records;
 use n_to_one::LigatureSubstitutionCache;
@@ -20,6 +20,7 @@ use read_fonts::{
     FontRef, TableProvider, TopLevelTable,
     types::{GlyphId16, Tag},
 };
+use std::cmp::Reverse;
 use write_fonts::{
     from_obj::ToOwnedTable,
     tables::{

@@ -129,7 +129,7 @@ You can find example recipes under [`tests/recipes`](tests/recipes).
     - [`Shaper::shape`](https://docs.rs/harfrust/latest/harfrust/struct.Shaper.html#method.shape)
     - [`GlyphBuffer`](https://docs.rs/harfrust/latest/harfrust/struct.GlyphBuffer.html)
 - [ ] Replace our rough implementation of TTC support after [`write-fonts` adds support for that](https://github.com/googlefonts/fontations/blob/2dec98a9d308c7b449a89eb49d3169464d6707c1/write-fonts/src/font_builder.rs#L265).
-- [ ] Shared lookups for single/multiple/ligature substitutions respectively, creating new ones if conflict arises
+- [x] Shared lookups for single/multiple/ligature substitutions respectively, creating new ones if conflict arises
 - [x] A single lookup for chained contextual substitutions
 - [x] Recipe (configuration) support
     - Advanced settings
@@ -155,7 +155,6 @@ You can find example recipes under [`tests/recipes`](tests/recipes).
 
 The following is of low priority, and may not get implemented:
 
-- Reuse 1 -> N and N -> 1 mappings: Not likely for those to be shared, and adds complexity
 - Determine "best split point", instead of just split in the end: Need to determine how to measure "best", i.e. a scoring algorithm, which could consider:
     - maximize unchanged 1 -> 1 pairs we can skip
     - maximize reuse of existing 1 -> 1, 1 -> N, or N -> 1 mappings

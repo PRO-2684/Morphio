@@ -391,7 +391,10 @@ fn shares_primitive_lookups_until_sources_conflict() {
 fn orders_shared_ligatures_longest_first_for_same_prefix() {
     let bytes = impact_bytes();
     let font = FontRef::new(&bytes).expect("impact fixture should parse");
-    let rules = [MorphRule::new("banana", "a"), MorphRule::new("bananas", "b")];
+    let rules = [
+        MorphRule::new("banana", "a"),
+        MorphRule::new("bananas", "b"),
+    ];
     let morphed = font
         .morph_many_with_options(&rules, MorphOptions::new(false, false, false))
         .expect("multi-rule morph should succeed");
