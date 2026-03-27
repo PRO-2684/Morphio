@@ -39,14 +39,17 @@ pub fn patch_gsub(
     options: MorphOptions,
 ) -> Result<Gsub, MorphError> {
     let mut gsub = load_gsub(font)?;
-    let lookup_indices = append_word_substitution_lookups(
+    let lookup_index = append_word_substitution_lookups(
         font,
         &mut gsub,
         rules,
         options.word_match_start,
         options.word_match_end,
     )?;
-    let feature_index = ensure_feature(&mut gsub, CALT_TAG, &lookup_indices)?;
+    let Some(lookup_index) = lookup_index else {
+        return Ok(gsub);
+    };
+    let feature_index = ensure_feature(&mut gsub, CALT_TAG, lookup_index)?;
     if gsub.script_list.script_records.is_empty() {
         ensure_script_feature(&mut gsub, DFLT_TAG, feature_index);
     } else {
@@ -67,20 +70,21 @@ fn load_gsub(font: &FontRef<'_>) -> Result<Gsub, MorphError> {
     }
 }
 
+/// Appends lookups for the given morph rules, and returns the index of the new chained contextual lookup.
 fn append_word_substitution_lookups(
     font: &FontRef<'_>,
     gsub: &mut Gsub,
     rules: &[ResolvedMorphRule],
     word_match_start: bool,
     word_match_end: bool,
-) -> Result<Vec<u16>, MorphError> {
+) -> Result<Option<u16>, MorphError> {
     let word_glyph_ranges = if word_match_start || word_match_end {
         word_glyph_ranges(font)?
     } else {
         Vec::new()
     };
 
-    let mut lookup_indices = Vec::new();
+    let mut contextual_subtables = Vec::new();
 
     for rule in rules {
         let mut single_cache = SingleSubstitutionCache::default();
@@ -144,17 +148,22 @@ fn append_word_substitution_lookups(
             continue;
         }
 
-        let contextual_lookup = create_contextual_lookup(
+        contextual_subtables.extend(create_contextual_subtables(
             &rule.from_glyphs,
             word_glyph_ranges.clone(),
             sequence_records,
             word_match_start,
             word_match_end,
-        );
-        lookup_indices.push(push_lookup(gsub, contextual_lookup)?);
+        ));
     }
 
-    Ok(lookup_indices)
+    if contextual_subtables.is_empty() {
+        return Ok(None);
+    }
+
+    let contextual_lookup =
+        SubstitutionLookup::ChainContextual(Lookup::new(LookupFlag::empty(), contextual_subtables));
+    Ok(Some(push_lookup(gsub, contextual_lookup)?))
 }
 
 fn create_single_substitution_lookup(src: GlyphId16, dst: GlyphId16) -> SubstitutionLookup {
@@ -163,13 +172,13 @@ fn create_single_substitution_lookup(src: GlyphId16, dst: GlyphId16) -> Substitu
     SubstitutionLookup::Single(Lookup::new(LookupFlag::empty(), vec![subtable]))
 }
 
-fn create_contextual_lookup(
+fn create_contextual_subtables(
     from_glyphs: &[GlyphId16],
     word_glyph_ranges: Vec<RangeRecord>,
     sequence_records: Vec<SequenceLookupRecord>,
     word_match_start: bool,
     word_match_end: bool,
-) -> SubstitutionLookup {
+) -> Vec<SubstitutionChainContext> {
     let input_coverages = exact_coverages(from_glyphs);
     let mut subtables: Vec<SubstitutionChainContext> = Vec::new();
 
@@ -204,7 +213,7 @@ fn create_contextual_lookup(
             .into(),
     );
 
-    SubstitutionLookup::ChainContextual(Lookup::new(LookupFlag::empty(), subtables))
+    subtables
 }
 
 fn exact_coverages(glyphs: &[GlyphId16]) -> Vec<CoverageTable> {
