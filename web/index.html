@@ -3,15 +3,15 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Morphio x WASM</title>
+        <title>Morphio</title>
         <link rel="stylesheet" href="style.css" />
         <link rel="icon" type="image/svg+xml" href="favicon.svg" />
         <link rel="manifest" href="manifest.json" />
     </head>
     <body>
-        <h1>Morphio x WASM</h1>
+        <h1>Morphio</h1>
 
-        <div class="card">
+        <section class="card">
             <div>
                 <label for="font-file">Font File</label>
                 <input
@@ -117,14 +117,14 @@
                     class="secondary"
                     type="button"
                 >
-                    Recipe import
+                    Import recipe
                 </button>
                 <button
                     id="export-recipe-button"
                     class="secondary"
                     type="button"
                 >
-                    Recipe export
+                    Export recipe
                 </button>
             </div>
 
@@ -150,17 +150,53 @@ banana.</textarea
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <p class="help">
-            Upload a font, add one or more morph rules, then click Morph. The
-            morphed font will render each source word as its target word. You
-            can preview before downloading the morphed font, and use recipes to
-            share and reuse your setup. GitHub:
-            <a href="https://github.com/PRO-2684/Morphio" target="_blank"
-                >PRO-2684/Morphio</a
-            >.
-        </p>
+        <section class="help" aria-label="Help">
+            <div class="help-intro">
+                <p class="help-kicker">Morphio</p>
+                <p class="help-copy">
+                    Morphs the font, so one word renders as another. Made with
+                    Rust & WebAssembly, designed for speed.
+                </p>
+            </div>
+            <div class="help-grid">
+                <div class="help-card">
+                    <h2>Quick Start</h2>
+                    <ol>
+                        <li>Upload a font.</li>
+                        <li>Add one or more rules.</li>
+                        <li>Click Morph, test the preview, then download.</li>
+                    </ol>
+                </div>
+                <div class="help-card">
+                    <h2>Recipes</h2>
+                    <p>
+                        Import or export TOML recipes to reuse rules and
+                        advanced settings across fonts and sessions.
+                    </p>
+                </div>
+                <div class="help-card">
+                    <h2>Resources</h2>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://github.com/PRO-2684/Morphio"
+                                target="_blank"
+                                >GitHub repository</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://github.com/PRO-2684/Morphio/tree/main/tests/recipes"
+                                target="_blank"
+                                >Example recipes</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
         <script type="module" src="./index.js"></script>
         <template id="morph-rule-template">

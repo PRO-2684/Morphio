@@ -283,16 +283,69 @@ button {
 .help {
     width: 100%;
     max-width: 1180px;
-    color: #777;
-    font-size: 0.88rem;
-    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
 
-    a {
-        color: #9cc4eb;
-        text-decoration: none;
+    .help-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+    }
 
-        &:hover {
-            text-decoration: underline;
+    .help-intro {
+        display: flex;
+        align-items: baseline;
+        column-gap: 1rem;
+        border: 1px solid #313131;
+        border-radius: 10px;
+        padding: 1rem 1.1rem;
+        color: #9a9a9a;
+        font-size: 0.88rem;
+        line-height: 1.55;
+
+        .help-kicker {
+            flex: 0 0 auto;
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #d3b46f;
+        }
+
+        .help-copy {
+            max-width: 54rem;
+        }
+    }
+
+    .help-card {
+        flex: 1 1 17rem;
+        border: 1px solid #313131;
+        border-radius: 10px;
+        padding: 1rem 1.1rem;
+        color: #9a9a9a;
+        font-size: 0.88rem;
+        line-height: 1.55;
+
+        h2 {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #c2c2c2;
+            margin-bottom: 0.65rem;
+        }
+
+        a {
+            color: #9cc4eb;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        ul,
+        ol {
+            padding-left: 1.2rem;
         }
     }
 }
@@ -311,6 +364,11 @@ button {
 
     .card {
         padding: 1.2rem;
+    }
+
+    .help-intro {
+        flex-direction: column;
+        gap: 0.45rem;
     }
 
     .morph-row {
