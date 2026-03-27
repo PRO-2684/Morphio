@@ -10,6 +10,7 @@ use super::{
     MorphError, MorphOptions,
     font::{ResolvedMorphRule, word_glyph_ranges},
 };
+use std::cmp::Reverse;
 use feature::{ensure_all_scripts_feature, ensure_feature, ensure_script_feature};
 use n_to_n::build_n_to_n_records;
 use n_to_one::build_n_to_one_record;
@@ -86,7 +87,10 @@ fn append_word_substitution_lookups(
 
     let mut contextual_subtables = Vec::new();
 
-    for rule in rules {
+    let mut ordered_rules = rules.iter().enumerate().collect::<Vec<_>>();
+    ordered_rules.sort_by_key(|(index, rule)| (Reverse(rule.from_glyphs.len()), *index));
+
+    for (_, rule) in ordered_rules {
         let mut single_cache = SingleSubstitutionCache::default();
         let mut sequence_records = Vec::new();
 

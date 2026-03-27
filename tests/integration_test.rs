@@ -307,6 +307,66 @@ fn supports_multiple_rules_in_one_pass() {
 }
 
 #[test]
+fn orders_prefix_overlaps_longest_first_in_shared_contextual_lookup() {
+    let bytes = impact_bytes();
+    let font = FontRef::new(&bytes).expect("impact fixture should parse");
+    let rules = [MorphRule::new("abc", "x"), MorphRule::new("abcd", "y")];
+    let morphed = font
+        .morph_many_with_options(&rules, MorphOptions::new(false, false, false))
+        .expect("multi-rule morph should succeed");
+
+    let rebuilt = FontRef::new(&morphed).expect("morphed font should parse");
+    let gsub = rebuilt.gsub().expect("patched font should contain GSUB");
+    let feature_list = gsub
+        .feature_list()
+        .expect("patched GSUB should contain a feature list");
+    let calt_record = feature_list
+        .feature_records()
+        .iter()
+        .find(|record| record.feature_tag() == Tag::new(b"calt"))
+        .expect("patched font should expose calt");
+    let calt_feature = calt_record.feature(feature_list.offset_data()).expect("calt feature should resolve");
+    let contextual_lookup_index = calt_feature
+        .lookup_list_indices()
+        .last()
+        .expect("calt should reference at least one lookup")
+        .get();
+    let lookup_list = gsub
+        .lookup_list()
+        .expect("patched GSUB should contain a lookup list");
+    let chain_lookup = lookup_list
+        .lookups()
+        .iter()
+        .nth(usize::from(contextual_lookup_index))
+        .expect("calt lookup index should exist")
+        .expect("lookup should resolve")
+        .subtables()
+        .expect("lookup subtables should resolve");
+    let read_fonts::tables::gsub::SubstitutionSubtables::ChainContextual(chain_lookup) =
+        chain_lookup
+    else {
+        panic!("calt lookup should be chained contextual");
+    };
+    let subtable_lengths = chain_lookup
+        .iter()
+        .map(|subtable| {
+            let subtable = subtable.expect("subtable should resolve");
+            let read_fonts::tables::layout::ChainedSequenceContext::Format3(subtable) = subtable
+            else {
+                panic!("expected format 3 chained contextual subtables");
+            };
+            subtable.input_coverages().len()
+        })
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        subtable_lengths,
+        vec![4, 3],
+        "longer prefix rule should be ordered before the shorter one",
+    );
+}
+
+#[test]
 fn supports_multiple_rules_in_collection_with_unequal_lengths() {
     let bytes = msyh_bytes();
     let file = FileRef::new(&bytes).expect("fixture should parse");
