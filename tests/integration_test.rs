@@ -388,6 +388,63 @@ fn shares_primitive_lookups_until_sources_conflict() {
 }
 
 #[test]
+fn orders_shared_ligatures_longest_first_for_same_prefix() {
+    let bytes = impact_bytes();
+    let font = FontRef::new(&bytes).expect("impact fixture should parse");
+    let rules = [MorphRule::new("banana", "a"), MorphRule::new("bananas", "b")];
+    let morphed = font
+        .morph_many_with_options(&rules, MorphOptions::new(false, false, false))
+        .expect("multi-rule morph should succeed");
+
+    let rebuilt = FontRef::new(&morphed).expect("morphed font should parse");
+    let gsub = rebuilt.gsub().expect("patched font should contain GSUB");
+    let lookup_list = gsub
+        .lookup_list()
+        .expect("patched GSUB should contain a lookup list");
+    let lookup_count = lookup_list.lookups().len();
+    let ligature_lookup = lookup_list
+        .lookups()
+        .iter()
+        .nth(lookup_count - 2)
+        .expect("ligature lookup should exist")
+        .expect("ligature lookup should resolve");
+    let read_fonts::tables::gsub::SubstitutionSubtables::Ligature(ligature_lookup) =
+        ligature_lookup
+            .subtables()
+            .expect("ligature lookup subtables should resolve")
+    else {
+        panic!("expected shared ligature lookup before the contextual lookup");
+    };
+    let ligature_subtable = ligature_lookup
+        .iter()
+        .next()
+        .expect("ligature lookup should contain a subtable")
+        .expect("ligature subtable should resolve");
+    let ligature_set = ligature_subtable
+        .ligature_sets()
+        .iter()
+        .next()
+        .expect("ligature subtable should contain a ligature set")
+        .expect("ligature set should resolve");
+    let component_lengths = ligature_set
+        .ligatures()
+        .iter()
+        .map(|ligature| {
+            ligature
+                .expect("ligature should resolve")
+                .component_glyph_ids()
+                .len()
+        })
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        component_lengths,
+        vec![6, 5],
+        "shared ligatures should prefer the longer source before its prefix",
+    );
+}
+
+#[test]
 fn orders_prefix_overlaps_longest_first_in_shared_contextual_lookup() {
     let bytes = impact_bytes();
     let font = FontRef::new(&bytes).expect("impact fixture should parse");

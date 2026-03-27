@@ -74,7 +74,7 @@ impl LigatureSubstitutionCache {
 }
 
 fn build_ligature_lookup(mappings: &BTreeMap<Vec<GlyphId16>, GlyphId16>) -> SubstitutionLookup {
-    let mut grouped = BTreeMap::<GlyphId16, Vec<Ligature>>::new();
+    let mut grouped = BTreeMap::<GlyphId16, Vec<(Vec<GlyphId16>, Ligature)>>::new();
     for (src, dst) in mappings {
         let (first, rest) = src
             .split_first()
@@ -82,13 +82,21 @@ fn build_ligature_lookup(mappings: &BTreeMap<Vec<GlyphId16>, GlyphId16>) -> Subs
         grouped
             .entry(*first)
             .or_default()
-            .push(Ligature::new(*dst, rest.to_vec()));
+            .push((src.clone(), Ligature::new(*dst, rest.to_vec())));
     }
 
     let coverage = CoverageTable::format_1(grouped.keys().copied().collect());
     let ligature_sets = grouped
         .into_values()
-        .map(LigatureSet::new)
+        .map(|mut ligatures| {
+            ligatures.sort_by(|(lhs_src, _), (rhs_src, _)| {
+                rhs_src
+                    .len()
+                    .cmp(&lhs_src.len())
+                    .then_with(|| lhs_src.cmp(rhs_src))
+            });
+            LigatureSet::new(ligatures.into_iter().map(|(_, ligature)| ligature).collect())
+        })
         .collect();
     let subtable = LigatureSubstFormat1::new(coverage, ligature_sets);
     SubstitutionLookup::Ligature(Lookup::new(LookupFlag::empty(), vec![subtable]))
