@@ -10,7 +10,7 @@ use super::{
     MorphError, MorphOptions,
     font::{ResolvedMorphRule, word_glyph_ranges},
 };
-use feature::{ensure_feature, ensure_script_feature};
+use feature::{ensure_all_scripts_feature, ensure_feature, ensure_script_feature};
 use n_to_n::build_n_to_n_records;
 use n_to_one::build_n_to_one_record;
 use one_to_n::build_one_to_n_record;
@@ -32,7 +32,6 @@ use write_fonts::{
 
 const CALT_TAG: Tag = Tag::new(b"calt");
 const DFLT_TAG: Tag = Tag::new(b"DFLT");
-const LATN_TAG: Tag = Tag::new(b"latn");
 
 pub fn patch_gsub(
     font: &FontRef<'_>,
@@ -48,8 +47,11 @@ pub fn patch_gsub(
         options.word_match_end,
     )?;
     let feature_index = ensure_feature(&mut gsub, CALT_TAG, &lookup_indices)?;
-    ensure_script_feature(&mut gsub, DFLT_TAG, feature_index);
-    ensure_script_feature(&mut gsub, LATN_TAG, feature_index);
+    if gsub.script_list.script_records.is_empty() {
+        ensure_script_feature(&mut gsub, DFLT_TAG, feature_index);
+    } else {
+        ensure_all_scripts_feature(&mut gsub, feature_index);
+    }
     Ok(gsub)
 }
 

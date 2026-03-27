@@ -56,6 +56,12 @@ pub fn ensure_script_feature(gsub: &mut Gsub, script_tag: Tag, feature_index: u1
     ));
 }
 
+pub fn ensure_all_scripts_feature(gsub: &mut Gsub, feature_index: u16) {
+    for record in &mut gsub.script_list.script_records {
+        ensure_langsys_features(record.script.as_mut(), feature_index);
+    }
+}
+
 fn ensure_langsys_features(script: &mut Script, feature_index: u16) {
     let lang_sys = if let Some(lang_sys) = script.default_lang_sys.as_mut() {
         lang_sys

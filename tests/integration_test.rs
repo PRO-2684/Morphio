@@ -208,6 +208,80 @@ fn impact_adds_calt_to_all_latin_langsys_records() {
 }
 
 #[test]
+fn adds_calt_to_all_existing_scripts() {
+    let bytes = msyh_bytes();
+    let font = FontRef::from_index(&bytes, 0).expect("fixture should parse");
+    let original_gsub = font.gsub().expect("fixture should contain GSUB");
+    let original_scripts = original_gsub
+        .script_list()
+        .expect("fixture should contain scripts");
+    let original_script_tags = original_scripts
+        .script_records()
+        .iter()
+        .map(|record| record.script_tag())
+        .collect::<Vec<_>>();
+    assert!(
+        !original_script_tags.is_empty(),
+        "fixture should have at least one existing script"
+    );
+
+    let morphed = font
+        .morph("abc", "xyz")
+        .expect("font should patch successfully");
+    let rebuilt = FontRef::new(&morphed).expect("patched font should parse");
+    let gsub = rebuilt.gsub().expect("patched font should contain GSUB");
+    let feature_list = gsub
+        .feature_list()
+        .expect("patched GSUB should contain a feature list");
+    let calt_index = feature_list
+        .feature_records()
+        .iter()
+        .position(|record| record.feature_tag() == Tag::new(b"calt"))
+        .expect("patched font should expose calt");
+    let calt_index = u16::try_from(calt_index).expect("feature index should fit into u16");
+
+    let script_list = gsub
+        .script_list()
+        .expect("patched GSUB should contain scripts");
+    for script_tag in original_script_tags {
+        let record = script_list
+            .script_records()
+            .iter()
+            .find(|record| record.script_tag() == script_tag)
+            .expect("original script should still exist after patching");
+        let script = record
+            .script(script_list.offset_data())
+            .expect("script should resolve");
+
+        let default_lang_sys = script
+            .default_lang_sys()
+            .expect("script default langsys should decode");
+        if let Ok(default_lang_sys) = default_lang_sys {
+            assert!(
+                default_lang_sys
+                    .feature_indices()
+                    .iter()
+                    .any(|index| index.get() == calt_index),
+                "default langsys for every existing script should include calt",
+            );
+        }
+
+        for lang_record in script.lang_sys_records() {
+            let lang_sys = lang_record
+                .lang_sys(script.offset_data())
+                .expect("langsys should resolve");
+            assert!(
+                lang_sys
+                    .feature_indices()
+                    .iter()
+                    .any(|index| index.get() == calt_index),
+                "every langsys for every existing script should include calt",
+            );
+        }
+    }
+}
+
+#[test]
 fn supports_multiple_rules_in_one_pass() {
     let bytes = impact_bytes();
     let font = FontRef::new(&bytes).expect("impact fixture should parse");
