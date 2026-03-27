@@ -153,8 +153,15 @@ You can find example recipes under [`tests/recipes`](tests/recipes).
 
 The following is of low priority, and may not get implemented:
 
-- Reuse 1 -> N and N -> 1 mappings
-- Determine "best split point", instead of just split in the end
+- Reuse 1 -> N and N -> 1 mappings: Not likely for those to be shared, and adds complexity
+- Determine "best split point", instead of just split in the end: Need to determine how to measure "best", i.e. a scoring algorithm, which could consider:
+    - maximize unchanged 1 -> 1 pairs we can skip
+    - maximize reuse of existing 1 -> 1, 1 -> N, or N -> 1 mappings
+    - maybe prefer a suffix split instead of a prefix split in some cases
+- Use contextual substitution instead of chained contextual substitution, when word_match_* options are all disabled, because we don't have to look forward or backward in this case
+    - Tiny performance gain and size reduction
+    - Cleaner and semantically more correct
+    - Low complexity
 
 ## 🎉 Credits
 
