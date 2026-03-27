@@ -2,7 +2,9 @@
 "use strict";
 
 const VERSION = "0.1.4";
-const CACHE_NAME = `morphio-${VERSION}`;
+const CACHE_PREFIX = "morphio";
+const CACHE_NAME = `${CACHE_PREFIX}-${VERSION}`;
+const BASE_PATH = self.location.pathname.split("/").slice(0, -1).join("/");
 const APP_RESOURCE = [
     "/",
     "/index.js",
@@ -11,7 +13,7 @@ const APP_RESOURCE = [
     "/style.css",
     "/wasm/morphio.js",
     "/wasm/morphio_bg.wasm",
-];
+].map((path) => BASE_PATH + path);
 
 // Install event - cache files
 self.addEventListener("install", (event) => {
@@ -66,8 +68,8 @@ function isAppResource(requestUrl) {
 self.addEventListener("fetch", (event) => {
     const requestUrl = new URL(event.request.url);
 
-    if (requestUrl.pathname === "/index.html") {
-        requestUrl.pathname = "/";
+    if (requestUrl.pathname === BASE_PATH + "/index.html") {
+        requestUrl.pathname = BASE_PATH + "/";
     }
     if (!isAppResource(requestUrl)) {
         // Do nothing
@@ -96,7 +98,11 @@ self.addEventListener("activate", (event) => {
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames
-                    .filter((cacheName) => cacheName !== CACHE_NAME)
+                    .filter(
+                        (cacheName) =>
+                            cacheName.startsWith(CACHE_PREFIX) &&
+                            cacheName !== CACHE_NAME,
+                    )
                     .map((cacheName) => {
                         console.log("Deleting old cache:", cacheName);
                         return caches.delete(cacheName);
