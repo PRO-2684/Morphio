@@ -35,6 +35,7 @@ name = "morphio"
 required-features = ["cli"]
 
 [dev-dependencies]
+harfrust = "0.6.0"
 serde_json = "1.0.149"
 
 [package.metadata.binstall]

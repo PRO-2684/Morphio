@@ -124,7 +124,7 @@ You can find example recipes under [`tests/recipes`](tests/recipes).
 
 ## ✅ TODO
 
-- [ ] Actual shaping tests via [`harfrust`](https://github.com/harfbuzz/harfrust)
+- [x] Actual shaping tests via [`harfrust`](https://github.com/harfbuzz/harfrust)
     - [`UnicodeBuffer`](https://docs.rs/harfrust/latest/harfrust/struct.UnicodeBuffer.html)
     - [`Shaper::shape`](https://docs.rs/harfrust/latest/harfrust/struct.Shaper.html#method.shape)
     - [`GlyphBuffer`](https://docs.rs/harfrust/latest/harfrust/struct.GlyphBuffer.html)
