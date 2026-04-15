@@ -16,16 +16,16 @@ default = []
 cli = ["argh"]
 
 [dependencies]
-read-fonts = "0.38.0"
-write-fonts = "0.46.0"
+read-fonts = "0.39.1"
+write-fonts = "0.48.0"
 argh = { version = "0.1.19", default-features = false, features = ["help"], optional = true }
 range-set-blaze = "0.5.0"
 serde = { version = "1.0.228", features = ["derive"] }
-toml = { version = "0.9.7" }
+toml = { version = "1.1.2" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2.104"
-js-sys = "0.3.81"
+wasm-bindgen = "0.2.118"
+js-sys = "0.3.95"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
