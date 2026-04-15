@@ -1,16 +1,27 @@
 //! Primitive helpers for `1 -> 1` substitutions.
 
+use read_fonts::types::GlyphId16;
+use write_fonts::tables::{
+    gsub::{SingleSubst, SubstitutionLookup},
+    layout::{CoverageTable, Lookup, LookupFlag, SequenceLookupRecord},
+};
+
 use std::collections::BTreeMap;
 
-use read_fonts::types::GlyphId16;
-use write_fonts::tables::layout::SequenceLookupRecord;
+use super::{MorphError, shared::SharedLookupCache};
 
-use super::{MorphError, create_single_substitution_lookup, push_lookup};
-
-/// Deduplicates identical single substitutions while building one rule.
-#[derive(Debug, Default)]
+/// Reuses non-conflicting `1 -> 1` lookups across rules.
+#[derive(Debug)]
 pub struct SingleSubstitutionCache {
-    lookup_indices: BTreeMap<(GlyphId16, GlyphId16), u16>,
+    cache: SharedLookupCache<GlyphId16, GlyphId16>,
+}
+
+impl Default for SingleSubstitutionCache {
+    fn default() -> Self {
+        Self {
+            cache: SharedLookupCache::new(build_single_lookup),
+        }
+    }
 }
 
 impl SingleSubstitutionCache {
@@ -27,13 +38,7 @@ impl SingleSubstitutionCache {
             return Ok(None);
         }
 
-        let lookup_index = if let Some(index) = self.lookup_indices.get(&(src, dst)) {
-            *index
-        } else {
-            let index = push_lookup(gsub, create_single_substitution_lookup(src, dst))?;
-            self.lookup_indices.insert((src, dst), index);
-            index
-        };
+        let lookup_index = self.cache.lookup_index(gsub, src, dst)?;
         let sequence_index = u16::try_from(sequence_index)
             .map_err(|_| MorphError::malformed("sequence index exceeds u16::MAX"))?;
         Ok(Some(SequenceLookupRecord::new(
@@ -41,4 +46,10 @@ impl SingleSubstitutionCache {
             lookup_index,
         )))
     }
+}
+
+fn build_single_lookup(mappings: &BTreeMap<GlyphId16, GlyphId16>) -> SubstitutionLookup {
+    let coverage = CoverageTable::format_1(mappings.keys().copied().collect());
+    let subtable = SingleSubst::format_2(coverage, mappings.values().copied().collect());
+    SubstitutionLookup::Single(Lookup::new(LookupFlag::empty(), vec![subtable]))
 }

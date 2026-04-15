@@ -11,7 +11,7 @@ use super::MorphError;
 pub fn ensure_feature(
     gsub: &mut Gsub,
     feature_tag: Tag,
-    lookup_indices: &[u16],
+    lookup_index: u16,
 ) -> Result<u16, MorphError> {
     if let Some((index, record)) = gsub
         .feature_list
@@ -21,10 +21,8 @@ pub fn ensure_feature(
         .find(|(_, record)| record.feature_tag == feature_tag)
     {
         let feature = record.feature.as_mut();
-        for lookup_index in lookup_indices {
-            if !feature.lookup_list_indices.contains(lookup_index) {
-                feature.lookup_list_indices.push(*lookup_index);
-            }
+        if !feature.lookup_list_indices.contains(&lookup_index) {
+            feature.lookup_list_indices.push(lookup_index);
         }
         return u16::try_from(index)
             .map_err(|_| MorphError::malformed("feature index exceeds u16::MAX"));
@@ -34,7 +32,7 @@ pub fn ensure_feature(
         .map_err(|_| MorphError::malformed("feature list exceeds u16::MAX"))?;
     gsub.feature_list.feature_records.push(FeatureRecord::new(
         feature_tag,
-        Feature::new(None, lookup_indices.to_vec()),
+        Feature::new(None, vec![lookup_index]),
     ));
     Ok(index)
 }

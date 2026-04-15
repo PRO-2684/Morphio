@@ -1,6 +1,7 @@
 [options]
 word_match_start = false
 word_match_end = true
+skip_missing_glyphs = true
 
 [[rules]]
 from = '\ngtr'
